@@ -40,6 +40,7 @@ export async function onRequest(context) {
   let externalId = cookies['_krob_eid'] || '';
   let existingFbc = cookies['_fbc'] || '';
   let existingFbp = cookies['_fbp'] || '';
+  const liFatId = cookies['li_fat_id'] || '';
 
   // --- Generate identifiers if missing ---
   const isNewSession = !sessionId;
@@ -103,8 +104,8 @@ export async function onRequest(context) {
       try {
         if (env.DB) {
           await env.DB.prepare(`
-            INSERT INTO sessions (session_id, external_id, fbclid, gclid, msclkid, fbc, fbp, ip_address, user_agent, referrer, landing_url, utm_source, utm_medium, utm_campaign, utm_content, utm_term, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO sessions (session_id, external_id, fbclid, gclid, msclkid, fbc, fbp, ip_address, user_agent, referrer, landing_url, utm_source, utm_medium, utm_campaign, utm_content, utm_term, li_fat_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(session_id) DO UPDATE SET
               fbclid = CASE WHEN excluded.fbclid != '' THEN excluded.fbclid ELSE sessions.fbclid END,
               gclid = CASE WHEN excluded.gclid != '' THEN excluded.gclid ELSE sessions.gclid END,
@@ -115,8 +116,9 @@ export async function onRequest(context) {
               utm_campaign = CASE WHEN excluded.utm_campaign != '' THEN excluded.utm_campaign ELSE sessions.utm_campaign END,
               utm_content = CASE WHEN excluded.utm_content != '' THEN excluded.utm_content ELSE sessions.utm_content END,
               utm_term = CASE WHEN excluded.utm_term != '' THEN excluded.utm_term ELSE sessions.utm_term END,
+              li_fat_id = CASE WHEN excluded.li_fat_id IS NOT NULL AND excluded.li_fat_id != '' THEN excluded.li_fat_id ELSE sessions.li_fat_id END,
               updated_at = excluded.updated_at
-          `).bind(sessionId, externalId, fbclid, gclid, msclkid, fbc, fbp, clientIp, userAgent, referrer, url.toString(), utmSource, utmMedium, utmCampaign, utmContent, utmTerm, now, now).run();
+          `).bind(sessionId, externalId, fbclid, gclid, msclkid, fbc, fbp, clientIp, userAgent, referrer, url.toString(), utmSource, utmMedium, utmCampaign, utmContent, utmTerm, liFatId || null, now, now).run();
         }
       } catch (e) {
         console.error('Middleware D1 error:', e.message);
