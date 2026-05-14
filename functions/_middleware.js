@@ -92,11 +92,25 @@ export async function onRequest(context) {
     newHeaders.append('Set-Cookie', `_fbc=${fbc}; ${cookieBase}`);
   }
 
-  const newResponse = new Response(response.body, {
+  let newResponse = new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
     headers: newHeaders,
   });
+
+  // --- LinkedIn Insight Tag injection ---
+  // When LINKEDIN_INSIGHT_TAG_ID is set, append the Insight Tag script to <head>
+  // on every HTML page. This enables PageView tracking, Website Demographics, and
+  // Visitor Retargeting without touching individual page files.
+  if (env.LINKEDIN_INSIGHT_TAG_ID && (newResponse.headers.get('content-type') || '').includes('text/html')) {
+    const pid = env.LINKEDIN_INSIGHT_TAG_ID;
+    const snippet = `<script>_linkedin_partner_id="${pid}";window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];window._linkedin_data_partner_ids.push(_linkedin_partner_id);</script>`
+      + `<script>(function(l){if(!l){window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[]}var s=document.getElementsByTagName("script")[0];var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src="https://snap.licdn.com/li.lms-analytics/insight.min.js";s.parentNode.insertBefore(b,s)})(window.lintrk);</script>`
+      + `<noscript><img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=${pid}&fmt=gif"/></noscript>`;
+    newResponse = new HTMLRewriter()
+      .on('head', { element(el) { el.append(snippet, { html: true }); } })
+      .transform(newResponse);
+  }
 
   // --- D1 UPSERT (background, non-blocking) ---
   context.waitUntil(

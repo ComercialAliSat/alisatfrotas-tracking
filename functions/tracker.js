@@ -1,3 +1,5 @@
+import { sendToLinkedIn } from './outputs/linkedin.js';
+
 export async function onRequestPost(context) {
   const { request, env } = context;
 
@@ -34,6 +36,7 @@ export async function onRequestPost(context) {
     const fbp = validateFbCookie(userData.fbp) || validateFbCookie(cookies['_fbp']) || validateFbCookie(sessionData.fbp) || '';
     const fbc = validateFbCookie(sessionData.fbc) || validateFbCookie(cookies['_fbc']) || validateFbCookie(userData.fbc) || '';
     const externalId = userData.external_id || cookies['_krob_eid'] || sessionData.external_id || '';
+    const liFatId = cookies['li_fat_id'] || userData.li_fat_id || sessionData.li_fat_id || '';
 
     // Track sources for analytics
     const fbpSource = userData.fbp ? 'pixel_js'
@@ -124,6 +127,7 @@ export async function onRequestPost(context) {
     const results = isBot ? [] : await Promise.allSettled([
       sendToMeta({ body, clientIp, userAgent, fbp, fbc, hashedEm, hashedFn, hashedLn, hashedPh, hashedExternalId, sessionData, env }),
       sendToGA4({ body, gaClientId, gaSessionId, hashedEm, env }),
+      sendToLinkedIn({ email: userData.em, li_fat_id: liFatId, event_type: body.event_name, value: body.value, currency: body.currency, eventId: body.event_id, eventTime: body.event_time, env }),
     ]);
 
     // --- Parse Meta result ---
@@ -156,6 +160,14 @@ export async function onRequestPost(context) {
       }
     } else if (results[1]?.status === 'rejected') {
       ga4ResponseBody = `Fetch error: ${results[1].reason?.message || 'unknown'}`;
+    }
+
+    // --- Parse LinkedIn result (fire-and-forget — not persisted to event_log) ---
+    if (results[2]?.status === 'rejected') {
+      console.error('LinkedIn CAPI error:', results[2].reason?.message || 'unknown');
+    } else if (results[2]?.status === 'fulfilled' && results[2].value?.response && !results[2].value?.skipped) {
+      const liStatus = results[2].value.response.status;
+      if (liStatus >= 400) console.error('LinkedIn CAPI non-2xx:', liStatus);
     }
 
     const rawEmail = userData.em || '';

@@ -46,7 +46,20 @@ database_id = "__REPLACE_ME_DB_ID__"
 #   GOOGLE_ADS_LOGIN_CUSTOMER_ID
 #   ENCHARGE_API_KEY
 #   MANYCHAT_KEY
-#   EDUZZ_WEBHOOK_SLUG      UUID v4 in URL path (generate per recipient; see deploy-stack)
-#   HOTMART_WEBHOOK_SLUG    same pattern
-#   KIWIFY_WEBHOOK_SLUG     same pattern
+#  
+# LinkedIn:
+#   LINKEDIN_INSIGHT_TAG_ID            Numeric Partner ID (Campaign Manager → Insight Tag).
+#                                      When set, the Insight Tag <script> is injected into
+#                                      every HTML page by the middleware automatically —
+#                                      enables PageView tracking, Demographics, and Retargeting.
+#   LINKEDIN_ACCESS_TOKEN              OAuth Bearer token for the Conversions API.
+#   LINKEDIN_CONVERSION_ID_PAGEVIEW    Conversion rule ID for PageView events.
+#   LINKEDIN_CONVERSION_ID_LEAD        Conversion rule ID for Lead events.
+#   LINKEDIN_CONVERSION_ID_PURCHASE    Conversion rule ID for Purchase events (Pipedrive webhook).
+#   LINKEDIN_CONVERSION_ID             Fallback rule ID if no event-specific var is set.
+#
+# Pipedrive (webhook):
+#   PIPEDRIVE_WEBHOOK_SLUG             UUID slug gating /webhook/pipedrive/<slug>
+#   PIPEDRIVE_API_TOKEN                Personal API token for Persons email lookup
+#   PIPEDRIVE_GOOGLE_ADS_CONVERSION_ACTION_ID  Google Ads conversion action for won deals
 # ---------------------------------------------------------------------------
