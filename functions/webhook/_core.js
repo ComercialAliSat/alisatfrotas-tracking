@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
 // Webhook core — platform-agnostic purchase processing.
 //
-// Each sales platform (Eduzz / Hotmart / Kiwify / etc.) has its own thin
-// adapter file in this directory. The adapter is responsible for:
+// Each sales platform has its own thin adapter file in this directory.
+// The adapter is responsible for:
 //   1. Reading the raw request body.
 //   2. Verifying the platform-specific signature.
 //   3. Parsing the platform's payload shape into the normalized purchase
@@ -16,7 +16,7 @@
 // Normalized purchase object (what each adapter must produce):
 //
 //   {
-//     platform:      'eduzz' | 'hotmart' | 'kiwify' | string,
+//     platform:      string,
 //     trk:           string,   // unique identifier threaded from page visit
 //     email:         string,
 //     name:          string,
@@ -30,9 +30,8 @@
 //     platformUtm:   { utm_source, utm_medium, utm_campaign, utm_content, utm_term },
 //   }
 //
-// Do NOT add platform-specific branching to this file. If you find yourself
-// writing `if (parsed.platform === 'hotmart')`, the right fix is to push that
-// logic back into the adapter file.
+// Do NOT add platform-specific branching to this file. Push any
+// platform-specific logic back into the adapter file.
 // -----------------------------------------------------------------------------
 
 import PRODUCTS_CONFIG from '../../config/products.js';
@@ -376,8 +375,6 @@ async function handlePurchaseLog({ parsed, eventId, eventTime, resultMap, env })
       // UTMs prefer what the sales platform echoes back in the webhook
       // (platformUtm, authoritative when present), then fall back to what
       // the sales page persisted to checkout_sessions (checkoutData).
-      // Platforms like Hotmart that don't carry UTMs natively rely on
-      // the fallback + the sck-merge recovery in their adapter.
       platformUtm.utm_source || checkoutData.utm_source || '',
       platformUtm.utm_medium || checkoutData.utm_medium || '',
       platformUtm.utm_campaign || checkoutData.utm_campaign || '',
