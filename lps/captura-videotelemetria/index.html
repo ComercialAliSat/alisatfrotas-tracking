@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Proteja sua frota com videotelemetria e IA embarcada. Reduza acidentes em até 60%, multas em 40% e economize diesel. Diagnóstico gratuito — Ali Sat Gestão de Frotas.">
+  <meta name="robots" content="index, follow">
+  <title>Videotelemetria com IA Embarcada | Proteja Sua Frota | Ali Sat Gestão de Frotas</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Videotelemetria com IA | Ali Sat Gestão de Frotas">
+  <meta property="og:description" content="Reduza acidentes em 60% com inteligência artificial embarcada. Diagnóstico gratuito da sua frota.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mkt.alisat.com.br/captura-videotelemetria">
+  <meta property="og:image" content="/assets/og-alisat-videotelemetria.webp">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Videotelemetria com IA Embarcada — Ali Sat Gestão de Frotas",
+    "description": "Solução de videotelemetria com inteligência artificial embarcada para frotas. Diagnóstico gratuito.",
+    "url": "https://mkt.alisat.com.br/captura-videotelemetria",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Ali Sat Rastreamento e Monitoramento LTDA",
+      "url": "https://www.alisat.com.br",
+      "telephone": "+55-51-3034-2111",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rua Porto Mauá, 742",
+        "addressLocality": "Sapucaia do Sul",
+        "addressRegion": "RS",
+        "addressCountry": "BR"
+      },
+      "sameAs": [
+        "https://www.instagram.com/alisatbrasil",
+        "https://www.linkedin.com/company/alisatgestaodefrotas",
+        "https://www.facebook.com/alisatbrasil"
+      ]
+    }
+  }
+  </script>
+
+  <!-- LinkedIn Insight Tag — injetado pelo _middleware.js via HTMLRewriter
+       usando env.LINKEDIN_INSIGHT_TAG_ID do Cloudflare Pages. Não duplicar aqui. -->
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy:  { DEFAULT: '#0A1628', light: '#0D1F3C', dark: '#060E1A' },
+            brand: { blue: '#1E40AF', accent: '#3B82F6', light: '#EFF6FF' }
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── Base ─────────────────────────────────────────────── */
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; }
+
+    /* ── Hero background ─────────────────────────────────── */
+    #hero {
+      background-color: #0A1628;
+      background-image: url('/assets/hero-frota.webp');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg,
+        rgba(6,14,26,0.92) 0%,
+        rgba(10,22,40,0.85) 50%,
+        rgba(10,22,40,0.7) 100%);
+      pointer-events: none;
+    }
+    /* Subtle grid overlay */
+    #hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.05) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+    }
+
+    /* ── Image placeholder boxes ─────────────────────────── */
+    .img-ph {
+      border: 2px dashed #CBD5E1;
+      background: #F1F5F9;
+      color: #94A3B8;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; font-size: 0.75rem; padding: 0.75rem;
+      border-radius: 0.75rem;
+    }
+    .img-ph-dark {
+      border: 2px dashed rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.35);
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; font-size: 0.75rem; padding: 0.75rem;
+      border-radius: 0.75rem;
+    }
+
+    /* ── Pulse on main CTA ───────────────────────────────── */
+    @keyframes pulse-glow {
+      0%   { box-shadow: 0 0 0 0 rgba(59,130,246,0.55); }
+      70%  { box-shadow: 0 0 0 14px rgba(59,130,246,0); }
+      100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+    }
+    .btn-pulse { animation: pulse-glow 2.4s ease-out infinite; }
+
+    /* ── Scroll fade-in ──────────────────────────────────── */
+    .fi {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fi.on { opacity: 1; transform: translateY(0); }
+    .fi.d1 { transition-delay: 0.10s; }
+    .fi.d2 { transition-delay: 0.20s; }
+    .fi.d3 { transition-delay: 0.30s; }
+    .fi.d4 { transition-delay: 0.40s; }
+
+    /* ── Stat numbers ────────────────────────────────────── */
+    .stat-num {
+      font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+      font-weight: 900; line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── FAQ accordion ───────────────────────────────────── */
+    .faq-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.32s ease, padding 0.32s ease;
+    }
+    .faq-body.open { max-height: 220px; }
+    .faq-chevron { transition: transform 0.28s ease; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+    /* ── Navbar scroll ───────────────────────────────────── */
+    #nav.scrolled {
+      background: rgba(6,14,26,0.97) !important;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+    }
+
+    /* ── Form inputs ─────────────────────────────────────── */
+    .inp {
+      width: 100%;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .inp::placeholder { color: rgba(255,255,255,0.35); }
+    .inp:focus {
+      outline: none;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
+    }
+    .inp-sel {
+      background-color: #0D1F3C;
+      appearance: none; -webkit-appearance: none;
+    }
+    .inp-sel option { background: #0D1F3C; }
+
+    /* Light-theme inputs (final form on dark bg — keep same dark style) */
+
+    /* ── Step indicator ──────────────────────────────────── */
+    .step-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transition: background 0.25s;
+    }
+    .step-dot.active { background: #3B82F6; }
+
+    /* ── Form states ─────────────────────────────────────── */
+    .form-wrap.done .form-body { display: none; }
+    .form-wrap .ty { display: none; }
+    .form-wrap.done .ty { display: block; }
+
+    /* ── Card hovers ─────────────────────────────────────── */
+    .pain-card { transition: transform 0.25s, border-color 0.25s; }
+    .pain-card:hover { transform: translateY(-5px); border-color: rgba(59,130,246,0.45) !important; }
+    .sol-card { transition: transform 0.25s, box-shadow 0.25s; }
+    .sol-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(30,64,175,0.18); }
+
+    /* ── YouTube facade ──────────────────────────────────── */
+    .yt-wrap { position: relative; cursor: pointer; }
+    .yt-wrap::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.25); transition:background 0.2s; border-radius:inherit; }
+    .yt-wrap:hover::after { background:rgba(0,0,0,0.15); }
+    .yt-play {
+      position: absolute; top:50%; left:50%;
+      transform: translate(-50%,-50%);
+      z-index: 10;
+      width: 74px; height: 74px;
+      background: #FF0000;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .yt-wrap:hover .yt-play { transform: translate(-50%,-50%) scale(1.1); background:#CC0000; }
+
+    /* ── Badge ───────────────────────────────────────────── */
+    .badge-anos {
+      background: linear-gradient(135deg,#1E40AF,#3B82F6);
+      border-radius: 50%; width:58px; height:58px;
+      display:inline-flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      font-weight:900; color:#fff; line-height:1;
+    }
+
+    /* ── Scrollbar ───────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0A1628; }
+    ::-webkit-scrollbar-thumb { background: #1E40AF; border-radius: 3px; }
+  </style>
+</head>
+<body class="font-sans antialiased bg-white text-gray-900">
+
+  <!-- ═══════════════════════════════════════════════════════
+       NAVBAR
+  ═══════════════════════════════════════════════════════ -->
+  <header id="nav" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+
+      <a href="#" aria-label="Ali Sat Gestão de Frotas">
+        <img src="/assets/logo-alisat.png" alt="Ali Sat Gestão de Frotas" class="h-9 w-auto"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <span class="hidden items-center gap-1.5 text-white font-extrabold text-xl">
+          <span class="text-blue-400">●</span>Ali Sat
+        </span>
+      </a>
+
+      <div class="flex items-center gap-3 sm:gap-4">
+        <a href="tel:+555130342111"
+           class="hidden sm:flex items-center gap-1.5 text-white/75 hover:text-white text-sm font-medium transition-colors"
+           aria-label="Ligar: (51) 3034-2111">
+          <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+          (51) 3034-2111
+        </a>
+        <a href="#hero-form-anchor"
+           class="bg-blue-700 hover:bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-all shadow-lg"
+           onclick="trackCTA('Fale com um especialista','navbar')">
+          Fale com um especialista
+        </a>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════════════ -->
+  <section id="hero" class="min-h-screen flex items-center pt-24 pb-16">
+    <!-- hero-bg set via CSS; placeholder label shown when image absent -->
+    <div id="hero-ph-label" class="img-ph-dark absolute inset-0 items-center justify-center text-sm z-0 hidden"
+         style="border-radius:0; border:none;">
+      Espaço para imagem hero — /assets/hero-frota.webp
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 w-full relative z-10">
+      <div class="grid lg:grid-cols-2 gap-10 xl:gap-16 items-center">
+
+        <!-- ── Left: copy ── -->
+        <div class="text-white">
+          <div class="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-500/30 text-blue-300 text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full mb-6 fi">
+            <span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse shrink-0"></span>
+            IA Embarcada • Alertas em Tempo Real
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl xl:text-[2.75rem] font-extrabold leading-[1.15] mb-5 fi d1">
+            Sua empresa e motoristas estão
+            <span class="text-blue-400"> realmente protegidos</span>
+            contra acidentes e multas evitáveis?
+          </h1>
+
+          <p class="text-gray-300 text-lg leading-relaxed mb-8 fi d2">
+            Acidentes nas rodovias geram um prejuízo anual de
+            <strong class="text-white">R$&nbsp;50&nbsp;bilhões</strong> no Brasil.
+            Não permita que sua frota faça parte dessa estatística. Implemente a
+            tecnologia que alerta o motorista
+            <strong class="text-white">antes da colisão acontecer.</strong>
+          </p>
+
+          <div class="flex flex-wrap gap-5 mb-8 fi d3">
+            <span class="flex items-center gap-2 text-sm text-gray-400">
+              <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              Instalação em campo
+            </span>
+            <span class="flex items-center gap-2 text-sm text-gray-400">
+              <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              Suporte 24 horas
+            </span>
+            <span class="flex items-center gap-2 text-sm text-gray-400">
+              <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              8 anos de mercado
+            </span>
+          </div>
+
+          <!-- Mobile CTA -->
+          <a href="#hero-form-anchor"
+             class="lg:hidden inline-block bg-blue-700 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all btn-pulse ab-test-hero-cta fi d4"
+             onclick="trackCTA('Quero proteger minha frota','hero')">
+            Quero proteger minha frota →
+          </a>
+        </div>
+
+        <!-- ── Right: 2-step form ── -->
+        <div id="hero-form-anchor" class="fi d2">
+          <div id="hero-form-wrap" class="form-wrap bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+
+            <!-- Header -->
+            <div class="flex items-start justify-between mb-6">
+              <div>
+                <p class="text-white font-bold text-lg">Diagnóstico gratuito</p>
+                <p class="text-gray-400 text-sm mt-0.5" id="hero-step-label">Etapa 1 de 2 — Seus dados</p>
+              </div>
+              <div class="flex gap-2 mt-1" aria-label="Progresso do formulário">
+                <div class="step-dot active" id="hero-dot-1"></div>
+                <div class="step-dot" id="hero-dot-2"></div>
+              </div>
+            </div>
+
+            <!-- Thank-you state -->
+            <div class="ty text-center py-8">
+              <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <h2 class="text-white font-bold text-xl mb-2">Solicitação enviada!</h2>
+              <p class="text-gray-300 text-sm">Nossa equipe entrará em contato em até 1 hora útil.</p>
+            </div>
+
+            <!-- Form body -->
+            <div class="form-body">
+
+              <!-- STEP 1 -->
+              <div id="hero-s1">
+                <div class="space-y-4">
+                  <div>
+                    <label for="h-nome" class="block text-gray-300 text-sm font-medium mb-1.5">Nome completo <span class="text-red-400">*</span></label>
+                    <input type="text" id="h-nome" autocomplete="name" placeholder="Seu nome" required class="inp" aria-required="true">
+                  </div>
+                  <div>
+                    <label for="h-email" class="block text-gray-300 text-sm font-medium mb-1.5">E-mail <span class="text-red-400">*</span></label>
+                    <input type="email" id="h-email" autocomplete="email" placeholder="seu@email.com" required class="inp" aria-required="true">
+                  </div>
+                  <div>
+                    <label for="h-tel" class="block text-gray-300 text-sm font-medium mb-1.5">Telefone / WhatsApp <span class="text-red-400">*</span></label>
+                    <input type="tel" id="h-tel" autocomplete="tel" placeholder="(51) 9 9999-9999" required class="inp" aria-required="true">
+                  </div>
+                  <!-- UTM hiddens -->
+                  <input type="hidden" id="h-utm_source"><input type="hidden" id="h-utm_medium">
+                  <input type="hidden" id="h-utm_campaign"><input type="hidden" id="h-utm_content">
+                  <input type="hidden" id="h-utm_term"><input type="hidden" id="h-fbclid"><input type="hidden" id="h-gclid">
+
+                  <button type="button" onclick="heroAdvance()"
+                          class="w-full bg-blue-700 hover:bg-blue-600 active:bg-blue-800 text-white font-bold py-4 rounded-lg transition-all shadow-lg btn-pulse ab-test-hero-cta"
+                          aria-label="Avançar para a próxima etapa">
+                    Quero proteger minha frota →
+                  </button>
+                </div>
+              </div>
+
+              <!-- STEP 2 -->
+              <div id="hero-s2" class="hidden">
+                <div class="space-y-4">
+                  <div>
+                    <label for="h-empresa" class="block text-gray-300 text-sm font-medium mb-1.5">Nome da Empresa <span class="text-red-400">*</span></label>
+                    <input type="text" id="h-empresa" autocomplete="organization" placeholder="Razão social ou nome fantasia" required class="inp">
+                  </div>
+                  <div>
+                    <label for="h-cnpj" class="block text-gray-300 text-sm font-medium mb-1.5">CNPJ <span class="text-red-400">*</span></label>
+                    <input type="text" id="h-cnpj" placeholder="00.000.000/0000-00" maxlength="18" required class="inp">
+                  </div>
+                  <div>
+                    <label for="h-seg" class="block text-gray-300 text-sm font-medium mb-1.5">Segmento de Atuação <span class="text-red-400">*</span></label>
+                    <select id="h-seg" required class="inp inp-sel">
+                      <option value="" disabled selected>Selecione seu segmento</option>
+                      <option>Transporte de Cargas</option><option>Transporte de Pessoas</option>
+                      <option>Distribuidora</option><option>Construção Civil</option>
+                      <option>Mineração e Siderurgia</option><option>Agrícola</option><option>Outro</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="h-veic" class="block text-gray-300 text-sm font-medium mb-1.5">Quantidade de Veículos <span class="text-red-400">*</span></label>
+                    <select id="h-veic" required class="inp inp-sel">
+                      <option value="" disabled selected>Quantos veículos na frota?</option>
+                      <option>20-50</option><option>51-100</option><option>101-200</option>
+                      <option>201-500</option><option>500+</option>
+                    </select>
+                  </div>
+                  <button type="button" onclick="heroSubmit()"
+                          class="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 rounded-lg transition-all shadow-lg"
+                          aria-label="Agendar diagnóstico gratuito">
+                    Agendar diagnóstico gratuito 🚀
+                  </button>
+                  <p class="text-center text-xs text-gray-500">🔒 Dados protegidos conforme a LGPD</p>
+                </div>
+              </div>
+
+            </div><!-- /.form-body -->
+          </div><!-- /.form-wrap -->
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       PROBLEMA — "O Custo Invisível"
+  ═══════════════════════════════════════════════════════ -->
+  <section id="problema" class="py-20 px-4 sm:px-6" style="background:#0A1628;">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <span class="inline-block text-blue-400 text-xs font-bold uppercase tracking-widest mb-3 fi">O Custo Invisível</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4 fi d1">
+          Você está pagando o preço da falta de visibilidade
+        </h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed fi d2">
+          Gerir uma frota sem visibilidade em tempo real é aceitar riscos financeiros e humanos constantes.
+          O custo de um acidente vai muito além do conserto do veículo — envolve passivos judiciais,
+          perda de carga e danos à reputação.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="pain-card bg-white/5 border border-white/10 rounded-xl p-6 fi d1" role="article">
+          <div class="text-4xl mb-4" aria-hidden="true">🚛</div>
+          <h3 class="text-white font-bold text-base mb-2">Multas por excesso de velocidade</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Drenam o fluxo de caixa e comprometem o resultado operacional da empresa.</p>
+        </div>
+        <div class="pain-card bg-white/5 border border-white/10 rounded-xl p-6 fi d2" role="article">
+          <div class="text-4xl mb-4" aria-hidden="true">⚠️</div>
+          <h3 class="text-white font-bold text-base mb-2">Colisões traseiras</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Causadas por distração ou fadiga — evitáveis com tecnologia de alerta preventivo.</p>
+        </div>
+        <div class="pain-card bg-white/5 border border-white/10 rounded-xl p-6 fi d3" role="article">
+          <div class="text-4xl mb-4" aria-hidden="true">📱</div>
+          <h3 class="text-white font-bold text-base mb-2">Uso indevido do celular</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Comportamentos de risco que geram responsabilidade civil e passivos trabalhistas.</p>
+        </div>
+        <div class="pain-card bg-white/5 border border-white/10 rounded-xl p-6 fi d4" role="article">
+          <div class="text-4xl mb-4" aria-hidden="true">⚖️</div>
+          <h3 class="text-white font-bold text-base mb-2">Dificuldade em provar inocência</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Sem imagens, o motorista não tem como provar inocência em sinistros e litígios.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SOLUÇÃO — "Tecnologia que Antecipa o Risco"
+  ═══════════════════════════════════════════════════════ -->
+  <section id="solucao" class="bg-white py-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-3 fi">A Solução</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 fi d1">
+          Tecnologia que Antecipa o Risco
+        </h2>
+        <p class="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed fi d2">
+          A Ali Sat entrega <strong>Inteligência Artificial embarcada.</strong>
+          Diferente de sistemas comuns que dependem da nuvem, nossa IA processa as imagens no próprio
+          veículo, gerando alertas sonoros instantâneos para o motorista.
+        </p>
+      </div>
+
+      <!-- Solution image placeholder -->
+      <div class="img-ph mx-auto mb-12 fi" style="max-width:860px; height:300px;">
+        📷 Imagem da solução / câmeras instaladas — /assets/solucao-cameras.webp
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="sol-card bg-blue-50 border border-blue-100 rounded-xl p-6 fi d1" role="article">
+          <div class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center text-2xl mb-4" aria-hidden="true">🧠</div>
+          <h3 class="text-gray-900 font-bold text-base mb-2">Detecção de Fadiga</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">Alerta imediato ao identificar sinais de cansaço antes que o acidente aconteça.</p>
+        </div>
+        <div class="sol-card bg-blue-50 border border-blue-100 rounded-xl p-6 fi d2" role="article">
+          <div class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center text-2xl mb-4" aria-hidden="true">👁️</div>
+          <h3 class="text-gray-900 font-bold text-base mb-2">Monitoramento de Distração</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">Identifica uso de celular ou desvio de atenção com precisão milimétrica.</p>
+        </div>
+        <div class="sol-card bg-blue-50 border border-blue-100 rounded-xl p-6 fi d3" role="article">
+          <div class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center text-2xl mb-4" aria-hidden="true">📡</div>
+          <h3 class="text-gray-900 font-bold text-base mb-2">Alerta de Colisão</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">Sensores que calculam distância e velocidade relativa em tempo real.</p>
+        </div>
+        <div class="sol-card bg-blue-50 border border-blue-100 rounded-xl p-6 fi d4" role="article">
+          <div class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center text-2xl mb-4" aria-hidden="true">⚡</div>
+          <h3 class="text-gray-900 font-bold text-base mb-2">Latência Zero</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">Processamento local — alerta a tempo de evitar o impacto, sem depender de internet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       PROVA SOCIAL + VÍDEO
+  ═══════════════════════════════════════════════════════ -->
+  <section id="prova-social" class="bg-gray-50 py-20 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-10">
+        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-3 fi">Resultados Reais</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3 fi d1">
+          Inteligência Artificial trabalhando a<br class="hidden sm:block"> seu favor 24 horas por dia!
+        </h2>
+        <p class="text-gray-500 text-lg fi d2">Confira o funcionamento real</p>
+      </div>
+
+      <!-- YouTube Facade -->
+      <div class="max-w-3xl mx-auto mb-14 fi d2">
+        <div id="yt-facade" class="yt-wrap rounded-2xl overflow-hidden shadow-2xl"
+             style="aspect-ratio:16/9;"
+             role="button" tabindex="0"
+             aria-label="Reproduzir vídeo de demonstração Ali Sat Videotelemetria"
+             onclick="loadYT()" onkeydown="if(event.key==='Enter'||event.key===' ')loadYT()">
+          <img src="https://img.youtube.com/vi/t60tY2u4r0Y/maxresdefault.jpg"
+               alt="Demonstração Ali Sat Videotelemetria — clique para assistir"
+               class="w-full h-full object-cover" loading="lazy">
+          <div class="yt-play" aria-hidden="true">
+            <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+        <div id="yt-player-wrap" class="hidden rounded-2xl overflow-hidden shadow-2xl" style="aspect-ratio:16/9;">
+          <iframe id="yt-iframe" width="100%" height="100%" src="" frameborder="0"
+                  title="Demonstração Ali Sat Videotelemetria"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>
+
+      <!-- Client logos -->
+      <div class="mb-14 fi">
+        <p class="text-center text-gray-400 text-xs font-bold uppercase tracking-wider mb-8">
+          As empresas que utilizam têm muito mais sucesso
+        </p>
+        <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-8">
+          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-1.png</div>
+          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-2.png</div>
+          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-3.png</div>
+          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-4.png</div>
+          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-5.png</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       STATS
+  ═══════════════════════════════════════════════════════ -->
+  <section id="resultados" class="py-20 px-4 sm:px-6" style="background:#1E40AF;">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 fi">Resultados comprovados em campo</h2>
+        <p class="text-blue-200 text-lg fi d1">Dados de clientes que implementaram a videotelemetria Ali Sat</p>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div class="text-center fi d1"><div class="stat-num text-white" data-target="80">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Redução das distrações ao volante</p></div>
+        <div class="text-center fi d2"><div class="stat-num text-white" data-target="70">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Aumento do uso do cinto</p></div>
+        <div class="text-center fi d3"><div class="stat-num text-white" data-target="65">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Menos excesso de velocidade</p></div>
+        <div class="text-center fi d1"><div class="stat-num text-white" data-target="60">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Redução no número de colisões</p></div>
+        <div class="text-center fi d2"><div class="stat-num text-white" data-target="40">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Redução de multas</p></div>
+        <div class="text-center fi d3"><div class="stat-num text-white" data-target="20">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Economia com diesel</p></div>
+      </div>
+
+      <div class="text-center fi">
+        <a href="#form-final"
+           class="inline-block bg-white text-blue-800 font-bold px-10 py-4 rounded-lg shadow-lg hover:bg-blue-50 transition-all text-base ab-test-stats-cta"
+           onclick="trackCTA('Quero esses benefícios','resultados')">
+          Quero esses benefícios →
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       FAQ
+  ═══════════════════════════════════════════════════════ -->
+  <section id="faq" class="bg-white py-20 px-4 sm:px-6">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-12">
+        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-3 fi">Dúvidas Frequentes</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 fi d1">Perguntas Frequentes</h2>
+      </div>
+
+      <div class="space-y-3 fi d2" role="list">
+
+        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+          <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  onclick="toggleFaq(this)" aria-expanded="false">
+            <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">A videotelemetria serve para qualquer veículo?</span>
+            <svg class="faq-chevron w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">Sim! A solução pode ser aplicada em qualquer tipo de veículo, exceto motos.</p></div>
+        </div>
+
+        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+          <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  onclick="toggleFaq(this)" aria-expanded="false">
+            <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Como funcionam as câmeras?</span>
+            <svg class="faq-chevron w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">São câmeras instaladas no veículo, que se comunicam através de dados móveis, enviando as imagens em tempo real para uma plataforma virtual.</p></div>
+        </div>
+
+        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+          <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  onclick="toggleFaq(this)" aria-expanded="false">
+            <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Como é o armazenamento da câmera?</span>
+            <svg class="faq-chevron w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">As câmeras possuem armazenamento físico através de cartão de memória e em nuvem.</p></div>
+        </div>
+
+        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+          <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  onclick="toggleFaq(this)" aria-expanded="false">
+            <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Posso solicitar as gravações?</span>
+            <svg class="faq-chevron w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">Sim, caso haja necessidade, você pode solicitar as gravações do dia e hora que desejar.</p></div>
+        </div>
+
+        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+          <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  onclick="toggleFaq(this)" aria-expanded="false">
+            <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Quanto tempo leva para instalar?</span>
+            <svg class="faq-chevron w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">A instalação é rápida e feita por equipe especializada em campo.</p></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       FINAL CTA + FORM COMPLETO
+  ═══════════════════════════════════════════════════════ -->
+  <section id="form-final" class="py-20 px-4 sm:px-6" style="background:#0A1628;">
+    <div class="max-w-4xl mx-auto">
+
+      <div class="text-center mb-10">
+        <div class="inline-block bg-yellow-400 text-blue-900 font-bold text-sm px-5 py-2 rounded-full mb-6 fi">
+          🎯 Diagnóstico gratuito da sua frota + Demonstração da plataforma
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4 fi d1">
+          Sua frota protegida 24 horas por dia.<br class="hidden sm:block">
+          Sua empresa com resultados reais.
+        </h2>
+        <p class="text-gray-400 text-lg fi d2">Fale com um especialista e proteja sua frota ainda esta semana.</p>
+      </div>
+
+      <div class="max-w-xl mx-auto fi d2">
+        <div id="final-form-wrap" class="form-wrap bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+
+          <!-- Thank-you state -->
+          <div class="ty text-center py-10">
+            <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h3 class="text-white font-bold text-xl mb-2">Solicitação enviada com sucesso!</h3>
+            <p class="text-gray-300 text-sm">Nossa equipe entrará em contato em até 1 hora útil.</p>
+            <p class="text-gray-500 text-xs mt-2">Siga-nos no Instagram: @alisatbrasil</p>
+          </div>
+
+          <!-- Form body (all steps together) -->
+          <div class="form-body">
+            <h3 class="text-white font-bold text-lg mb-6 text-center">Preencha seus dados</h3>
+            <div class="space-y-4">
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="f-nome" class="block text-gray-300 text-sm font-medium mb-1.5">Nome completo <span class="text-red-400">*</span></label>
+                  <input type="text" id="f-nome" autocomplete="name" placeholder="Seu nome" required class="inp">
+                </div>
+                <div>
+                  <label for="f-email" class="block text-gray-300 text-sm font-medium mb-1.5">E-mail <span class="text-red-400">*</span></label>
+                  <input type="email" id="f-email" autocomplete="email" placeholder="seu@email.com" required class="inp">
+                </div>
+              </div>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="f-tel" class="block text-gray-300 text-sm font-medium mb-1.5">Telefone <span class="text-red-400">*</span></label>
+                  <input type="tel" id="f-tel" autocomplete="tel" placeholder="(51) 9 9999-9999" required class="inp">
+                </div>
+                <div>
+                  <label for="f-empresa" class="block text-gray-300 text-sm font-medium mb-1.5">Nome da Empresa <span class="text-red-400">*</span></label>
+                  <input type="text" id="f-empresa" autocomplete="organization" placeholder="Sua empresa" required class="inp">
+                </div>
+              </div>
+              <div>
+                <label for="f-cnpj" class="block text-gray-300 text-sm font-medium mb-1.5">CNPJ <span class="text-red-400">*</span></label>
+                <input type="text" id="f-cnpj" placeholder="00.000.000/0000-00" maxlength="18" required class="inp">
+              </div>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="f-seg" class="block text-gray-300 text-sm font-medium mb-1.5">Segmento <span class="text-red-400">*</span></label>
+                  <select id="f-seg" required class="inp inp-sel">
+                    <option value="" disabled selected>Selecione...</option>
+                    <option>Transporte de Cargas</option><option>Transporte de Pessoas</option>
+                    <option>Distribuidora</option><option>Construção Civil</option>
+                    <option>Mineração e Siderurgia</option><option>Agrícola</option><option>Outro</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="f-veic" class="block text-gray-300 text-sm font-medium mb-1.5">Qtd. Veículos <span class="text-red-400">*</span></label>
+                  <select id="f-veic" required class="inp inp-sel">
+                    <option value="" disabled selected>Quantidade...</option>
+                    <option>20-50</option><option>51-100</option><option>101-200</option>
+                    <option>201-500</option><option>500+</option>
+                  </select>
+                </div>
+              </div>
+              <!-- Hidden UTMs -->
+              <input type="hidden" id="f-utm_source"><input type="hidden" id="f-utm_medium">
+              <input type="hidden" id="f-utm_campaign"><input type="hidden" id="f-utm_content">
+              <input type="hidden" id="f-utm_term"><input type="hidden" id="f-fbclid"><input type="hidden" id="f-gclid">
+
+              <button id="final-btn" type="button" onclick="finalSubmit()"
+                      class="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 rounded-lg transition-all shadow-lg text-base mt-2 ab-test-final-cta"
+                      aria-label="Agendar diagnóstico gratuito da frota">
+                Agendar diagnóstico gratuito 🚀
+              </button>
+              <p class="text-center text-xs text-gray-500 flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Seus dados estão protegidos conforme a LGPD
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════ -->
+  <footer class="py-10 px-4 sm:px-6 border-t border-white/10" style="background:#060E1A;">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8">
+
+        <div class="flex items-center gap-4">
+          <img src="/assets/logo-alisat.png" alt="Ali Sat Gestão de Frotas" class="h-9 w-auto"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <span class="hidden items-center gap-1.5 text-white font-extrabold text-lg">
+            <span class="text-blue-400">●</span>Ali Sat
+          </span>
+          <div class="badge-anos text-xs" aria-label="8 anos de mercado">
+            <span class="text-lg font-black leading-none">8</span>
+            <span class="text-xs font-bold leading-none">ANOS</span>
+          </div>
+        </div>
+
+        <nav class="flex items-center gap-5" aria-label="Redes sociais">
+          <a href="https://www.instagram.com/alisatbrasil" target="_blank" rel="noopener noreferrer"
+             class="text-gray-400 hover:text-white transition-colors" aria-label="Instagram @alisatbrasil">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/alisatgestaodefrotas" target="_blank" rel="noopener noreferrer"
+             class="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn alisatgestaodefrotas">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://www.youtube.com/channel/UCJ0V--CpWFlnPdl5Ctsllug" target="_blank" rel="noopener noreferrer"
+             class="text-gray-400 hover:text-white transition-colors" aria-label="YouTube Ali Sat">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/alisatbrasil" target="_blank" rel="noopener noreferrer"
+             class="text-gray-400 hover:text-white transition-colors" aria-label="Facebook @alisatbrasil">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+        </nav>
+      </div>
+
+      <div class="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        <p>Ali Sat Rastreamento e Monitoramento LTDA — CNPJ 29.989.683/0001-33</p>
+        <div class="flex items-center gap-4">
+          <a href="tel:+555130342111" class="hover:text-gray-300 transition-colors">(51) 3034-2111</a>
+          <span aria-hidden="true">·</span>
+          <a href="/politica-de-privacidade" class="hover:text-gray-300 transition-colors">Política de Privacidade</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════════════════ -->
+  <script>
+  'use strict';
+
+  // ── dataLayer ────────────────────────────────────────────────
+  window.dataLayer = window.dataLayer || [];
+
+  // ── Utilities ────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const param = k => new URLSearchParams(window.location.search).get(k) || '';
+  const cookie = name => {
+    const v = `; ${document.cookie}`;
+    const p = v.split(`; ${name}=`);
+    return p.length === 2 ? p.pop().split(';').shift() : '';
+  };
+  const push = obj => window.dataLayer.push(obj);
+
+  // ── UTM fill ─────────────────────────────────────────────────
+  function fillUtms() {
+    const keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'];
+    ['h','f'].forEach(prefix => {
+      keys.forEach(k => {
+        const el = $(`${prefix}-${k}`);
+        if (el) el.value = param(k);
+      });
+    });
+  }
+
+  // ── Phone mask ───────────────────────────────────────────────
+  function maskPhone(el) {
+    let v = el.value.replace(/\D/g,'').slice(0,11);
+    if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4})$/,'($1) $2-$3');
+    else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d*)/,'($1) $2-$3');
+    else if (v.length > 2) v = v.replace(/^(\d{2})(\d*)/,'($1) $2');
+    else if (v.length) v = `(${v}`;
+    el.value = v;
+  }
+
+  // ── CNPJ mask ────────────────────────────────────────────────
+  function maskCNPJ(el) {
+    let v = el.value.replace(/\D/g,'').slice(0,14);
+    v = v.replace(/^(\d{2})(\d)/,'$1.$2');
+    v = v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');
+    v = v.replace(/\.(\d{3})(\d)/,'.$1/$2');
+    v = v.replace(/(\d{4})(\d)/,'$1-$2');
+    el.value = v;
+  }
+
+  // ── Validate helpers ─────────────────────────────────────────
+  const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const isPhone = v => v.replace(/\D/g,'').length >= 10;
+  const isCNPJ  = v => v.replace(/\D/g,'').length === 14;
+
+  function alert_(msg) {
+    // Accessible: announce to screen readers via live region if present
+    window.alert(msg);
+  }
+
+  // ── Navbar scroll ────────────────────────────────────────────
+  const nav = $('nav') || document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  // ── Fade-in observer ─────────────────────────────────────────
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -36px 0px' });
+  document.querySelectorAll('.fi').forEach(el => io.observe(el));
+
+  // ── Stat counter ─────────────────────────────────────────────
+  let statsRan = false;
+  const statsIo = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting || statsRan) return;
+    statsRan = true;
+    document.querySelectorAll('[data-target]').forEach(el => {
+      const target = +el.dataset.target, fps = 60, dur = 1600;
+      const steps = Math.round(dur / (1000 / fps));
+      let i = 0;
+      const t = setInterval(() => {
+        i++;
+        el.textContent = Math.round(target * (i / steps)) + '%';
+        if (i >= steps) clearInterval(t);
+      }, 1000 / fps);
+    });
+    statsIo.unobserve(document.getElementById('resultados'));
+  }, { threshold: 0.3 });
+  statsIo.observe(document.getElementById('resultados'));
+
+  // ── Scroll depth ─────────────────────────────────────────────
+  const sdFired = new Set();
+  window.addEventListener('scroll', () => {
+    const pct = Math.round(window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100);
+    [25,50,75,100].forEach(t => {
+      if (pct >= t && !sdFired.has(t)) { sdFired.add(t); push({ event:'Scroll_Depth', percent:t }); }
+    });
+  }, { passive: true });
+
+  // ── CTA tracking ─────────────────────────────────────────────
+  function trackCTA(text, section) { push({ event:'CTA_Click', cta_text:text, section }); }
+
+  // ── FAQ ──────────────────────────────────────────────────────
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-body').classList.remove('open');
+      i.querySelector('button').setAttribute('aria-expanded','false');
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      item.querySelector('.faq-body').classList.add('open');
+      btn.setAttribute('aria-expanded','true');
+    }
+  }
+
+  // ── Hero form — step data store ──────────────────────────────
+  const heroS1 = {};
+
+  function heroAdvance() {
+    const nome  = $('h-nome').value.trim();
+    const email = $('h-email').value.trim();
+    const tel   = $('h-tel').value.trim();
+    if (!nome)           { alert_('Por favor, informe seu nome.'); return; }
+    if (!isEmail(email)) { alert_('Por favor, informe um e-mail válido.'); return; }
+    if (!isPhone(tel))   { alert_('Por favor, informe um telefone válido.'); return; }
+
+    heroS1.nome  = nome;
+    heroS1.email = email;
+    heroS1.tel   = tel;
+
+    push({ event:'Lead_Captura', form_step:1 });
+
+    $('hero-s1').classList.add('hidden');
+    $('hero-s2').classList.remove('hidden');
+    $('hero-dot-1').classList.remove('active');
+    $('hero-dot-2').classList.add('active');
+    document.getElementById('hero-step-label').textContent = 'Etapa 2 de 2 — Sua empresa';
+    $('hero-form-anchor').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function heroSubmit() {
+    const empresa = $('h-empresa').value.trim();
+    const cnpj    = $('h-cnpj').value.trim();
+    const seg     = $('h-seg').value;
+    const veic    = $('h-veic').value;
+    if (!empresa)       { alert_('Por favor, informe o nome da empresa.'); return; }
+    if (!isCNPJ(cnpj))  { alert_('Por favor, informe um CNPJ válido (14 dígitos).'); return; }
+    if (!seg)           { alert_('Por favor, selecione o segmento de atuação.'); return; }
+    if (!veic)          { alert_('Por favor, selecione a quantidade de veículos.'); return; }
+
+    push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
+    postLead({
+      nome: heroS1.nome, email: heroS1.email, tel: heroS1.tel,
+      empresa, cnpj, segmento:seg, qtd_veiculos:veic,
+    }, 'hero-form-wrap');
+  }
+
+  function finalSubmit() {
+    const nome    = $('f-nome').value.trim();
+    const email   = $('f-email').value.trim();
+    const tel     = $('f-tel').value.trim();
+    const empresa = $('f-empresa').value.trim();
+    const cnpj    = $('f-cnpj').value.trim();
+    const seg     = $('f-seg').value;
+    const veic    = $('f-veic').value;
+
+    if (!nome)           { alert_('Por favor, informe seu nome.'); return; }
+    if (!isEmail(email)) { alert_('Por favor, informe um e-mail válido.'); return; }
+    if (!isPhone(tel))   { alert_('Por favor, informe um telefone válido.'); return; }
+    if (!empresa)        { alert_('Por favor, informe o nome da empresa.'); return; }
+    if (!isCNPJ(cnpj))   { alert_('Por favor, informe um CNPJ válido.'); return; }
+    if (!seg)            { alert_('Por favor, selecione o segmento de atuação.'); return; }
+    if (!veic)           { alert_('Por favor, selecione a quantidade de veículos.'); return; }
+
+    push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
+    postLead({ nome, email, tel, empresa, cnpj, segmento:seg, qtd_veiculos:veic }, 'final-form-wrap');
+  }
+
+  // ── Core POST ────────────────────────────────────────────────
+  async function postLead(data, wrapId) {
+    const btn = document.querySelector(`#${wrapId} button[type=button]`);
+    if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+
+    const parts = (data.nome || '').trim().split(/\s+/);
+    const payload = {
+      event_name: 'Lead',
+      event_id: crypto.randomUUID(),
+      event_time: Math.floor(Date.now() / 1000),
+      event_source_url: window.location.href,
+      product: 'videotelemetria',
+      user_data: {
+        em: data.email || '',
+        fn: parts[0] || '',
+        ln: parts.slice(1).join(' ') || '',
+        ph: (data.tel || '').replace(/\D/g,''),
+      },
+      empresa:      data.empresa      || '',
+      cnpj:         data.cnpj         || '',
+      segmento:     data.segmento     || '',
+      qtd_veiculos: data.qtd_veiculos || '',
+      utm_source:   param('utm_source'),
+      utm_medium:   param('utm_medium'),
+      utm_campaign: param('utm_campaign'),
+      utm_content:  param('utm_content'),
+      utm_term:     param('utm_term'),
+      fbclid:       param('fbclid'),
+      gclid:        param('gclid'),
+      fbp:          cookie('_fbp'),
+      fbc:          cookie('_fbc'),
+    };
+
+    try {
+      const res = await fetch('/tracker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const wrap = document.getElementById(wrapId);
+        if (wrap) wrap.classList.add('done');
+        // Also mark the other form done (user submitted once = both are resolved)
+        ['hero-form-wrap','final-form-wrap'].forEach(id => {
+          const w = document.getElementById(id);
+          if (w) w.classList.add('done');
+        });
+      } else {
+        if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito 🚀'; }
+        alert_('Ocorreu um erro. Por favor, tente novamente.');
+      }
+    } catch (err) {
+      console.error('Lead submit error:', err);
+      if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito 🚀'; }
+      alert_('Erro de conexão. Por favor, tente novamente.');
+    }
+  }
+
+  // ── YouTube facade ───────────────────────────────────────────
+  let ytLoaded = false;
+  const ytThresholds = { 25:false, 50:false, 75:false, 100:false };
+
+  function loadYT() {
+    if (ytLoaded) return;
+    ytLoaded = true;
+
+    $('yt-facade').style.display = 'none';
+    const wrap = $('yt-player-wrap');
+    wrap.classList.remove('hidden');
+    $('yt-iframe').src = 'https://www.youtube.com/embed/t60tY2u4r0Y?autoplay=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+
+    push({ event:'Video_View', percent:0, action:'play' });
+
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+
+    window.onYouTubeIframeAPIReady = () => {
+      const player = new YT.Player('yt-iframe', {
+        events: {
+          onStateChange(e) {
+            if (e.data === YT.PlayerState.PLAYING) watchProgress(e.target);
+          }
+        }
+      });
+    };
+  }
+
+  function watchProgress(player) {
+    const iv = setInterval(() => {
+      try {
+        const dur = player.getDuration();
+        const cur = player.getCurrentTime();
+        if (!dur) return;
+        const pct = (cur / dur) * 100;
+        [25,50,75,100].forEach(t => {
+          if (pct >= t && !ytThresholds[t]) {
+            ytThresholds[t] = true;
+            push({ event:'Video_View', percent:t });
+          }
+        });
+        if (ytThresholds[100]) clearInterval(iv);
+      } catch(_) {}
+    }, 1200);
+  }
+
+  // ── Init ─────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    fillUtms();
+
+    // Phone masks
+    ['h-tel','f-tel'].forEach(id => {
+      const el = $(id);
+      if (el) el.addEventListener('input', () => maskPhone(el));
+    });
+
+    // CNPJ masks
+    ['h-cnpj','f-cnpj'].forEach(id => {
+      const el = $(id);
+      if (el) el.addEventListener('input', () => maskCNPJ(el));
+    });
+
+    // Hero image fallback: show placeholder label if asset missing
+    const img = new Image();
+    img.onerror = () => {
+      const lbl = $('hero-ph-label');
+      if (lbl) { lbl.classList.remove('hidden'); lbl.style.display = 'flex'; }
+    };
+    img.src = '/assets/hero-frota.webp';
+  });
+  </script>
+
+</body>
+</html>

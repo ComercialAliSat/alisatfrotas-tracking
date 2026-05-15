@@ -1,5 +1,7 @@
 import { sendToLinkedIn } from './outputs/linkedin.js';
 
+let googleAdsTokenCache = { token: null, expiresAt: 0 };
+
 export async function onRequestPost(context) {
   const { request, env } = context;
 
@@ -128,6 +130,15 @@ export async function onRequestPost(context) {
       sendToMeta({ body, clientIp, userAgent, fbp, fbc, hashedEm, hashedFn, hashedLn, hashedPh, hashedExternalId, sessionData, env }),
       sendToGA4({ body, gaClientId, gaSessionId, hashedEm, env }),
       sendToLinkedIn({ email: userData.em, li_fat_id: liFatId, event_type: body.event_name, value: body.value, currency: body.currency, eventId: body.event_id, eventTime: body.event_time, env }),
+      sendToGoogleAds({
+        sessionData,
+        conversionActionId: env.GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID || '',
+        hashedEm,
+        value: body.value || 0,
+        currency: body.currency || 'BRL',
+        eventTime: body.event_time,
+        env,
+      }),
     ]);
 
     // --- Parse Meta result ---
@@ -168,6 +179,14 @@ export async function onRequestPost(context) {
     } else if (results[2]?.status === 'fulfilled' && results[2].value?.response && !results[2].value?.skipped) {
       const liStatus = results[2].value.response.status;
       if (liStatus >= 400) console.error('LinkedIn CAPI non-2xx:', liStatus);
+    }
+
+    // --- Parse Google Ads result (fire-and-forget — not persisted to event_log) ---
+    if (results[3]?.status === 'rejected') {
+      console.error('Google Ads lead CAPI error:', results[3].reason?.message || 'unknown');
+    } else if (results[3]?.status === 'fulfilled' && results[3].value?.response && !results[3].value?.skipped) {
+      const gadsStatus = results[3].value.response.status;
+      if (gadsStatus >= 400) console.error('Google Ads lead CAPI non-2xx:', gadsStatus);
     }
 
     const rawEmail = userData.em || '';
@@ -312,6 +331,128 @@ async function sendToGA4({ body, gaClientId, gaSessionId, hashedEm, env }) {
     body: payloadJson,
   });
   return { payload: payloadJson, response };
+}
+
+// -------------------------------------------------------
+// GOOGLE ADS — Lead conversion
+// Mirrors _core.js/pipedrive adapter logic, kept local to avoid
+// cross-module state coupling. Uses GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID
+// as the conversion action (no productConfig at lead time).
+// -------------------------------------------------------
+async function sendToGoogleAds({ sessionData, conversionActionId, hashedEm, value, currency, eventTime, env }) {
+  if (!env.GOOGLE_ADS_CUSTOMER_ID || !env.GOOGLE_ADS_LOGIN_CUSTOMER_ID ||
+      !env.GOOGLE_ADS_DEVELOPER_TOKEN || !env.GOOGLE_ADS_CLIENT_ID ||
+      !env.GOOGLE_ADS_CLIENT_SECRET || !env.GOOGLE_ADS_REFRESH_TOKEN) {
+    return { skipped: 'missing google ads env', payload: null, response: null };
+  }
+
+  if (!conversionActionId) {
+    return { skipped: 'no conversion action configured', payload: null, response: null };
+  }
+
+  const gclid = sessionData.gclid || '';
+  const wbraid = sessionData.wbraid || '';
+  const gbraid = sessionData.gbraid || '';
+  if (!gclid && !wbraid && !gbraid) {
+    return { skipped: 'no click id', payload: null, response: null };
+  }
+
+  const accessToken = await getGoogleAdsAccessToken(env);
+  if (!accessToken) {
+    return { skipped: 'oauth token unavailable', payload: null, response: null };
+  }
+
+  const customerId = String(env.GOOGLE_ADS_CUSTOMER_ID).replace(/-/g, '');
+  const loginCustomerId = String(env.GOOGLE_ADS_LOGIN_CUSTOMER_ID).replace(/-/g, '');
+
+  const conversion = {
+    conversionAction: `customers/${customerId}/conversionActions/${conversionActionId}`,
+    conversionDateTime: formatConversionDateTime(eventTime, env.TIMEZONE_OFFSET),
+    conversionValue: parseFloat(value) || 0,
+    currencyCode: currency || 'BRL',
+  };
+  if (gclid) conversion.gclid = gclid;
+  else if (wbraid) conversion.wbraid = wbraid;
+  else if (gbraid) conversion.gbraid = gbraid;
+
+  if (hashedEm) {
+    conversion.userIdentifiers = [{ hashedEmail: hashedEm }];
+  }
+
+  const gadsBody = {
+    conversions: [conversion],
+    partialFailure: true,
+    validateOnly: false,
+  };
+
+  const payloadJson = JSON.stringify(gadsBody);
+  const response = await fetch(
+    `https://googleads.googleapis.com/v21/customers/${customerId}:uploadClickConversions`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'developer-token': env.GOOGLE_ADS_DEVELOPER_TOKEN,
+        'login-customer-id': loginCustomerId,
+        'Content-Type': 'application/json',
+      },
+      body: payloadJson,
+    }
+  );
+  return { payload: payloadJson, response };
+}
+
+async function getGoogleAdsAccessToken(env) {
+  const now = Math.floor(Date.now() / 1000);
+  if (googleAdsTokenCache.token && googleAdsTokenCache.expiresAt > now + 30) {
+    return googleAdsTokenCache.token;
+  }
+
+  const resp = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      client_id: env.GOOGLE_ADS_CLIENT_ID,
+      client_secret: env.GOOGLE_ADS_CLIENT_SECRET,
+      refresh_token: env.GOOGLE_ADS_REFRESH_TOKEN,
+    }),
+  });
+
+  if (!resp.ok) {
+    const errBody = await resp.text().catch(() => '');
+    console.error('Google Ads token refresh failed:', resp.status, errBody);
+    return null;
+  }
+
+  const data = await resp.json();
+  if (!data.access_token) {
+    console.error('Google Ads token refresh: no access_token in response', data);
+    return null;
+  }
+
+  googleAdsTokenCache = {
+    token: data.access_token,
+    expiresAt: now + (data.expires_in || 3600) - 60,
+  };
+  return data.access_token;
+}
+
+function formatConversionDateTime(unixSeconds, offsetString) {
+  const tz = offsetString || '-03:00';
+  const match = /^([+-])(\d{2}):(\d{2})$/.exec(tz);
+  if (!match) {
+    const d = new Date(unixSeconds * 1000);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ` +
+      `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}+00:00`;
+  }
+  const sign = match[1] === '-' ? -1 : 1;
+  const offsetSeconds = sign * (parseInt(match[2], 10) * 3600 + parseInt(match[3], 10) * 60);
+  const shifted = new Date((unixSeconds + offsetSeconds) * 1000);
+  const pad = n => String(n).padStart(2, '0');
+  return `${shifted.getUTCFullYear()}-${pad(shifted.getUTCMonth() + 1)}-${pad(shifted.getUTCDate())} ` +
+    `${pad(shifted.getUTCHours())}:${pad(shifted.getUTCMinutes())}:${pad(shifted.getUTCSeconds())}${tz}`;
 }
 
 // -------------------------------------------------------

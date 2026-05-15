@@ -35,6 +35,7 @@
 // -----------------------------------------------------------------------------
 
 import PRODUCTS_CONFIG from '../../config/products.js';
+import { sendToLinkedIn } from '../outputs/linkedin.js';
 
 // Module-scope OAuth2 access token cache for Google Ads API.
 // Reused across warm worker invocations to skip the refresh round-trip.
@@ -140,10 +141,11 @@ async function handleTracking({ parsed, eventId, eventTime, env }) {
     currency: it?.price?.currency || currency,
   }));
 
-  const [metaResult, ga4Result, googleAdsResult] = await Promise.allSettled([
+  const [metaResult, ga4Result, googleAdsResult, linkedInResult] = await Promise.allSettled([
     sendToMeta({ checkoutData, hashedEm, hashedFn, hashedLn, hashedPh, hashedExternalId, eventId, eventTime, value, currency, productName, contents, env }),
     sendToGA4({ checkoutData, hashedEm, transactionId, value, currency, ga4Items, env }),
     sendToGoogleAds({ checkoutData, productConfig, hashedEm, transactionId, value, currency, eventTime, env }),
+    sendToLinkedIn({ email, li_fat_id: checkoutData.li_fat_id || '', event_type: 'Purchase', value, currency, eventId, eventTime, env }),
   ]);
 
   // Parse Meta response
@@ -200,6 +202,14 @@ async function handleTracking({ parsed, eventId, eventTime, env }) {
     }
   } else if (googleAdsResult?.status === 'rejected') {
     googleAdsResponseBody = `Fetch error: ${googleAdsResult.reason?.message || 'unknown'}`;
+  }
+
+  // LinkedIn is fire-and-forget — not persisted to purchase_log.
+  if (linkedInResult?.status === 'rejected') {
+    console.error('LinkedIn CAPI error (purchase):', linkedInResult.reason?.message || 'unknown');
+  } else if (linkedInResult?.status === 'fulfilled' && linkedInResult.value?.response && !linkedInResult.value?.skipped) {
+    const liStatus = linkedInResult.value.response.status;
+    if (liStatus >= 400) console.error('LinkedIn CAPI non-2xx (purchase):', liStatus);
   }
 
   return {

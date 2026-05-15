@@ -39,9 +39,6 @@ Meta dashboard showing conversions"**, invoke `verify-tracking`.
 
 If they want to **add another lead page or sales page**, invoke `add-page`.
 
-If they say **"I use [sales platform not in Eduzz/Hotmart/Kiwify]"**, invoke
-`add-sales-platform`.
-
 For anything else, ask a clarifying question before reaching for a skill.
 
 ## Identifier chain
@@ -62,9 +59,11 @@ purchase with its original attribution.
 
 **The `trk` chain is the critical one for sales pages**: generated on the
 sales page visit → persisted to `checkout_sessions` with all attribution →
-passed to the sales platform as a custom field (`tracker.code1` for Eduzz,
-`xcod` for Hotmart, `sck` for Kiwify) → returned in the webhook payload →
-looked up to enrich the Meta/GA4/Google Ads conversion.
+passed to the sales platform as a custom field → returned in the webhook
+payload → looked up to enrich the Meta/GA4/Google Ads/LinkedIn conversion.
+Pipedrive (CRM flow) bypasses `trk` entirely: on deal-won, the adapter
+fetches the contact email from Pipedrive, then recovers the earliest
+matching session from D1 by email for attribution enrichment.
 
 Hop-by-hop debugging bible: `docs/data-flow.md`
 
@@ -72,7 +71,7 @@ Hop-by-hop debugging bible: `docs/data-flow.md`
 
 - **Never log PageView events to `event_log`.** PageView still fires to
   Meta/GA4 — it just doesn't write to D1. This keeps per-instance D1 write
-  volume sustainable forever. Enforced at `functions/tracker.js:118`.
+  volume sustainable forever. Enforced by `shouldLogEvent` in `functions/tracker.js`.
 - **Never commit secrets.** `wrangler.toml`, `.dev.vars`, `.env*` are all
   gitignored. Only `wrangler.toml.example` is tracked. Product configuration
   (`config/products.js`) IS tracked — product IDs and tag IDs are not secrets.
@@ -109,14 +108,12 @@ Hop-by-hop debugging bible: `docs/data-flow.md`
 | Path | Purpose |
 |---|---|
 | `_middleware.js` | Runs on every page request. Generates `_krob_sid`, captures `fbclid`/`gclid`/UTMs, computes `SUB_DOMAIN_INDEX` from the Host header, sets 400-day cookies, upserts `sessions`. Skips `/tracker`, `/webhook/*`, `/api/*`, `/dash`. |
-| `tracker.js` | `POST /tracker` — client events. Hashes PII, fires Meta CAPI + GA4 MP, logs to `event_log` (PageView skipped). |
+| `tracker.js` | `POST /tracker` — client events. Hashes PII, fires Meta CAPI + GA4 MP + LinkedIn CAPI + Google Ads (lead conversion), logs to `event_log` (PageView skipped). |
 | `checkout-session.js` | `POST /checkout-session` — persists `trk` + attribution when a sales-page loads or a checkout button fires. |
 | `scripts/[[path]].js` | First-party proxy for `gtag.js`. Example pages load GA4 via `/scripts/gtag.js?id=...`. |
-| `webhook/_core.js` | Platform-agnostic brain: lookup `trk` → enrich → fan out to Meta/GA4/Google Ads/Encharge/ManyChat → persist `purchase_log` + `purchase_items`. |
+| `webhook/_core.js` | Platform-agnostic brain: lookup `trk` → enrich → fan out to Meta/GA4/Google Ads/LinkedIn/Encharge/ManyChat → persist `purchase_log` + `purchase_items`. |
 | `webhook/_utils.js` | `timingSafeEqual` + `guardSlug` helpers shared by adapters. |
-| `webhook/eduzz/[slug].js` | Eduzz adapter. Gates on `EDUZZ_WEBHOOK_SLUG`, parses Eduzz shape, delegates to `_core.js`. |
-| `webhook/hotmart/[slug].js` | Hotmart adapter. Gates on `HOTMART_WEBHOOK_SLUG`, parses Hotmart shape. |
-| `webhook/kiwify/[slug].js` | Kiwify adapter. Gates on `KIWIFY_WEBHOOK_SLUG`, parses Kiwify shape. |
+| `webhook/pipedrive/[slug].js` | Pipedrive adapter. Gates on `PIPEDRIVE_WEBHOOK_SLUG`. On deal-won, fetches contact email via Pipedrive Persons API, recovers session from D1 by email, fans out to Meta CAPI + Google Ads. |
 | `api/revenue.js` | Dashboard: gross revenue, sales, AOV, daily time series from `purchase_log`. |
 | `api/products.js` | Dashboard: per-product breakdown + time series from `purchase_items`. |
 | `api/utm-breakdown.js` | Dashboard: tabbed UTM drill-down from `purchase_log` with cascading filters. |
@@ -148,7 +145,6 @@ live under `.claude/skills/<name>/SKILL.md`.
 | `deploy-stack` | "set this up", "deploy this", "I just downloaded this", "first-time setup" | Phase A bootstrap, hybrid flow: uses `wrangler` only for D1 (create + migrations) and generates `wrangler.toml`; creates a private GitHub repo via `gh` and pushes; generates `DASH_KEY` and per-platform webhook slugs locally; hands off to the recipient for manual Pages-project creation, D1 binding, and env-var entry in the Cloudflare dashboard. Page deploys are driven by `git push` from then on. |
 | `verify-tracking` | "is my tracking working", "check my tracking", "verify the chain" | Phase B: walks the 6-checkpoint Level 1 integrity chain (cookie → sessions row → checkout URL → webhook arrival → D1 lookup → platform receipt). |
 | `add-page` | "add a lead page", "add a sales page", "create a landing page" | Copies the matching starter from `examples/`, reads `docs/page-types/*.md`, wires routing and platform-specific snippets. |
-| `add-sales-platform` | "I use [platform not in Eduzz/Hotmart/Kiwify]" | Creates a new webhook adapter following `docs/platforms/_template.md` by copying an existing adapter as the structural reference. |
 
 ## Deep reference
 
@@ -159,9 +155,7 @@ live under `.claude/skills/<name>/SKILL.md`.
 | D1 schema, every table, every column | `docs/schema.md` |
 | Lead form recipe | `docs/page-types/lead-form-page.md` |
 | Sales page recipe | `docs/page-types/sales-page.md` |
-| Eduzz-specific notes | `docs/platforms/eduzz.md` |
-| Hotmart-specific notes | `docs/platforms/hotmart.md` |
-| Kiwify-specific notes | `docs/platforms/kiwify.md` |
+| Pipedrive-specific notes | `docs/platforms/pipedrive.md` |
 | Adding a new sales platform | `docs/platforms/_template.md` |
 | Setting up Meta Ads spend sync via external cron | `docs/ad-spend-sync.md` |
 
@@ -175,6 +169,6 @@ These have sensible defaults. Change them only if you know why.
 | Timezone for Google Ads conversion timestamps | `-03:00` (São Paulo, DST-free since 2019) | Set `TIMEZONE_OFFSET` secret to any ISO offset (`+00:00`, `-05:00`, etc.) |
 | Default phone country code | `55` (Brazil) — prepended to local-format phone numbers before hashing for Meta CAPI / ManyChat, per Meta Advanced Matching spec (digits must include country code + area code) | Set `DEFAULT_COUNTRY_CODE` secret to the recipient's ISO calling code (`1` US/CA, `44` UK, `351` Portugal, etc.). Detection is length-based — if a lead already typed a number at a plausible international length it passes through untouched. |
 | PII retention window | Raw email/name/phone stored indefinitely | Manual: run a periodic `DELETE` via scheduled worker. Not enforced by default. |
-| Which sales platforms are active | Eduzz / Hotmart / Kiwify all built in | A platform goes live once its `<PLATFORM>_WEBHOOK_SLUG` env var is set. Recipients paste the full `/webhook/<platform>/<slug>` URL into the platform's dashboard; wrong slug = 404 |
+| Which sales platforms are active | Pipedrive built in | A platform goes live once its `<PLATFORM>_WEBHOOK_SLUG` env var is set. Configure the full `/webhook/<platform>/<slug>` URL in the platform's webhook settings; wrong slug = 404 |
 | Dashboard auth | Query param `?key=<DASH_KEY>` | Rotate by changing the env var; no code change |
 | Ad-spend sync | Off until recipient configures Meta Ads cron (see `docs/ad-spend-sync.md`) | Set `META_ADS_ACCESS_TOKEN`, `META_ADS_ACCOUNT_ID`, `SYNC_SECRET` and schedule an external cron to hit `/api/sync/meta-ads` hourly |
