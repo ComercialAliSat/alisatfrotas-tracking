@@ -195,16 +195,18 @@ export async function onRequest(context) {
       `})();\x3c/script>`
     );
 
-    if (snippets.length > 0 || bannerHtml) {
-      const rw = new HTMLRewriter();
-      if (snippets.length > 0) {
-        rw.on('head', { element(el) { el.append(snippets.join(''), { html: true }); } });
-      }
-      if (bannerHtml) {
-        rw.on('body', { element(el) { el.append(bannerHtml, { html: true }); } });
-      }
-      newResponse = rw.transform(newResponse);
+    // Favicon injetado em todas as páginas HTML, independente de consentimento.
+    const faviconTag = '<link rel="icon" type="image/x-icon" href="/assets/favicon.png">';
+
+    const rw = new HTMLRewriter()
+      .on('head', { element(el) {
+        el.append(faviconTag, { html: true });
+        if (snippets.length > 0) el.append(snippets.join(''), { html: true });
+      }});
+    if (bannerHtml) {
+      rw.on('body', { element(el) { el.append(bannerHtml, { html: true }); } });
     }
+    newResponse = rw.transform(newResponse);
   }
 
   // --- D1 UPSERT (background, non-blocking) ---
