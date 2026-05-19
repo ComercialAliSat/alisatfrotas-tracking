@@ -98,14 +98,21 @@ export async function onRequest(context) {
     headers: newHeaders,
   });
 
-  // --- Pixel injection: Meta, GA4, LinkedIn — single HTMLRewriter pass ---
-  // All three tags are injected server-side from Cloudflare env vars so that
-  // individual HTML files (LPs, etc.) stay free of hardcoded IDs. One pass
-  // keeps the edge worker overhead minimal.
-  if ((newResponse.headers.get('content-type') || '').includes('text/html')) {
+  // --- LGPD consent + Pixel injection ---
+  // Pixels are only injected when the visitor has explicitly accepted all cookies
+  // (alisat_lgpd=all cookie). On first visit or when "Só necessários" is chosen,
+  // no tracking scripts are sent. The LGPD banner is injected into <body> on all
+  // HTML page responses when no decision has been recorded yet.
+  const isHtml = (newResponse.headers.get('content-type') || '').includes('text/html');
+
+  if (isHtml) {
+    const consent      = cookies['alisat_lgpd'] || '';          // '' | 'all' | 'necessary'
+    const trackingOk   = consent === 'all';
+    const hasDecided   = consent === 'all' || consent === 'necessary';
+
     const snippets = [];
 
-    if (env.META_PIXEL_ID) {
+    if (trackingOk && env.META_PIXEL_ID) {
       const pid = env.META_PIXEL_ID;
       snippets.push(
         `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?` +
@@ -118,10 +125,8 @@ export async function onRequest(context) {
       );
     }
 
-    if (env.GA4_MEASUREMENT_ID) {
+    if (trackingOk && env.GA4_MEASUREMENT_ID) {
       const mid = env.GA4_MEASUREMENT_ID;
-      // Load via the first-party /scripts/gtag.js proxy so ad-blockers can't
-      // filter on the googletagmanager.com hostname.
       snippets.push(
         `<script async src="/scripts/gtag.js?id=${mid}"></script>` +
         `<script>window.dataLayer=window.dataLayer||[];` +
@@ -130,7 +135,7 @@ export async function onRequest(context) {
       );
     }
 
-    if (env.LINKEDIN_INSIGHT_TAG_ID) {
+    if (trackingOk && env.LINKEDIN_INSIGHT_TAG_ID) {
       const pid = env.LINKEDIN_INSIGHT_TAG_ID;
       snippets.push(
         `<script>_linkedin_partner_id="${pid}";window._linkedin_data_partner_ids=` +
@@ -145,10 +150,60 @@ export async function onRequest(context) {
       );
     }
 
-    if (snippets.length > 0) {
-      newResponse = new HTMLRewriter()
-        .on('head', { element(el) { el.append(snippets.join(''), { html: true }); } })
-        .transform(newResponse);
+    // LGPD banner — shown when visitor has not yet made a cookie choice.
+    // Uses an HTTP cookie so the server can read it on the next request.
+    // "Aceitar todos"  → cookie alisat_lgpd=all   + page reload (pixels fire on reload)
+    // "Só necessários" → cookie alisat_lgpd=necessary (pixels never injected)
+    const bannerHtml = hasDecided ? '' : (
+      `<div id="__lgpd_b" role="dialog" aria-label="Aviso de cookies LGPD" ` +
+      `style="position:fixed;bottom:0;left:0;right:0;z-index:99999;` +
+      `background:#033566;color:#fff;padding:16px 24px;` +
+      `box-shadow:0 -2px 20px rgba(0,0,0,.35);` +
+      `font-family:Poppins,Arial,sans-serif;font-size:13px;line-height:1.5;display:none;">` +
+      `<div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;` +
+      `align-items:center;gap:16px;justify-content:space-between;">` +
+      `<p style="margin:0;flex:1;min-width:220px;color:rgba(255,255,255,.9);">` +
+      `Usamos cookies para melhorar sua experiência e realizar análises. ` +
+      `Consulte nossa <a href="/politica-de-privacidade" ` +
+      `style="color:#1ECB87;text-decoration:underline;">Política de Privacidade</a>.</p>` +
+      `<div style="display:flex;gap:10px;flex-shrink:0;">` +
+      `<button id="__lgpd_nec" ` +
+      `style="background:transparent;color:rgba(255,255,255,.85);` +
+      `border:1px solid rgba(255,255,255,.35);border-radius:6px;` +
+      `padding:9px 18px;font-size:12px;font-family:inherit;cursor:pointer;">` +
+      `Só necessários</button>` +
+      `<button id="__lgpd_all" ` +
+      `style="background:#1ECB87;color:#033566;border:none;border-radius:6px;` +
+      `padding:9px 22px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">` +
+      `Aceitar todos</button>` +
+      `</div></div></div>` +
+      `<script>(function(){` +
+      `var K='alisat_lgpd';` +
+      `var b=document.getElementById('__lgpd_b');` +
+      `if(!document.cookie.match(K+'=')&&!localStorage.getItem(K)){` +
+      `setTimeout(function(){b.style.display='block';},700);}` +
+      `function choose(v){` +
+      `document.cookie=K+'='+v+'; path=/; max-age='+(365*24*3600)+'; SameSite=Lax';` +
+      `try{localStorage.setItem(K,v);}catch(e){}` +
+      `b.style.display='none';` +
+      `if(v==='all'){location.reload();}` +
+      `}` +
+      `var ea=document.getElementById('__lgpd_all');` +
+      `var en=document.getElementById('__lgpd_nec');` +
+      `if(ea)ea.addEventListener('click',function(){choose('all');});` +
+      `if(en)en.addEventListener('click',function(){choose('necessary');});` +
+      `})();\x3c/script>`
+    );
+
+    if (snippets.length > 0 || bannerHtml) {
+      const rw = new HTMLRewriter();
+      if (snippets.length > 0) {
+        rw.on('head', { element(el) { el.append(snippets.join(''), { html: true }); } });
+      }
+      if (bannerHtml) {
+        rw.on('body', { element(el) { el.append(bannerHtml, { html: true }); } });
+      }
+      newResponse = rw.transform(newResponse);
     }
   }
 

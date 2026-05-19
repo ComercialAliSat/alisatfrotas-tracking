@@ -345,13 +345,21 @@
                     <option>20-50</option><option>51-100</option><option>101-200</option>
                     <option>201-500</option><option>500+</option>
                   </select>
+                  <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:rgba(0,0,0,0.65);line-height:1.5;margin-bottom:4px;">
+                    <input type="checkbox" id="h-lgpd" required
+                           style="margin-top:2px;width:15px;height:15px;flex-shrink:0;accent-color:#00BE69;cursor:pointer;">
+                    <span>Concordo com a
+                      <a href="/politica-de-privacidade" target="_blank"
+                         style="color:#033566;text-decoration:underline;">Política de Privacidade</a>
+                      e o tratamento dos meus dados conforme a LGPD.
+                    </span>
+                  </label>
                   <button type="button" onclick="heroSubmit()"
                           class="w-full text-white font-bold py-3 transition-all shadow-lg"
                           style="background:#00BE69; border-radius:3px; font-family:'Poppins',sans-serif; font-size:14px;"
                           aria-label="Agendar diagnóstico gratuito">
                     Agendar diagnóstico gratuito 🚀
                   </button>
-                  <p class="text-center text-xs" style="color:rgba(0,0,0,0.5);">🔒 Dados protegidos conforme a LGPD</p>
                 </div>
               </div>
 
@@ -899,10 +907,12 @@
     const cnpj    = $('h-cnpj').value.trim();
     const seg     = $('h-seg').value;
     const veic    = $('h-veic').value;
+    const lgpd   = $('h-lgpd')?.checked;
     if (!empresa)       { alert_('Por favor, informe o nome da empresa.'); return; }
     if (!isCNPJ(cnpj))  { alert_('Por favor, informe um CNPJ válido (14 dígitos).'); return; }
     if (!seg)           { alert_('Por favor, selecione o segmento de atuação.'); return; }
     if (!veic)          { alert_('Por favor, selecione a quantidade de veículos.'); return; }
+    if (!lgpd)          { alert_('Por favor, aceite a Política de Privacidade para continuar.'); return; }
 
     push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
     postLead({
