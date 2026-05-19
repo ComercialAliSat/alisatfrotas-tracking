@@ -47,10 +47,10 @@
   <!-- LinkedIn Insight Tag — injetado pelo _middleware.js via HTMLRewriter
        usando env.LINKEDIN_INSIGHT_TAG_ID do Cloudflare Pages. Não duplicar aqui. -->
 
-  <!-- Google Fonts: Inter -->
+  <!-- Google Fonts: Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -59,10 +59,10 @@
       theme: {
         extend: {
           colors: {
-            navy:  { DEFAULT: '#0A1628', light: '#0D1F3C', dark: '#060E1A' },
-            brand: { blue: '#1E40AF', accent: '#3B82F6', light: '#EFF6FF' }
+            navy:  { DEFAULT: '#033566', light: '#034075', dark: '#021e3d' },
+            brand: { blue: '#1E40AF', accent: '#1ECB87', light: '#EFF6FF' }
           },
-          fontFamily: { sans: ['Inter', 'sans-serif'] }
+          fontFamily: { sans: ['Poppins', 'sans-serif'] }
         }
       }
     }
@@ -71,12 +71,12 @@
   <style>
     /* ── Base ─────────────────────────────────────────────── */
     html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; }
+    body { font-family: 'Poppins', sans-serif; }
 
     /* ── Hero background ─────────────────────────────────── */
     #hero {
-      background-color: #0A1628;
-      background-image: url('/assets/hero-frota.webp');
+      background-color: #033566;
+      background-image: url('/assets/tech.webp');
       background-size: cover;
       background-position: center;
       position: relative;
@@ -85,9 +85,9 @@
       content: '';
       position: absolute; inset: 0;
       background: linear-gradient(135deg,
-        rgba(6,14,26,0.92) 0%,
-        rgba(10,22,40,0.85) 50%,
-        rgba(10,22,40,0.7) 100%);
+        rgba(3,53,102,0.88) 0%,
+        rgba(3,53,102,0.75) 50%,
+        rgba(3,64,117,0.60) 100%);
       pointer-events: none;
     }
     /* Subtle grid overlay */
@@ -95,8 +95,8 @@
       content: '';
       position: absolute; inset: 0;
       background-image:
-        linear-gradient(rgba(59,130,246,0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(59,130,246,0.05) 1px, transparent 1px);
+        linear-gradient(rgba(30,203,135,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(30,203,135,0.04) 1px, transparent 1px);
       background-size: 64px 64px;
       pointer-events: none;
     }
@@ -154,44 +154,50 @@
     .faq-chevron { transition: transform 0.28s ease; }
     .faq-item.open .faq-chevron { transform: rotate(180deg); }
 
-    /* ── Navbar scroll ───────────────────────────────────── */
+    /* ── Navbar ──────────────────────────────────────────── */
+    #nav {
+      background: #033566 !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
     #nav.scrolled {
-      background: rgba(6,14,26,0.97) !important;
+      background: #033566 !important;
       box-shadow: 0 2px 24px rgba(0,0,0,0.4);
     }
 
     /* ── Form inputs ─────────────────────────────────────── */
     .inp {
       width: 100%;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.18);
-      color: #fff;
-      border-radius: 0.5rem;
-      padding: 0.75rem 1rem;
+      background: #fff;
+      border: 1px solid #fff;
+      color: #000;
+      border-radius: 2px;
+      padding: 0.65rem 0.75rem;
       font-size: 0.875rem;
+      font-family: 'Poppins', sans-serif;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .inp::placeholder { color: rgba(255,255,255,0.35); }
+    .inp::placeholder { color: rgba(0,0,0,0.5); }
     .inp:focus {
       outline: none;
-      border-color: #3B82F6;
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
+      border-color: #1ECB87;
+      box-shadow: 0 0 0 3px rgba(30,203,135,0.18);
     }
     .inp-sel {
-      background-color: #0D1F3C;
+      background-color: #fff;
+      color: #000;
       appearance: none; -webkit-appearance: none;
     }
-    .inp-sel option { background: #0D1F3C; }
+    .inp-sel option { background: #fff; color: #000; }
 
     /* Light-theme inputs (final form on dark bg — keep same dark style) */
 
     /* ── Step indicator ──────────────────────────────────── */
     .step-dot {
       width: 9px; height: 9px; border-radius: 50%;
-      background: rgba(255,255,255,0.25);
+      background: rgba(0,0,0,0.2);
       transition: background 0.25s;
     }
-    .step-dot.active { background: #3B82F6; }
+    .step-dot.active { background: #1ECB87; }
 
     /* ── Form states ─────────────────────────────────────── */
     .form-wrap.done .form-body { display: none; }
@@ -240,32 +246,15 @@
   <!-- ═══════════════════════════════════════════════════════
        NAVBAR
   ═══════════════════════════════════════════════════════ -->
-  <header id="nav" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-
+  <header id="nav" class="sticky top-0 left-0 right-0 z-50 py-3 transition-all duration-300">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-center">
       <a href="#" aria-label="Ali Sat Gestão de Frotas">
-        <img src="/assets/logo-alisat.png" alt="Ali Sat Gestão de Frotas" class="h-9 w-auto"
+        <img src="/assets/logobranco.png" alt="Ali Sat Gestão de Frotas" class="h-14 w-auto"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <span class="hidden items-center gap-1.5 text-white font-extrabold text-xl">
-          <span class="text-blue-400">●</span>Ali Sat
+          <span style="color:#1ECB87;">●</span>Ali Sat
         </span>
       </a>
-
-      <div class="flex items-center gap-3 sm:gap-4">
-        <a href="tel:+555130342111"
-           class="hidden sm:flex items-center gap-1.5 text-white/75 hover:text-white text-sm font-medium transition-colors"
-           aria-label="Ligar: (51) 3034-2111">
-          <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-          </svg>
-          (51) 3034-2111
-        </a>
-        <a href="#hero-form-anchor"
-           class="bg-blue-700 hover:bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-all shadow-lg"
-           onclick="trackCTA('Fale com um especialista','navbar')">
-          Fale com um especialista
-        </a>
-      </div>
     </div>
   </header>
 
@@ -273,7 +262,7 @@
   <!-- ═══════════════════════════════════════════════════════
        HERO
   ═══════════════════════════════════════════════════════ -->
-  <section id="hero" class="min-h-screen flex items-center pt-24 pb-16">
+  <section id="hero" class="min-h-screen flex items-center pt-16 pb-16">
     <!-- hero-bg set via CSS; placeholder label shown when image absent -->
     <div id="hero-ph-label" class="img-ph-dark absolute inset-0 items-center justify-center text-sm z-0 hidden"
          style="border-radius:0; border:none;">
@@ -329,13 +318,13 @@
 
         <!-- ── Right: 2-step form ── -->
         <div id="hero-form-anchor" class="fi d2">
-          <div id="hero-form-wrap" class="form-wrap bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+          <div id="hero-form-wrap" class="form-wrap shadow-2xl" style="background:#F0F3F5; border:1px solid #a3bac6; border-radius:14px; padding:20px 22px;">
 
             <!-- Header -->
-            <div class="flex items-start justify-between mb-6">
+            <div class="flex items-start justify-between mb-5">
               <div>
-                <p class="text-white font-bold text-lg">Diagnóstico gratuito</p>
-                <p class="text-gray-400 text-sm mt-0.5" id="hero-step-label">Etapa 1 de 2 — Seus dados</p>
+                <p class="font-bold text-lg" style="color:#033566;">Diagnóstico gratuito</p>
+                <p class="text-sm mt-0.5" style="color:#6b7280;" id="hero-step-label">Etapa 1 de 2 — Seus dados</p>
               </div>
               <div class="flex gap-2 mt-1" aria-label="Progresso do formulário">
                 <div class="step-dot active" id="hero-dot-1"></div>
@@ -345,11 +334,11 @@
 
             <!-- Thank-you state -->
             <div class="ty text-center py-8">
-              <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style="background:rgba(30,203,135,0.15);">
+                <svg class="w-8 h-8" style="color:#1ECB87;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
               </div>
-              <h2 class="text-white font-bold text-xl mb-2">Solicitação enviada!</h2>
-              <p class="text-gray-300 text-sm">Nossa equipe entrará em contato em até 1 hora útil.</p>
+              <h2 class="font-bold text-xl mb-2" style="color:#033566;">Solicitação enviada!</h2>
+              <p class="text-sm" style="color:#4b5563;">Nossa equipe entrará em contato em até 1 hora útil.</p>
             </div>
 
             <!-- Form body -->
@@ -357,26 +346,18 @@
 
               <!-- STEP 1 -->
               <div id="hero-s1">
-                <div class="space-y-4">
-                  <div>
-                    <label for="h-nome" class="block text-gray-300 text-sm font-medium mb-1.5">Nome completo <span class="text-red-400">*</span></label>
-                    <input type="text" id="h-nome" autocomplete="name" placeholder="Seu nome" required class="inp" aria-required="true">
-                  </div>
-                  <div>
-                    <label for="h-email" class="block text-gray-300 text-sm font-medium mb-1.5">E-mail <span class="text-red-400">*</span></label>
-                    <input type="email" id="h-email" autocomplete="email" placeholder="seu@email.com" required class="inp" aria-required="true">
-                  </div>
-                  <div>
-                    <label for="h-tel" class="block text-gray-300 text-sm font-medium mb-1.5">Telefone / WhatsApp <span class="text-red-400">*</span></label>
-                    <input type="tel" id="h-tel" autocomplete="tel" placeholder="(51) 9 9999-9999" required class="inp" aria-required="true">
-                  </div>
+                <div class="space-y-3">
+                  <input type="text"  id="h-nome"  autocomplete="name"  placeholder="* Nome completo" required class="inp" aria-required="true">
+                  <input type="email" id="h-email" autocomplete="email" placeholder="* E-mail"         required class="inp" aria-required="true">
+                  <input type="tel"   id="h-tel"   autocomplete="tel"   placeholder="* Telefone / WhatsApp" required class="inp" aria-required="true">
                   <!-- UTM hiddens -->
                   <input type="hidden" id="h-utm_source"><input type="hidden" id="h-utm_medium">
                   <input type="hidden" id="h-utm_campaign"><input type="hidden" id="h-utm_content">
                   <input type="hidden" id="h-utm_term"><input type="hidden" id="h-fbclid"><input type="hidden" id="h-gclid">
 
                   <button type="button" onclick="heroAdvance()"
-                          class="w-full bg-blue-700 hover:bg-blue-600 active:bg-blue-800 text-white font-bold py-4 rounded-lg transition-all shadow-lg btn-pulse ab-test-hero-cta"
+                          class="w-full text-white font-bold py-3 transition-all shadow-lg ab-test-hero-cta"
+                          style="background:#00BE69; border-radius:3px; font-family:'Poppins',sans-serif; font-size:14px;"
                           aria-label="Avançar para a próxima etapa">
                     Quero proteger minha frota →
                   </button>
@@ -385,38 +366,27 @@
 
               <!-- STEP 2 -->
               <div id="hero-s2" class="hidden">
-                <div class="space-y-4">
-                  <div>
-                    <label for="h-empresa" class="block text-gray-300 text-sm font-medium mb-1.5">Nome da Empresa <span class="text-red-400">*</span></label>
-                    <input type="text" id="h-empresa" autocomplete="organization" placeholder="Razão social ou nome fantasia" required class="inp">
-                  </div>
-                  <div>
-                    <label for="h-cnpj" class="block text-gray-300 text-sm font-medium mb-1.5">CNPJ <span class="text-red-400">*</span></label>
-                    <input type="text" id="h-cnpj" placeholder="00.000.000/0000-00" maxlength="18" required class="inp">
-                  </div>
-                  <div>
-                    <label for="h-seg" class="block text-gray-300 text-sm font-medium mb-1.5">Segmento de Atuação <span class="text-red-400">*</span></label>
-                    <select id="h-seg" required class="inp inp-sel">
-                      <option value="" disabled selected>Selecione seu segmento</option>
-                      <option>Transporte de Cargas</option><option>Transporte de Pessoas</option>
-                      <option>Distribuidora</option><option>Construção Civil</option>
-                      <option>Mineração e Siderurgia</option><option>Agrícola</option><option>Outro</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="h-veic" class="block text-gray-300 text-sm font-medium mb-1.5">Quantidade de Veículos <span class="text-red-400">*</span></label>
-                    <select id="h-veic" required class="inp inp-sel">
-                      <option value="" disabled selected>Quantos veículos na frota?</option>
-                      <option>20-50</option><option>51-100</option><option>101-200</option>
-                      <option>201-500</option><option>500+</option>
-                    </select>
-                  </div>
+                <div class="space-y-3">
+                  <input type="text" id="h-empresa" autocomplete="organization" placeholder="* Nome da Empresa" required class="inp">
+                  <input type="text" id="h-cnpj" placeholder="* CNPJ" maxlength="18" required class="inp">
+                  <select id="h-seg" required class="inp inp-sel">
+                    <option value="" disabled selected>* Segmento de Atuação</option>
+                    <option>Transporte de Cargas</option><option>Transporte de Pessoas</option>
+                    <option>Distribuidora</option><option>Construção Civil</option>
+                    <option>Mineração e Siderurgia</option><option>Agrícola</option><option>Outro</option>
+                  </select>
+                  <select id="h-veic" required class="inp inp-sel">
+                    <option value="" disabled selected>* Quantidade de Veículos</option>
+                    <option>20-50</option><option>51-100</option><option>101-200</option>
+                    <option>201-500</option><option>500+</option>
+                  </select>
                   <button type="button" onclick="heroSubmit()"
-                          class="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 rounded-lg transition-all shadow-lg"
+                          class="w-full text-white font-bold py-3 transition-all shadow-lg"
+                          style="background:#00BE69; border-radius:3px; font-family:'Poppins',sans-serif; font-size:14px;"
                           aria-label="Agendar diagnóstico gratuito">
                     Agendar diagnóstico gratuito 🚀
                   </button>
-                  <p class="text-center text-xs text-gray-500">🔒 Dados protegidos conforme a LGPD</p>
+                  <p class="text-center text-xs" style="color:rgba(0,0,0,0.5);">🔒 Dados protegidos conforme a LGPD</p>
                 </div>
               </div>
 
