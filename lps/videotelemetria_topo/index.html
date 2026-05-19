@@ -90,16 +90,6 @@
         rgba(3,64,117,0.60) 100%);
       pointer-events: none;
     }
-    /* Subtle grid overlay */
-    #hero::after {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(30,203,135,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(30,203,135,0.04) 1px, transparent 1px);
-      background-size: 64px 64px;
-      pointer-events: none;
-    }
 
     /* ── Image placeholder boxes ─────────────────────────── */
     .img-ph {
@@ -263,29 +253,18 @@
        HERO
   ═══════════════════════════════════════════════════════ -->
   <section id="hero" class="min-h-screen flex items-center pt-16 pb-16">
-    <!-- hero-bg set via CSS; placeholder label shown when image absent -->
-    <div id="hero-ph-label" class="img-ph-dark absolute inset-0 items-center justify-center text-sm z-0 hidden"
-         style="border-radius:0; border:none;">
-      Espaço para imagem hero — /assets/hero-frota.webp
-    </div>
-
     <div class="max-w-6xl mx-auto px-4 sm:px-6 w-full relative z-10">
       <div class="grid lg:grid-cols-2 gap-10 xl:gap-16 items-center">
 
         <!-- ── Left: copy ── -->
         <div class="text-white">
-          <div class="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-500/30 text-blue-300 text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full mb-6 fi">
-            <span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse shrink-0"></span>
-            IA Embarcada • Alertas em Tempo Real
-          </div>
-
-          <h1 class="text-3xl sm:text-4xl xl:text-[2.75rem] font-extrabold leading-[1.15] mb-5 fi d1">
+          <h1 class="text-3xl sm:text-4xl xl:text-[2.75rem] font-extrabold leading-[1.15] mb-5 fi">
             Sua empresa e motoristas estão
-            <span class="text-blue-400"> realmente protegidos</span>
+            <span style="color:#1ECB87;"> realmente protegidos</span>
             contra acidentes e multas evitáveis?
           </h1>
 
-          <p class="text-gray-300 text-lg leading-relaxed mb-8 fi d2">
+          <p class="text-gray-300 text-lg leading-relaxed mb-8 fi d1">
             Acidentes nas rodovias geram um prejuízo anual de
             <strong class="text-white">R$&nbsp;50&nbsp;bilhões</strong> no Brasil.
             Não permita que sua frota faça parte dessa estatística. Implemente a
@@ -293,24 +272,24 @@
             <strong class="text-white">antes da colisão acontecer.</strong>
           </p>
 
-          <div class="flex flex-wrap gap-5 mb-8 fi d3">
-            <span class="flex items-center gap-2 text-sm text-gray-400">
-              <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-              Instalação em campo
-            </span>
-            <span class="flex items-center gap-2 text-sm text-gray-400">
-              <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-              Suporte 24 horas
-            </span>
-            <span class="flex items-center gap-2 text-sm text-gray-400">
-              <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-              8 anos de mercado
-            </span>
+          <!-- Câmeras de videotelemetria -->
+          <div class="flex items-end gap-8 fi d2">
+            <div class="text-center">
+              <img src="/assets/dash.svg" alt="Câmera Dash Ali Sat"
+                   class="w-auto drop-shadow-xl" style="height:130px; object-fit:contain;">
+              <p class="text-xs mt-2 font-semibold" style="color:#1ECB87;">Câmera Dash</p>
+            </div>
+            <div class="text-center">
+              <img src="/assets/202.svg" alt="Câmera 202 Ali Sat"
+                   class="w-auto drop-shadow-xl" style="height:130px; object-fit:contain;">
+              <p class="text-xs mt-2 font-semibold" style="color:#1ECB87;">Câmera 202</p>
+            </div>
           </div>
 
           <!-- Mobile CTA -->
           <a href="#hero-form-anchor"
-             class="lg:hidden inline-block bg-blue-700 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all btn-pulse ab-test-hero-cta fi d4"
+             class="lg:hidden inline-block text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all mt-8 fi d3"
+             style="background:#00BE69;"
              onclick="trackCTA('Quero proteger minha frota','hero')">
             Quero proteger minha frota →
           </a>
