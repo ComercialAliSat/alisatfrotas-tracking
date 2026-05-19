@@ -98,18 +98,58 @@ export async function onRequest(context) {
     headers: newHeaders,
   });
 
-  // --- LinkedIn Insight Tag injection ---
-  // When LINKEDIN_INSIGHT_TAG_ID is set, append the Insight Tag script to <head>
-  // on every HTML page. This enables PageView tracking, Website Demographics, and
-  // Visitor Retargeting without touching individual page files.
-  if (env.LINKEDIN_INSIGHT_TAG_ID && (newResponse.headers.get('content-type') || '').includes('text/html')) {
-    const pid = env.LINKEDIN_INSIGHT_TAG_ID;
-    const snippet = `<script>_linkedin_partner_id="${pid}";window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];window._linkedin_data_partner_ids.push(_linkedin_partner_id);</script>`
-      + `<script>(function(l){if(!l){window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[]}var s=document.getElementsByTagName("script")[0];var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src="https://snap.licdn.com/li.lms-analytics/insight.min.js";s.parentNode.insertBefore(b,s)})(window.lintrk);</script>`
-      + `<noscript><img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=${pid}&fmt=gif"/></noscript>`;
-    newResponse = new HTMLRewriter()
-      .on('head', { element(el) { el.append(snippet, { html: true }); } })
-      .transform(newResponse);
+  // --- Pixel injection: Meta, GA4, LinkedIn — single HTMLRewriter pass ---
+  // All three tags are injected server-side from Cloudflare env vars so that
+  // individual HTML files (LPs, etc.) stay free of hardcoded IDs. One pass
+  // keeps the edge worker overhead minimal.
+  if ((newResponse.headers.get('content-type') || '').includes('text/html')) {
+    const snippets = [];
+
+    if (env.META_PIXEL_ID) {
+      const pid = env.META_PIXEL_ID;
+      snippets.push(
+        `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?` +
+        `n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;` +
+        `n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;` +
+        `s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',` +
+        `'https://connect.facebook.net/en_US/fbevents.js');fbq('init','${pid}');fbq('track','PageView');</script>` +
+        `<noscript><img height="1" width="1" style="display:none" alt="" ` +
+        `src="https://www.facebook.com/tr?id=${pid}&ev=PageView&noscript=1"/></noscript>`
+      );
+    }
+
+    if (env.GA4_MEASUREMENT_ID) {
+      const mid = env.GA4_MEASUREMENT_ID;
+      // Load via the first-party /scripts/gtag.js proxy so ad-blockers can't
+      // filter on the googletagmanager.com hostname.
+      snippets.push(
+        `<script async src="/scripts/gtag.js?id=${mid}"></script>` +
+        `<script>window.dataLayer=window.dataLayer||[];` +
+        `function gtag(){dataLayer.push(arguments);}` +
+        `gtag('js',new Date());gtag('config','${mid}');</script>`
+      );
+    }
+
+    if (env.LINKEDIN_INSIGHT_TAG_ID) {
+      const pid = env.LINKEDIN_INSIGHT_TAG_ID;
+      snippets.push(
+        `<script>_linkedin_partner_id="${pid}";window._linkedin_data_partner_ids=` +
+        `window._linkedin_data_partner_ids||[];window._linkedin_data_partner_ids.push(_linkedin_partner_id);</script>` +
+        `<script>(function(l){if(!l){window.lintrk=function(a,b){window.lintrk.q.push([a,b])};` +
+        `window.lintrk.q=[]}var s=document.getElementsByTagName("script")[0];` +
+        `var b=document.createElement("script");b.type="text/javascript";b.async=true;` +
+        `b.src="https://snap.licdn.com/li.lms-analytics/insight.min.js";` +
+        `s.parentNode.insertBefore(b,s)})(window.lintrk);</script>` +
+        `<noscript><img height="1" width="1" style="display:none;" alt="" ` +
+        `src="https://px.ads.linkedin.com/collect/?pid=${pid}&fmt=gif"/></noscript>`
+      );
+    }
+
+    if (snippets.length > 0) {
+      newResponse = new HTMLRewriter()
+        .on('head', { element(el) { el.append(snippets.join(''), { html: true }); } })
+        .transform(newResponse);
+    }
   }
 
   // --- D1 UPSERT (background, non-blocking) ---
