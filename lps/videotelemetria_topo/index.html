@@ -229,6 +229,33 @@
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #0A1628; }
     ::-webkit-scrollbar-thumb { background: #1E40AF; border-radius: 3px; }
+
+    /* ── Accordion setores ───────────────────────────────── */
+    .acc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .acc-item { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; transition: box-shadow .2s, border-color .2s; }
+    .acc-item[open] { box-shadow: 0 4px 20px rgba(3,53,102,.1); border-color: #1ECB87; }
+    details summary::-webkit-details-marker { display: none; }
+    details summary { list-style: none; }
+    .acc-summary {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 18px; cursor: pointer;
+      list-style: none; user-select: none;
+      background: #fff; transition: background .15s;
+    }
+    .acc-summary:hover { background: #f8fafc; }
+    .acc-img { width: 80px; height: 56px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+    .acc-img-fb { width: 80px; height: 56px; border-radius: 8px; flex-shrink: 0; display: none; }
+    .acc-name { flex: 1; font-weight: 700; font-size: 15px; color: #033566; text-decoration: none; font-family: 'Poppins', sans-serif; }
+    .acc-name:hover { color: #1ECB87; text-decoration: underline; }
+    .acc-chevron { font-size: 22px; color: #a3bac6; flex-shrink: 0; transition: transform .25s ease; line-height: 1; display: inline-block; }
+    details[open] .acc-chevron { transform: rotate(90deg); }
+    .acc-content { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+    details[open] .acc-content { max-height: 160px; }
+    .acc-text { font-size: 14px; color: #555; line-height: 1.65; border-left: 3px solid #1ECB87; padding: 2px 0 2px 12px; margin: 0 18px 16px 112px; }
+    @media (max-width: 800px) {
+      .acc-grid { grid-template-columns: 1fr; }
+      .acc-text { margin: 0 14px 14px 14px; }
+    }
   </style>
 </head>
 <body class="font-sans antialiased bg-white text-gray-900">
@@ -366,6 +393,109 @@
             </div><!-- /.form-body -->
           </div><!-- /.form-wrap -->
         </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SETORES — "Solução sob medida para o seu setor"
+  ═══════════════════════════════════════════════════════ -->
+  <section id="setores" class="py-20 px-4 sm:px-6 bg-white">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-10 fi">
+        <p style="color:#1ECB87; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:8px;">Especialização Setorial</p>
+        <h2 class="fi d1" style="font-size:26px; font-weight:700; color:#033566; line-height:1.2;">
+          Solução sob medida para o seu setor
+        </h2>
+      </div>
+
+      <div class="acc-grid fi d2">
+
+        <!-- 1. Construção Civil -->
+        <details class="acc-item">
+          <summary class="acc-summary">
+            <img src="/assets/setor-construcao.webp" alt="Construção Civil" class="acc-img"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="acc-img-fb" style="background:linear-gradient(135deg,#F59E0B,#D97706);"></div>
+            <a href="/lps/construcao" class="acc-name">Construção Civil e Terraplanagem</a>
+            <span class="acc-chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="acc-content">
+            <p class="acc-text">Monitoramento de máquinas pesadas, prevenção de acidentes em canteiros e proteção contra furtos. Ideal para construtoras, empreiteiras e locadoras de equipamentos.</p>
+          </div>
+        </details>
+
+        <!-- 2. Transporte de Cargas -->
+        <details class="acc-item">
+          <summary class="acc-summary">
+            <img src="/assets/setor-transporte-carga.webp" alt="Transporte de Cargas" class="acc-img"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="acc-img-fb" style="background:linear-gradient(135deg,#1E40AF,#1D4ED8);"></div>
+            <a href="/lps/transporte-carga" class="acc-name">Transporte de Cargas</a>
+            <span class="acc-chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="acc-content">
+            <p class="acc-text">Redução de colisões, controle de velocidade e comprovação de inocência em sinistros. Ideal para transportadoras, frotas de carga e logística.</p>
+          </div>
+        </details>
+
+        <!-- 3. Transporte de Pessoas -->
+        <details class="acc-item">
+          <summary class="acc-summary">
+            <img src="/assets/setor-transporte-passageiros.webp" alt="Transporte de Pessoas" class="acc-img"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="acc-img-fb" style="background:linear-gradient(135deg,#7C3AED,#6D28D9);"></div>
+            <a href="/lps/transporte-passageiros" class="acc-name">Transporte de Pessoas</a>
+            <span class="acc-chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="acc-content">
+            <p class="acc-text">Segurança para passageiros, monitoramento de comportamento do motorista e relatórios de fadiga. Ideal para fretamento, vans e ônibus.</p>
+          </div>
+        </details>
+
+        <!-- 4. Distribuidoras -->
+        <details class="acc-item">
+          <summary class="acc-summary">
+            <img src="/assets/setor-distribuicao.webp" alt="Distribuidoras" class="acc-img"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="acc-img-fb" style="background:linear-gradient(135deg,#059669,#047857);"></div>
+            <a href="/lps/distribuicao" class="acc-name">Distribuidoras</a>
+            <span class="acc-chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="acc-content">
+            <p class="acc-text">Otimização de entregas, redução de multas e otimização da janela de entrega. Ideal para distribuição urbana, atacado e varejo.</p>
+          </div>
+        </details>
+
+        <!-- 5. Mineradoras -->
+        <details class="acc-item">
+          <summary class="acc-summary">
+            <img src="/assets/setor-mineracao.webp" alt="Mineradoras" class="acc-img"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="acc-img-fb" style="background:linear-gradient(135deg,#92400E,#78350F);"></div>
+            <a href="/lps/mineracao" class="acc-name">Mineração e Siderurgia</a>
+            <span class="acc-chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="acc-content">
+            <p class="acc-text">Monitoramento em condições severas, alertas de colisão e geofencing. Ideal para mineração, siderurgia e operações off-road.</p>
+          </div>
+        </details>
+
+        <!-- 6. Agrícola -->
+        <details class="acc-item">
+          <summary class="acc-summary">
+            <img src="/assets/setor-agro.webp" alt="Agrícola" class="acc-img"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="acc-img-fb" style="background:linear-gradient(135deg,#16A34A,#15803D);"></div>
+            <a href="/lps/agro" class="acc-name">Agrícola e Agroindústria</a>
+            <span class="acc-chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="acc-content">
+            <p class="acc-text">Proteção de frota rural, rastreamento de implementos e gestão de colheita. Ideal para agroindústria, fazendas e cooperativas.</p>
+          </div>
+        </details>
 
       </div>
     </div>

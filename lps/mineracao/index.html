@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Monitoramento de máquinas pesadas para mineração e siderurgia. Alertas de colisão, geofencing e rastreamento 24h. Ali Sat Gestão de Frotas.">
+  <meta name="robots" content="index, follow">
+  <title>Gestão de Frota para Mineração e Siderurgia | Ali Sat</title>
+  <meta property="og:title" content="Videotelemetria para Mineração e Siderurgia | Ali Sat">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mkt.alisat.com.br/mineracao">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Gestão de Frota para Mineração — Ali Sat","url":"https://mkt.alisat.com.br/mineracao","publisher":{"@type":"Organization","name":"Ali Sat Rastreamento e Monitoramento LTDA","url":"https://www.alisat.com.br","telephone":"+55-51-3034-2111"}}</script>
+  <!-- Pixels (Meta, GA4, LinkedIn) injetados pelo _middleware.js via HTMLRewriter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Poppins', sans-serif; color: rgba(0,0,0,0.87); background: #fff; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; height: auto; display: block; }
+    :root { --navy:#033566; --green:#1ECB87; --green-btn:#00BE69; --yellow:#FBC900; --gray:#E9E9E9; --form-bg:#F0F3F5; --border:#a3bac6; --accent:#78350F; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; position: relative; }
+    .finput { display:block; width:100%; height:36px; padding:0 8px; font-family:'Poppins',sans-serif; font-size:14px; color:#000; background:#fff; border:1px solid #fff; border-radius:2px; outline:none; transition:border-color .2s; margin-bottom:10px; }
+    .finput::placeholder { color:rgba(0,0,0,0.5); }
+    .finput:focus { border-color:var(--green); box-shadow:0 0 0 2px rgba(30,203,135,0.15); }
+    .btn-green { display:block; width:100%; background:var(--green-btn); color:#fff; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; border:none; border-radius:3px; padding:14px 16px; text-align:center; cursor:pointer; transition:background .25s; }
+    .btn-green:hover { background:#009258; }
+    .btn-green:disabled { background:#aaa; cursor:not-allowed; }
+    .btn-mint { display:inline-flex; align-items:center; justify-content:center; background:var(--green); color:#fff; font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; border:none; border-radius:100px; padding:8px 28px; cursor:pointer; transition:background .25s; text-decoration:none; }
+    .btn-mint:hover { background:#009258; }
+    .form-wrap.done .form-body { display:none; }
+    .form-wrap .ty { display:none; }
+    .form-wrap.done .ty { display:flex; }
+    .fi { opacity:0; transform:translateY(18px); transition:opacity .5s ease,transform .5s ease; }
+    .fi.on { opacity:1; transform:none; }
+    .fi.d1 { transition-delay:.1s; } .fi.d2 { transition-delay:.2s; } .fi.d3 { transition-delay:.3s; }
+    @media (max-width:800px) { .hero-grid,.two-col,.sol-grid { flex-direction:column; } .hide-mob { display:none!important; } h2.big { font-size:22px!important; } }
+  </style>
+</head>
+<body>
+
+<header style="background:var(--navy);padding:12px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3);">
+  <div class="wrap" style="display:flex;justify-content:center;align-items:center;">
+    <a href="/"><img src="/assets/logobranco.svg" alt="Ali Sat" style="height:56px;width:auto;" onerror="this.style.display='none'"></a>
+  </div>
+</header>
+
+<section id="hero" style="background-color:var(--accent);background-image:url('/assets/hero-mineracao.webp');background-size:cover;background-position:center;min-height:600px;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(120,53,15,0.92) 0%,rgba(92,40,10,0.82) 50%,rgba(120,53,15,0.68) 100%);pointer-events:none;"></div>
+  <div class="wrap" style="min-height:600px;padding-top:44px;padding-bottom:60px;position:relative;z-index:2;">
+    <div class="hero-grid" style="display:flex;gap:24px;align-items:flex-start;">
+      <div style="flex:1;padding-top:8px;">
+        <h2 class="fi" style="color:#fff;font-size:32px;line-height:1.15;font-weight:700;max-width:560px;">
+          Monitore máquinas pesadas em condições extremas e proteja sua operação mineradora.
+        </h2>
+        <p class="fi" style="color:rgba(255,255,255,.88);font-size:15px;line-height:1.65;margin-top:16px;max-width:520px;">
+          Alertas de colisão, geofencing e monitoramento 24h para escavadeiras, caminhões fora-de-estrada e equipamentos de alto valor.
+        </p>
+        <div class="hide-mob fi" style="margin-top:200px;">
+          <a href="#form-anchor" class="btn-mint" onclick="push({event:'CTA_Click',cta_text:'Quero resolver',section:'hero'})">Quero resolver</a>
+        </div>
+      </div>
+      <div id="form-anchor" style="width:360px;flex-shrink:0;position:relative;z-index:10;">
+        <div id="hero-form-wrap" class="form-wrap" style="background:var(--form-bg);border:1px solid var(--border);border-radius:14px;padding:20px 22px;">
+          <div class="ty" style="flex-direction:column;align-items:center;padding:32px 16px;text-align:center;gap:16px;">
+            <span class="material-icons" style="color:var(--green);font-size:48px;">check_circle</span>
+            <h3 style="font-size:18px;font-weight:700;color:var(--navy);">Obrigado!</h3>
+            <p style="font-size:13px;color:#555;">Nossa equipe entrará em contato em breve.</p>
+          </div>
+          <div class="form-body">
+            <div style="font-size:13px;color:var(--navy);margin-bottom:14px;font-weight:600;text-align:center;">Fale com um especialista</div>
+            <form novalidate>
+              <input type="text"  id="h-nome"    class="finput" placeholder="* Nome"           required autocomplete="name">
+              <input type="tel"   id="h-tel"     class="finput" placeholder="* Telefone"        required autocomplete="tel">
+              <input type="email" id="h-email"   class="finput" placeholder="* E-mail"          required autocomplete="email">
+              <input type="text"  id="h-empresa" class="finput" placeholder="* Nome da empresa" required autocomplete="organization">
+              <input type="text"  id="h-cnpj"    class="finput" placeholder="* CNPJ" maxlength="18" required>
+              <input type="hidden" id="h-utm_source"><input type="hidden" id="h-utm_medium">
+              <input type="hidden" id="h-utm_campaign"><input type="hidden" id="h-utm_content">
+              <input type="hidden" id="h-utm_term"><input type="hidden" id="h-fbclid"><input type="hidden" id="h-gclid">
+              <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:rgba(0,0,0,0.6);line-height:1.5;margin-bottom:10px;">
+                <input type="checkbox" id="h-lgpd" required style="margin-top:2px;width:15px;height:15px;flex-shrink:0;accent-color:var(--green-btn);cursor:pointer;">
+                <span>Concordo com a <a href="/politica-de-privacidade" target="_blank" style="color:var(--navy);text-decoration:underline;">Política de Privacidade</a> e a LGPD.</span>
+              </label>
+              <button type="button" id="h-submit" class="btn-green" onclick="heroSubmit()">Enviar meus dados</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--yellow);padding:18px 0;"><div class="wrap" style="text-align:center;"><h1 style="font-size:14px;font-weight:400;color:#fff;letter-spacing:.5px;">VIDEOTELEMETRIA &nbsp;●&nbsp; COMBUSTÍVEL &nbsp;●&nbsp; PRODUTIVIDADE &nbsp;●&nbsp; ECONOMIA &nbsp;●&nbsp; TECNOLOGIA</h1></div></section>
+
+<section style="background:#fff;padding:60px 0;">
+  <div class="wrap">
+    <div class="two-col" style="display:flex;gap:0;align-items:flex-start;margin-top:16px;">
+      <div style="flex:0 0 400px;padding-right:40px;">
+        <p class="fi big" style="font-size:38px;line-height:1.1;color:var(--navy);">Controle <span style="color:var(--green);font-weight:700;">total</span> para</p>
+        <p class="fi" style="font-size:38px;line-height:1.1;color:var(--navy);font-weight:700;">mineração e siderurgia!</p>
+      </div>
+      <div class="hide-mob" style="width:1px;background:var(--border);align-self:stretch;margin:0 32px;flex-shrink:0;"></div>
+      <div style="flex:1;padding-top:8px;">
+        <div style="display:flex;flex-direction:column;gap:22px;">
+          <div class="fi d1" style="display:flex;align-items:flex-start;gap:12px;"><span class="material-icons" style="color:var(--green);font-size:30px;flex-shrink:0;">add</span><p style="font-size:15px;font-weight:700;color:var(--navy);">Segurança operacional em condições extremas de trabalho</p></div>
+          <div class="fi d2" style="display:flex;align-items:flex-start;gap:12px;"><span class="material-icons" style="color:var(--green);font-size:30px;flex-shrink:0;">add</span><p style="font-size:15px;font-weight:700;color:var(--navy);">Redução de paradas não planejadas com manutenção preditiva</p></div>
+          <div class="fi d3" style="display:flex;align-items:flex-start;gap:12px;"><span class="material-icons" style="color:var(--green);font-size:30px;flex-shrink:0;">add</span><p style="font-size:15px;font-weight:700;color:var(--navy);">Controle de ativos de alto valor com geofencing e rastreamento 24h</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--navy);padding:60px 0;">
+  <div class="wrap">
+    <h2 class="big fi" style="font-size:34px;font-weight:700;color:#fff;margin-bottom:40px;">Seus problemas, nossas soluções</h2>
+    <div class="sol-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="fi d1" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:24px;"><div style="font-size:36px;margin-bottom:12px;">📹</div><h3 style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;">Videotelemetria</h3><p style="font-size:12px;color:rgba(255,255,255,.8);line-height:1.6;">Câmeras resistentes monitoram operadores em condições extremas. Alertas de colisão e fadiga protegem vidas e equipamentos.</p></div>
+      <div class="fi d2" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:24px;"><div style="font-size:36px;margin-bottom:12px;">⛽</div><h3 style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;">Controle de Combustível</h3><p style="font-size:12px;color:rgba(255,255,255,.8);line-height:1.6;">Monitore o consumo de máquinas pesadas e caminhões fora-de-estrada. Identifique ineficiências e reduza custo operacional.</p></div>
+      <div class="fi d3" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:24px;"><div style="font-size:36px;margin-bottom:12px;">⏱️</div><h3 style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;">Horímetro</h3><p style="font-size:12px;color:rgba(255,255,255,.8);line-height:1.6;">Controle as horas efetivas de operação de escavadeiras, tratores e equipamentos pesados. Planeje manutenções com precisão.</p></div>
+      <div class="fi d4" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:24px;"><div style="font-size:36px;margin-bottom:12px;">🪪</div><h3 style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;">Identificador de Operador</h3><p style="font-size:12px;color:rgba(255,255,255,.8);line-height:1.6;">Controle quem opera cada equipamento de alto valor, garantindo segurança, responsabilidade e conformidade com normas NR.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--gray);padding:60px 0;">
+  <div class="wrap">
+    <div style="display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
+      <div class="hide-mob"><span class="material-icons" style="font-size:90px;color:var(--green);">chat_bubble</span></div>
+      <div style="flex:1;">
+        <h2 class="big fi" style="font-size:24px;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:12px;">Descubra como mineradoras estão reduzindo acidentes e paradas com tecnologia de rastreamento!</h2>
+        <p class="fi d1" style="font-size:14px;color:var(--navy);opacity:.8;margin-bottom:20px;">Agende uma demonstração gratuita e conheça soluções desenvolvidas para a realidade da mineração.</p>
+        <a href="#form-anchor" class="btn-mint fi d2" onclick="push({event:'CTA_Click',cta_text:'Quero saber mais',section:'cta-final'})">Quero saber mais</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:var(--navy);padding:24px 0;"><div class="wrap" style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;"><img src="/assets/logobranco.svg" alt="Ali Sat" style="height:44px;width:auto;" onerror="this.style.display='none'"><p style="font-size:11px;color:rgba(255,255,255,.65);line-height:1.8;">Ali Sat Rastreamento e Monitoramento LTDA — CNPJ 29.989.683/0001-33<br>© 2025 — <a href="/politica-de-privacidade" style="color:rgba(255,255,255,.5);text-decoration:underline;">Política de Privacidade</a></p></div></footer>
+
+<script>
+'use strict';
+window.dataLayer=window.dataLayer||[];const push=obj=>window.dataLayer.push(obj);const $=id=>document.getElementById(id);const param=k=>new URLSearchParams(location.search).get(k)||'';const cookie=n=>{const v=`; ${document.cookie}`;const p=v.split(`; ${n}=`);return p.length===2?p.pop().split(';').shift():'';};
+function fillUtms(){['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'].forEach(k=>{const el=$('h-'+k);if(el)el.value=param(k);});}
+function maskPhone(el){let v=el.value.replace(/\D/g,'').slice(0,11);if(v.length>10)v=v.replace(/^(\d{2})(\d{5})(\d{4})$/,'($1) $2-$3');else if(v.length>6)v=v.replace(/^(\d{2})(\d{4})(\d*)/,'($1) $2-$3');else if(v.length>2)v=v.replace(/^(\d{2})(\d*)/,'($1) $2');else if(v.length)v=`(${v}`;el.value=v;}
+function maskCNPJ(el){let v=el.value.replace(/\D/g,'').slice(0,14);v=v.replace(/^(\d{2})(\d)/,'$1.$2');v=v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');v=v.replace(/\.(\d{3})(\d)/,'.$1/$2');v=v.replace(/(\d{4})(\d)/,'$1-$2');el.value=v;}
+const isEmail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),isPhone=v=>v.replace(/\D/g,'').length>=10,isCNPJ=v=>v.replace(/\D/g,'').length===14;
+async function heroSubmit(){
+  const nome=$('h-nome').value.trim(),tel=$('h-tel').value.trim(),email=$('h-email').value.trim(),empresa=$('h-empresa').value.trim(),cnpj=$('h-cnpj').value.trim(),lgpd=$('h-lgpd').checked;
+  if(!nome||!isPhone(tel)||!isEmail(email)||!empresa||!isCNPJ(cnpj)||!lgpd){alert(!lgpd?'Aceite a Política de Privacidade.':'Preencha todos os campos.');return;}
+  push({event:'Lead_Qualificado',product:'mineracao'});
+  const btn=$('h-submit');btn.disabled=true;btn.textContent='Enviando…';
+  const parts=nome.split(/\s+/);
+  try{const res=await fetch('/tracker',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_name:'Lead',event_id:crypto.randomUUID(),event_time:Math.floor(Date.now()/1000),event_source_url:location.href,product:'mineracao',user_data:{em:email,fn:parts[0]||'',ln:parts.slice(1).join(' ')||'',ph:tel.replace(/\D/g,'')},empresa,cnpj,utm_source:param('utm_source'),utm_medium:param('utm_medium'),utm_campaign:param('utm_campaign'),utm_content:param('utm_content'),utm_term:param('utm_term'),fbclid:param('fbclid'),gclid:param('gclid'),fbp:cookie('_fbp'),fbc:cookie('_fbc')})});
+  if(res.ok){$('hero-form-wrap').classList.add('done');}else{btn.disabled=false;btn.textContent='Enviar meus dados';alert('Erro. Tente novamente.');}}catch(e){btn.disabled=false;btn.textContent='Enviar meus dados';alert('Erro de conexão.');}
+}
+const sdFired=new Set();window.addEventListener('scroll',()=>{const p=Math.round(window.scrollY/(document.body.scrollHeight-window.innerHeight)*100);[25,50,75,100].forEach(t=>{if(p>=t&&!sdFired.has(t)){sdFired.add(t);push({event:'Scroll_Depth',percent:t});}});},{passive:true});
+const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('on');io.unobserve(x.target);}});},{threshold:.08});
+document.querySelectorAll('.fi').forEach(el=>io.observe(el));
+document.addEventListener('DOMContentLoaded',()=>{fillUtms();const t=$('h-tel');if(t)t.addEventListener('input',()=>maskPhone(t));const c=$('h-cnpj');if(c)c.addEventListener('input',()=>maskCNPJ(c));});
+</script>
+</body>
+</html>
