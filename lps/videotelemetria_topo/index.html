@@ -230,22 +230,43 @@
     ::-webkit-scrollbar-track { background: #033566; }
     ::-webkit-scrollbar-thumb { background: #1ECB87; border-radius: 3px; }
 
-    /* ── Como funciona ──────────────────────────────────── */
-    .cf-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-    .cf-card {
-      background:#fff; border-radius:12px;
-      box-shadow:0 2px 16px rgba(3,53,102,0.07);
-      border:1px solid rgba(3,53,102,0.06);
-      overflow:hidden; display:flex; flex-direction:column;
-      transition:transform .22s ease, box-shadow .22s ease;
+    /* ── Como funciona (timeline) ───────────────────────── */
+    @keyframes cfFadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    .cf-panel { background:#fff; border-radius:16px; box-shadow:0 4px 28px rgba(3,53,102,0.09); overflow:hidden; }
+    .cf-step { display:none; }
+    .cf-step.active { display:grid; grid-template-columns:55% 45%; min-height:380px; animation:cfFadeIn .3s ease; }
+    .cf-step-left { padding:48px 44px 48px 52px; display:flex; flex-direction:column; justify-content:center; }
+    .cf-step-right { position:relative; overflow:hidden; }
+    .cf-step-right img { width:100%; height:100%; object-fit:cover; display:block; }
+    .cf-big-num { font-size:80px; font-weight:900; color:#1ECB87; line-height:1; font-family:'Poppins',sans-serif; letter-spacing:-.03em; margin-bottom:16px; }
+    .cf-step-title { font-size:22px; font-weight:700; color:#033566; font-family:'Poppins',sans-serif; margin-bottom:14px; line-height:1.3; }
+    .cf-step-text { font-size:14px; color:#555; line-height:1.7; font-family:'Poppins',sans-serif; }
+
+    /* timeline nav */
+    .cf-timeline { margin-top:32px; padding:0 4px; }
+    .cf-tl-track { display:flex; align-items:flex-start; }
+    .cf-dot-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; flex-shrink:0; }
+    .cf-connector { flex:1; height:2px; background:#dde2ea; margin-top:19px; transition:background .35s ease; }
+    .cf-connector.passed { background:#1ECB87; }
+    .cf-dot-circle { width:40px; height:40px; border-radius:50%; border:2px solid #dde2ea; background:#fff; display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; font-size:12px; font-weight:700; color:#aab4c0; transition:all .25s ease; }
+    .cf-dot-wrap.active .cf-dot-circle { background:#1ECB87; border-color:#1ECB87; color:#fff; box-shadow:0 0 0 5px rgba(30,203,135,0.18); }
+    .cf-dot-wrap:not(.active):hover .cf-dot-circle { border-color:#1ECB87; color:#1ECB87; }
+    .cf-dot-label { font-size:11px; font-family:'Poppins',sans-serif; color:#999; font-weight:500; text-align:center; max-width:80px; line-height:1.3; transition:color .25s; }
+    .cf-dot-wrap.active .cf-dot-label { color:#033566; font-weight:600; }
+
+    @media(max-width:768px){
+      .cf-step.active { display:flex; flex-direction:column; min-height:auto; }
+      .cf-step-left { order:2; padding:24px 20px 28px; }
+      .cf-step-right { order:1; height:200px; }
+      .cf-big-num { font-size:56px; margin-bottom:10px; }
+      .cf-step-title { font-size:18px; }
     }
-    .cf-card:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(3,53,102,0.12); }
-    .cf-body { padding:20px 22px 24px; flex:1; }
-    .cf-num  { font-size:52px; font-weight:900; color:#1ECB87; line-height:1; font-family:'Poppins',sans-serif; margin-bottom:10px; letter-spacing:-.02em; }
-    .cf-title{ font-size:15px; font-weight:700; color:#033566; margin-bottom:8px; font-family:'Poppins',sans-serif; line-height:1.3; }
-    .cf-text { font-size:13px; color:#555; line-height:1.65; font-family:'Poppins',sans-serif; }
-    @media(max-width:800px){ .cf-grid{ grid-template-columns:repeat(2,1fr); } }
-    @media(max-width:480px){ .cf-grid{ grid-template-columns:1fr; } }
+    @media(max-width:480px){
+      .cf-dot-circle { width:32px; height:32px; font-size:10px; }
+      .cf-connector { margin-top:15px; }
+      .cf-dot-label { display:none; }
+    }
 
     /* ── Cards setores ───────────────────────────────────── */
     .setor-grid {
@@ -517,10 +538,10 @@
        COMO FUNCIONA
   ═══════════════════════════════════════════════════════ -->
   <section id="como-funciona" style="background:#f4f6f8; padding:80px 20px;">
-    <div style="max-width:1152px; margin:0 auto;">
+    <div style="max-width:1100px; margin:0 auto;">
 
       <!-- Header -->
-      <div class="fi" style="text-align:center; margin-bottom:52px;">
+      <div class="fi" style="text-align:center; margin-bottom:48px;">
         <h2 class="fi d1" style="font-size:32px; font-weight:700; color:#033566; font-family:'Poppins',sans-serif; margin-bottom:10px;">
           Como funciona
         </h2>
@@ -529,94 +550,124 @@
         </p>
       </div>
 
-      <!-- Grid -->
-      <div class="cf-grid fi d2">
+      <!-- Step panel -->
+      <div class="cf-panel">
 
-        <!-- 01 -->
-        <div class="cf-card">
-          <div style="height:180px; overflow:hidden; position:relative; background:linear-gradient(135deg,#033566,#0d2244);">
-            <img src="/assets/como-funciona-01.webp" alt="Diagnóstico da frota"
-                 style="width:100%;height:100%;object-fit:cover;"
-                 onerror="this.style.display='none'">
+        <!-- Step 01 -->
+        <div class="cf-step active" id="cf-step-0">
+          <div class="cf-step-left">
+            <div class="cf-big-num">01</div>
+            <h3 class="cf-step-title">Diagnóstico da frota e desenho do projeto</h3>
+            <p class="cf-step-text">Criamos o projeto especial para sua operação, mapeando veículos, rotas e pontos críticos para uma implementação precisa.</p>
           </div>
-          <div class="cf-body">
-            <div class="cf-num">01</div>
-            <h3 class="cf-title">Diagnóstico da frota e desenho do projeto</h3>
-            <p class="cf-text">Criamos o projeto especial para sua operação, mapeando veículos, rotas e pontos críticos para uma implementação precisa.</p>
+          <div class="cf-step-right" style="background:linear-gradient(135deg,#033566 0%,#0d2244 100%);">
+            <img src="/assets/como-funciona-01.webp" alt="Diagnóstico da frota" onerror="this.style.display='none'">
           </div>
         </div>
 
-        <!-- 02 -->
-        <div class="cf-card">
-          <div style="height:180px; overflow:hidden; position:relative; background:linear-gradient(135deg,#034075,#0a2244);">
-            <img src="/assets/como-funciona-02.webp" alt="Instalação dos equipamentos"
-                 style="width:100%;height:100%;object-fit:cover;"
-                 onerror="this.style.display='none'">
+        <!-- Step 02 -->
+        <div class="cf-step" id="cf-step-1">
+          <div class="cf-step-left">
+            <div class="cf-big-num">02</div>
+            <h3 class="cf-step-title">Instalação rápida dos equipamentos</h3>
+            <p class="cf-step-text">Instalamos as câmeras com IA embarcada nos veículos da sua frota. Processo rápido, feito por equipe especializada em campo, sem parar sua operação.</p>
           </div>
-          <div class="cf-body">
-            <div class="cf-num">02</div>
-            <h3 class="cf-title">Instalação rápida dos equipamentos</h3>
-            <p class="cf-text">Instalamos as câmeras com IA embarcada nos veículos da sua frota. Processo rápido, feito por equipe especializada em campo, sem parar sua operação.</p>
+          <div class="cf-step-right" style="background:linear-gradient(135deg,#034075 0%,#0a2244 100%);">
+            <img src="/assets/como-funciona-02.webp" alt="Instalação dos equipamentos" onerror="this.style.display='none'">
           </div>
         </div>
 
-        <!-- 03 -->
-        <div class="cf-card">
-          <div style="height:180px; overflow:hidden; position:relative; background:linear-gradient(135deg,#033566,#0d6642);">
-            <img src="/assets/como-funciona-03.webp" alt="Ativação do monitoramento"
-                 style="width:100%;height:100%;object-fit:cover;"
-                 onerror="this.style.display='none'">
+        <!-- Step 03 -->
+        <div class="cf-step" id="cf-step-2">
+          <div class="cf-step-left">
+            <div class="cf-big-num">03</div>
+            <h3 class="cf-step-title">Ativação do monitoramento</h3>
+            <p class="cf-step-text">Sistema entra em operação automaticamente. Câmeras capturam imagens em tempo real e a IA começa a gerar alertas sonoros preventivos para o motorista.</p>
           </div>
-          <div class="cf-body">
-            <div class="cf-num">03</div>
-            <h3 class="cf-title">Ativação do monitoramento</h3>
-            <p class="cf-text">Sistema entra em operação automaticamente. Câmeras capturam imagens em tempo real e a IA começa a gerar alertas sonoros preventivos para o motorista.</p>
+          <div class="cf-step-right" style="background:linear-gradient(135deg,#033566 0%,#1ECB87 100%);">
+            <img src="/assets/como-funciona-03.webp" alt="Ativação do monitoramento" onerror="this.style.display='none'">
           </div>
         </div>
 
-        <!-- 04 -->
-        <div class="cf-card">
-          <div style="height:180px; overflow:hidden; position:relative; background:linear-gradient(135deg,#0a1628,#033566);">
-            <img src="/assets/como-funciona-04.webp" alt="Alertas em tempo real"
-                 style="width:100%;height:100%;object-fit:cover;"
-                 onerror="this.style.display='none'">
+        <!-- Step 04 -->
+        <div class="cf-step" id="cf-step-3">
+          <div class="cf-step-left">
+            <div class="cf-big-num">04</div>
+            <h3 class="cf-step-title">Alertas em tempo real</h3>
+            <p class="cf-step-text">Receba notificações instantâneas sobre excesso de velocidade, fadiga, distração, uso de celular e colisões iminentes — antes do acidente acontecer.</p>
           </div>
-          <div class="cf-body">
-            <div class="cf-num">04</div>
-            <h3 class="cf-title">Alertas em tempo real</h3>
-            <p class="cf-text">Receba notificações instantâneas sobre excesso de velocidade, fadiga, distração, uso de celular e colisões iminentes — antes do acidente acontecer.</p>
+          <div class="cf-step-right" style="background:linear-gradient(135deg,#0a1628 0%,#033566 100%);">
+            <img src="/assets/como-funciona-04.webp" alt="Alertas em tempo real" onerror="this.style.display='none'">
           </div>
         </div>
 
-        <!-- 05 -->
-        <div class="cf-card">
-          <div style="height:180px; overflow:hidden; position:relative; background:linear-gradient(135deg,#034075,#0d3060);">
-            <img src="/assets/como-funciona-05.webp" alt="Acesso à plataforma"
-                 style="width:100%;height:100%;object-fit:cover;"
-                 onerror="this.style.display='none'">
+        <!-- Step 05 -->
+        <div class="cf-step" id="cf-step-4">
+          <div class="cf-step-left">
+            <div class="cf-big-num">05</div>
+            <h3 class="cf-step-title">Acesso à plataforma</h3>
+            <p class="cf-step-text">Acompanhe tudo pelo painel virtual: mapas, relatórios, gravações e indicadores de desempenho da frota. Visível de qualquer lugar, a qualquer hora.</p>
           </div>
-          <div class="cf-body">
-            <div class="cf-num">05</div>
-            <h3 class="cf-title">Acesso à plataforma</h3>
-            <p class="cf-text">Acompanhe tudo pelo painel virtual: mapas, relatórios, gravações e indicadores de desempenho da frota. Visível de qualquer lugar, a qualquer hora.</p>
+          <div class="cf-step-right" style="background:linear-gradient(135deg,#034075 0%,#0d3060 100%);">
+            <img src="/assets/como-funciona-05.webp" alt="Acesso à plataforma" onerror="this.style.display='none'">
           </div>
         </div>
 
-        <!-- 06 -->
-        <div class="cf-card">
-          <div style="height:180px; overflow:hidden; position:relative; background:linear-gradient(135deg,#033566,#0d6642);">
-            <img src="/assets/como-funciona-06.webp" alt="Análise de dados e resultados"
-                 style="width:100%;height:100%;object-fit:cover;"
-                 onerror="this.style.display='none'">
+        <!-- Step 06 -->
+        <div class="cf-step" id="cf-step-5">
+          <div class="cf-step-left">
+            <div class="cf-big-num">06</div>
+            <h3 class="cf-step-title">Análise de dados e resultados</h3>
+            <p class="cf-step-text">Relatórios detalhados de comportamento, redução de multas e economia de combustível. Redução de acidentes, queda nos custos operacionais e frota mais produtiva.</p>
           </div>
-          <div class="cf-body">
-            <div class="cf-num">06</div>
-            <h3 class="cf-title">Análise de dados e resultados</h3>
-            <p class="cf-text">Relatórios detalhados de comportamento, redução de multas e economia de combustível. Redução de acidentes, queda nos custos operacionais e frota mais produtiva.</p>
+          <div class="cf-step-right" style="background:linear-gradient(135deg,#033566 0%,#1ECB87 100%);">
+            <img src="/assets/como-funciona-06.webp" alt="Análise de dados e resultados" onerror="this.style.display='none'">
           </div>
         </div>
 
-      </div><!-- /cf-grid -->
+      </div><!-- /cf-panel -->
+
+      <!-- Timeline navigation -->
+      <div class="cf-timeline">
+        <div class="cf-tl-track">
+
+          <div class="cf-dot-wrap active" id="cf-dot-0" onclick="cfGo(0)" role="button" aria-label="Passo 1">
+            <div class="cf-dot-circle">01</div>
+            <span class="cf-dot-label">Diagnóstico</span>
+          </div>
+          <div class="cf-connector" id="cf-conn-0"></div>
+
+          <div class="cf-dot-wrap" id="cf-dot-1" onclick="cfGo(1)" role="button" aria-label="Passo 2">
+            <div class="cf-dot-circle">02</div>
+            <span class="cf-dot-label">Instalação</span>
+          </div>
+          <div class="cf-connector" id="cf-conn-1"></div>
+
+          <div class="cf-dot-wrap" id="cf-dot-2" onclick="cfGo(2)" role="button" aria-label="Passo 3">
+            <div class="cf-dot-circle">03</div>
+            <span class="cf-dot-label">Ativação</span>
+          </div>
+          <div class="cf-connector" id="cf-conn-2"></div>
+
+          <div class="cf-dot-wrap" id="cf-dot-3" onclick="cfGo(3)" role="button" aria-label="Passo 4">
+            <div class="cf-dot-circle">04</div>
+            <span class="cf-dot-label">Alertas</span>
+          </div>
+          <div class="cf-connector" id="cf-conn-3"></div>
+
+          <div class="cf-dot-wrap" id="cf-dot-4" onclick="cfGo(4)" role="button" aria-label="Passo 5">
+            <div class="cf-dot-circle">05</div>
+            <span class="cf-dot-label">Plataforma</span>
+          </div>
+          <div class="cf-connector" id="cf-conn-4"></div>
+
+          <div class="cf-dot-wrap" id="cf-dot-5" onclick="cfGo(5)" role="button" aria-label="Passo 6">
+            <div class="cf-dot-circle">06</div>
+            <span class="cf-dot-label">Resultados</span>
+          </div>
+
+        </div>
+      </div><!-- /cf-timeline -->
 
       <!-- CTA -->
       <div class="fi" style="text-align:center; margin-top:48px;">
@@ -1037,6 +1088,15 @@
     return p.length === 2 ? p.pop().split(';').shift() : '';
   };
   const push = obj => window.dataLayer.push(obj);
+
+  // ── Como funciona — timeline ─────────────────────────────────
+  let cfCurrent = 0;
+  function cfGo(n) {
+    document.querySelectorAll('.cf-step').forEach((el, i) => el.classList.toggle('active', i === n));
+    document.querySelectorAll('.cf-dot-wrap').forEach((el, i) => el.classList.toggle('active', i === n));
+    document.querySelectorAll('.cf-connector').forEach((el, i) => el.classList.toggle('passed', i < n));
+    cfCurrent = n;
+  }
 
   // ── UTM fill ─────────────────────────────────────────────────
   function fillUtms() {
