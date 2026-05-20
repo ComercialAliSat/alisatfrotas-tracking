@@ -230,31 +230,67 @@
     ::-webkit-scrollbar-track { background: #033566; }
     ::-webkit-scrollbar-thumb { background: #1ECB87; border-radius: 3px; }
 
-    /* ── Accordion setores ───────────────────────────────── */
-    .acc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .acc-item { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; transition: box-shadow .2s, border-color .2s; }
-    .acc-item[open] { box-shadow: 0 4px 20px rgba(3,53,102,.1); border-color: #1ECB87; }
-    details summary::-webkit-details-marker { display: none; }
-    details summary { list-style: none; }
-    .acc-summary {
-      display: flex; align-items: center; gap: 14px;
-      padding: 16px 18px; cursor: pointer;
-      list-style: none; user-select: none;
-      background: #fff; transition: background .15s;
+    /* ── Cards setores ───────────────────────────────────── */
+    .setor-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
     }
-    .acc-summary:hover { background: #f8fafc; }
-    .acc-img { width: 80px; height: 56px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
-    .acc-img-fb { width: 80px; height: 56px; border-radius: 8px; flex-shrink: 0; display: none; }
-    .acc-name { flex: 1; font-weight: 700; font-size: 15px; color: #033566; text-decoration: none; font-family: 'Poppins', sans-serif; }
-    .acc-name:hover { color: #1ECB87; text-decoration: underline; }
-    .acc-chevron { font-size: 22px; color: #a3bac6; flex-shrink: 0; transition: transform .25s ease; line-height: 1; display: inline-block; }
-    details[open] .acc-chevron { transform: rotate(90deg); }
-    .acc-content { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
-    details[open] .acc-content { max-height: 160px; }
-    .acc-text { font-size: 14px; color: #555; line-height: 1.65; border-left: 3px solid #1ECB87; padding: 2px 0 2px 12px; margin: 0 18px 16px 112px; }
+    .setor-card {
+      position: relative;
+      display: block;
+      border-radius: 14px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+    .setor-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      border-color: rgba(30,203,135,0.55);
+      box-shadow: 0 8px 32px rgba(30,203,135,0.15);
+    }
+    .setor-card-bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .setor-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(3,16,40,0.88) 0%, rgba(3,16,40,0.3) 55%, transparent 100%);
+    }
+    .setor-card-icon {
+      position: absolute; top: 14px; left: 14px;
+      width: 42px; height: 42px;
+      background: #1ECB87;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2;
+    }
+    .setor-card-icon .material-icons { color: #fff; font-size: 20px; }
+    .setor-card-label {
+      position: absolute; bottom: 14px; left: 14px;
+      z-index: 2;
+      background: rgba(3,16,40,0.72);
+      border: 1px solid #1ECB87;
+      border-radius: 6px;
+      padding: 7px 14px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .setor-card-label span {
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      white-space: nowrap;
+    }
     @media (max-width: 800px) {
-      .acc-grid { grid-template-columns: 1fr; }
-      .acc-text { margin: 0 14px 14px 14px; }
+      .setor-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .setor-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -347,6 +383,16 @@
                   <input type="hidden" id="h-utm_campaign"><input type="hidden" id="h-utm_content">
                   <input type="hidden" id="h-utm_term"><input type="hidden" id="h-fbclid"><input type="hidden" id="h-gclid">
 
+                  <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:rgba(0,0,0,0.65);line-height:1.5;margin-bottom:2px;">
+                    <input type="checkbox" id="h-lgpd" required
+                           style="margin-top:2px;width:15px;height:15px;flex-shrink:0;accent-color:#00BE69;cursor:pointer;">
+                    <span>Concordo com a
+                      <a href="/politica-de-privacidade" target="_blank"
+                         style="color:#033566;text-decoration:underline;">Política de Privacidade</a>
+                      e o tratamento dos meus dados conforme a LGPD.
+                    </span>
+                  </label>
+
                   <button type="button" onclick="heroAdvance()"
                           class="w-full text-white font-bold py-3 transition-all shadow-lg ab-test-hero-cta"
                           style="background:#00BE69; border-radius:3px; font-family:'Poppins',sans-serif; font-size:14px;"
@@ -372,15 +418,6 @@
                     <option>20-50</option><option>51-100</option><option>101-200</option>
                     <option>201-500</option><option>500+</option>
                   </select>
-                  <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:rgba(0,0,0,0.65);line-height:1.5;margin-bottom:4px;">
-                    <input type="checkbox" id="h-lgpd" required
-                           style="margin-top:2px;width:15px;height:15px;flex-shrink:0;accent-color:#00BE69;cursor:pointer;">
-                    <span>Concordo com a
-                      <a href="/politica-de-privacidade" target="_blank"
-                         style="color:#033566;text-decoration:underline;">Política de Privacidade</a>
-                      e o tratamento dos meus dados conforme a LGPD.
-                    </span>
-                  </label>
                   <button type="button" onclick="heroSubmit()"
                           class="w-full text-white font-bold py-3 transition-all shadow-lg"
                           style="background:#00BE69; border-radius:3px; font-family:'Poppins',sans-serif; font-size:14px;"
@@ -402,100 +439,81 @@
   <!-- ═══════════════════════════════════════════════════════
        SETORES — "Solução sob medida para o seu setor"
   ═══════════════════════════════════════════════════════ -->
-  <section id="setores" class="py-20 px-4 sm:px-6 bg-white">
+  <section id="setores" class="py-20 px-4 sm:px-6" style="background:#071120;">
     <div class="max-w-6xl mx-auto">
       <div class="text-center mb-10 fi">
-        <p style="color:#1ECB87; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:8px;">Especialização Setorial</p>
-        <h2 class="fi d1" style="font-size:26px; font-weight:700; color:#033566; line-height:1.2;">
+        <h2 class="fi d1" style="font-size:26px; font-weight:700; color:#fff; line-height:1.2;">
           Solução sob medida para o seu setor
         </h2>
       </div>
 
-      <div class="acc-grid fi d2">
+      <div class="setor-grid fi d2">
 
-        <!-- 1. Construção Civil -->
-        <details class="acc-item">
-          <summary class="acc-summary">
-            <img src="/assets/setor-construcao.webp" alt="Construção Civil" class="acc-img"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <div class="acc-img-fb" style="background:linear-gradient(135deg,#F59E0B,#D97706);"></div>
-            <a href="/lps/construcao" class="acc-name">Construção Civil e Terraplanagem</a>
-            <span class="acc-chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="acc-content">
-            <p class="acc-text">Monitoramento de máquinas pesadas, prevenção de acidentes em canteiros e proteção contra furtos. Ideal para construtoras, empreiteiras e locadoras de equipamentos.</p>
+        <!-- Construção Civil -->
+        <a href="/lps/construcao" class="setor-card" aria-label="Construção Civil e Terraplanagem">
+          <img src="/assets/setor-construcao.webp" alt="Construção Civil" class="setor-card-bg"
+               onerror="this.style.background='linear-gradient(135deg,#2a1f08,#3d2c0a)';this.style.display='block';">
+          <div class="setor-card-overlay"></div>
+          <div class="setor-card-icon">
+            <span class="material-icons">engineering</span>
           </div>
-        </details>
+          <div class="setor-card-label"><span>Construção Civil</span></div>
+        </a>
 
-        <!-- 2. Transporte de Cargas -->
-        <details class="acc-item">
-          <summary class="acc-summary">
-            <img src="/assets/setor-transporte-carga.webp" alt="Transporte de Cargas" class="acc-img"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <div class="acc-img-fb" style="background:linear-gradient(135deg,#1E40AF,#1D4ED8);"></div>
-            <a href="/lps/transporte-carga" class="acc-name">Transporte de Cargas</a>
-            <span class="acc-chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="acc-content">
-            <p class="acc-text">Redução de colisões, controle de velocidade e comprovação de inocência em sinistros. Ideal para transportadoras, frotas de carga e logística.</p>
+        <!-- Transporte de Cargas -->
+        <a href="/lps/transporte-carga" class="setor-card" aria-label="Transporte de Cargas">
+          <img src="/assets/setor-transporte-carga.webp" alt="Transporte de Cargas" class="setor-card-bg"
+               onerror="this.style.background='linear-gradient(135deg,#0a1628,#0d2244)';this.style.display='block';">
+          <div class="setor-card-overlay"></div>
+          <div class="setor-card-icon">
+            <span class="material-icons">local_shipping</span>
           </div>
-        </details>
+          <div class="setor-card-label"><span>Transporte de Cargas</span></div>
+        </a>
 
-        <!-- 3. Transporte de Pessoas -->
-        <details class="acc-item">
-          <summary class="acc-summary">
-            <img src="/assets/setor-transporte-passageiros.webp" alt="Transporte de Pessoas" class="acc-img"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <div class="acc-img-fb" style="background:linear-gradient(135deg,#7C3AED,#6D28D9);"></div>
-            <a href="/lps/transporte-passageiros" class="acc-name">Transporte de Pessoas</a>
-            <span class="acc-chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="acc-content">
-            <p class="acc-text">Segurança para passageiros, monitoramento de comportamento do motorista e relatórios de fadiga. Ideal para fretamento, vans e ônibus.</p>
+        <!-- Transporte de Passageiros -->
+        <a href="/lps/transporte-passageiros" class="setor-card" aria-label="Transporte de Passageiros">
+          <img src="/assets/setor-transporte-passageiros.webp" alt="Transporte de Passageiros" class="setor-card-bg"
+               onerror="this.style.background='linear-gradient(135deg,#1a0d2e,#2a1548)';this.style.display='block';">
+          <div class="setor-card-overlay"></div>
+          <div class="setor-card-icon">
+            <span class="material-icons">directions_bus</span>
           </div>
-        </details>
+          <div class="setor-card-label"><span>Transporte de Passageiros</span></div>
+        </a>
 
-        <!-- 4. Distribuidoras -->
-        <details class="acc-item">
-          <summary class="acc-summary">
-            <img src="/assets/setor-distribuicao.webp" alt="Distribuidoras" class="acc-img"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <div class="acc-img-fb" style="background:linear-gradient(135deg,#059669,#047857);"></div>
-            <a href="/lps/distribuicao" class="acc-name">Distribuidoras</a>
-            <span class="acc-chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="acc-content">
-            <p class="acc-text">Otimização de entregas, redução de multas e otimização da janela de entrega. Ideal para distribuição urbana, atacado e varejo.</p>
+        <!-- Distribuidoras -->
+        <a href="/lps/distribuicao" class="setor-card" aria-label="Distribuidoras">
+          <img src="/assets/setor-distribuicao.webp" alt="Distribuidoras" class="setor-card-bg"
+               onerror="this.style.background='linear-gradient(135deg,#0a1628,#0a2820)';this.style.display='block';">
+          <div class="setor-card-overlay"></div>
+          <div class="setor-card-icon">
+            <span class="material-icons">inventory_2</span>
           </div>
-        </details>
+          <div class="setor-card-label"><span>Distribuidoras</span></div>
+        </a>
 
-        <!-- 5. Mineradoras -->
-        <details class="acc-item">
-          <summary class="acc-summary">
-            <img src="/assets/setor-mineracao.webp" alt="Mineradoras" class="acc-img"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <div class="acc-img-fb" style="background:linear-gradient(135deg,#92400E,#78350F);"></div>
-            <a href="/lps/mineracao" class="acc-name">Mineração e Siderurgia</a>
-            <span class="acc-chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="acc-content">
-            <p class="acc-text">Monitoramento em condições severas, alertas de colisão e geofencing. Ideal para mineração, siderurgia e operações off-road.</p>
+        <!-- Mineração -->
+        <a href="/lps/mineracao" class="setor-card" aria-label="Mineração e Siderurgia">
+          <img src="/assets/setor-mineracao.webp" alt="Mineração" class="setor-card-bg"
+               onerror="this.style.background='linear-gradient(135deg,#2a1208,#1a0c05)';this.style.display='block';">
+          <div class="setor-card-overlay"></div>
+          <div class="setor-card-icon">
+            <span class="material-icons">terrain</span>
           </div>
-        </details>
+          <div class="setor-card-label"><span>Mineração e Siderurgia</span></div>
+        </a>
 
-        <!-- 6. Agrícola -->
-        <details class="acc-item">
-          <summary class="acc-summary">
-            <img src="/assets/setor-agro.webp" alt="Agrícola" class="acc-img"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <div class="acc-img-fb" style="background:linear-gradient(135deg,#16A34A,#15803D);"></div>
-            <a href="/lps/agro" class="acc-name">Agrícola e Agroindústria</a>
-            <span class="acc-chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="acc-content">
-            <p class="acc-text">Proteção de frota rural, rastreamento de implementos e gestão de colheita. Ideal para agroindústria, fazendas e cooperativas.</p>
+        <!-- Agrícola -->
+        <a href="/lps/agro" class="setor-card" aria-label="Agrícola e Agroindústria">
+          <img src="/assets/setor-agro.webp" alt="Agrícola" class="setor-card-bg"
+               onerror="this.style.background='linear-gradient(135deg,#0a2814,#143d1c)';this.style.display='block';">
+          <div class="setor-card-overlay"></div>
+          <div class="setor-card-icon">
+            <span class="material-icons">agriculture</span>
           </div>
-        </details>
+          <div class="setor-card-label"><span>Agrícola e Agroindústria</span></div>
+        </a>
 
       </div>
     </div>
@@ -1014,9 +1032,11 @@
     const nome  = $('h-nome').value.trim();
     const email = $('h-email').value.trim();
     const tel   = $('h-tel').value.trim();
+    const lgpd  = $('h-lgpd')?.checked;
     if (!nome)           { alert_('Por favor, informe seu nome.'); return; }
     if (!isEmail(email)) { alert_('Por favor, informe um e-mail válido.'); return; }
     if (!isPhone(tel))   { alert_('Por favor, informe um telefone válido.'); return; }
+    if (!lgpd)           { alert_('Por favor, aceite a Política de Privacidade para continuar.'); return; }
 
     heroS1.nome  = nome;
     heroS1.email = email;
@@ -1037,12 +1057,10 @@
     const cnpj    = $('h-cnpj').value.trim();
     const seg     = $('h-seg').value;
     const veic    = $('h-veic').value;
-    const lgpd   = $('h-lgpd')?.checked;
     if (!empresa)       { alert_('Por favor, informe o nome da empresa.'); return; }
     if (!isCNPJ(cnpj))  { alert_('Por favor, informe um CNPJ válido (14 dígitos).'); return; }
     if (!seg)           { alert_('Por favor, selecione o segmento de atuação.'); return; }
     if (!veic)          { alert_('Por favor, selecione a quantidade de veículos.'); return; }
-    if (!lgpd)          { alert_('Por favor, aceite a Política de Privacidade para continuar.'); return; }
 
     push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
     postLead({
