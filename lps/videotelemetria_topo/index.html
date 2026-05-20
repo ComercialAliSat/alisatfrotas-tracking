@@ -234,22 +234,24 @@
     .setor-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+      gap: 10px;
     }
     .setor-card {
       position: relative;
       display: block;
-      border-radius: 14px;
+      border-radius: 8px;
       overflow: hidden;
-      aspect-ratio: 4/3;
+      aspect-ratio: 16/9;
       text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.08);
-      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+      border: 1px solid rgba(30,203,135,0.18);
+      border-top: 2px solid rgba(30,203,135,0.4);
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
     }
     .setor-card:hover {
-      transform: translateY(-4px) scale(1.01);
-      border-color: rgba(30,203,135,0.55);
-      box-shadow: 0 8px 32px rgba(30,203,135,0.15);
+      transform: translateY(-3px);
+      border-color: rgba(30,203,135,0.65);
+      border-top-color: #1ECB87;
+      box-shadow: 0 6px 24px rgba(30,203,135,0.13);
     }
     .setor-card-bg {
       position: absolute; inset: 0;
@@ -258,33 +260,25 @@
     }
     .setor-card-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(3,16,40,0.88) 0%, rgba(3,16,40,0.3) 55%, transparent 100%);
+      background: linear-gradient(to top, rgba(3,10,30,0.90) 0%, rgba(3,10,30,0.35) 50%, transparent 100%);
     }
-    .setor-card-icon {
-      position: absolute; top: 14px; left: 14px;
-      width: 42px; height: 42px;
-      background: #1ECB87;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      z-index: 2;
-    }
-    .setor-card-icon .material-icons { color: #fff; font-size: 20px; }
     .setor-card-label {
-      position: absolute; bottom: 14px; left: 14px;
+      position: absolute; bottom: 10px; left: 10px;
       z-index: 2;
-      background: rgba(3,16,40,0.72);
-      border: 1px solid #1ECB87;
-      border-radius: 6px;
-      padding: 7px 14px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background: rgba(3,10,28,0.80);
+      border: 1px solid rgba(30,203,135,0.6);
+      border-radius: 3px;
+      padding: 5px 11px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
     .setor-card-label span {
       color: #fff;
-      font-weight: 700;
-      font-size: 14px;
+      font-weight: 600;
+      font-size: 12px;
       font-family: 'Poppins', sans-serif;
       white-space: nowrap;
+      letter-spacing: .03em;
     }
     @media (max-width: 800px) {
       .setor-grid { grid-template-columns: repeat(2, 1fr); }
@@ -439,7 +433,7 @@
   <!-- ═══════════════════════════════════════════════════════
        SETORES — "Solução sob medida para o seu setor"
   ═══════════════════════════════════════════════════════ -->
-  <section id="setores" class="py-20 px-4 sm:px-6" style="background:#071120;">
+  <section id="setores" class="py-16 px-4 sm:px-6" style="background:#071120; background-image:linear-gradient(rgba(30,203,135,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(30,203,135,0.04) 1px,transparent 1px); background-size:32px 32px;">
     <div class="max-w-6xl mx-auto">
       <div class="text-center mb-10 fi">
         <h2 class="fi d1" style="font-size:26px; font-weight:700; color:#fff; line-height:1.2;">
@@ -454,10 +448,7 @@
           <img src="/assets/setor-construcao.webp" alt="Construção Civil" class="setor-card-bg"
                onerror="this.style.background='linear-gradient(135deg,#2a1f08,#3d2c0a)';this.style.display='block';">
           <div class="setor-card-overlay"></div>
-          <div class="setor-card-icon">
-            <span class="material-icons">engineering</span>
-          </div>
-          <div class="setor-card-label"><span>Construção Civil</span></div>
+<div class="setor-card-label"><span>Construção Civil</span></div>
         </a>
 
         <!-- Transporte de Cargas -->
@@ -465,10 +456,7 @@
           <img src="/assets/setor-transporte-carga.webp" alt="Transporte de Cargas" class="setor-card-bg"
                onerror="this.style.background='linear-gradient(135deg,#0a1628,#0d2244)';this.style.display='block';">
           <div class="setor-card-overlay"></div>
-          <div class="setor-card-icon">
-            <span class="material-icons">local_shipping</span>
-          </div>
-          <div class="setor-card-label"><span>Transporte de Cargas</span></div>
+<div class="setor-card-label"><span>Transporte de Cargas</span></div>
         </a>
 
         <!-- Transporte de Passageiros -->
@@ -476,9 +464,6 @@
           <img src="/assets/setor-transporte-passageiros.webp" alt="Transporte de Passageiros" class="setor-card-bg"
                onerror="this.style.background='linear-gradient(135deg,#1a0d2e,#2a1548)';this.style.display='block';">
           <div class="setor-card-overlay"></div>
-          <div class="setor-card-icon">
-            <span class="material-icons">directions_bus</span>
-          </div>
           <div class="setor-card-label"><span>Transporte de Passageiros</span></div>
         </a>
 
@@ -487,9 +472,6 @@
           <img src="/assets/setor-distribuicao.webp" alt="Distribuidoras" class="setor-card-bg"
                onerror="this.style.background='linear-gradient(135deg,#0a1628,#0a2820)';this.style.display='block';">
           <div class="setor-card-overlay"></div>
-          <div class="setor-card-icon">
-            <span class="material-icons">inventory_2</span>
-          </div>
           <div class="setor-card-label"><span>Distribuidoras</span></div>
         </a>
 
@@ -498,9 +480,6 @@
           <img src="/assets/setor-mineracao.webp" alt="Mineração" class="setor-card-bg"
                onerror="this.style.background='linear-gradient(135deg,#2a1208,#1a0c05)';this.style.display='block';">
           <div class="setor-card-overlay"></div>
-          <div class="setor-card-icon">
-            <span class="material-icons">terrain</span>
-          </div>
           <div class="setor-card-label"><span>Mineração e Siderurgia</span></div>
         </a>
 
@@ -509,9 +488,6 @@
           <img src="/assets/setor-agro.webp" alt="Agrícola" class="setor-card-bg"
                onerror="this.style.background='linear-gradient(135deg,#0a2814,#143d1c)';this.style.display='block';">
           <div class="setor-card-overlay"></div>
-          <div class="setor-card-icon">
-            <span class="material-icons">agriculture</span>
-          </div>
           <div class="setor-card-label"><span>Agrícola e Agroindústria</span></div>
         </a>
 
