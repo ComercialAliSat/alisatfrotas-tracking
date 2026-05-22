@@ -202,35 +202,36 @@
 
     /* ── Evento cards ────────────────────────────────────── */
     .evento-card {
-      border: 1px solid rgba(255,255,255,0.15);
-      border-top: 2px solid #1ECB87;
-      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 14px;
       overflow: hidden;
-      background: rgba(255,255,255,0.04);
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
     .evento-card:hover {
       transform: translateY(-4px);
-      border-color: rgba(30,203,135,0.55);
-      border-top-color: #1ECB87;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.25);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.32);
     }
-    .evento-card-img { position: relative; overflow: hidden; }
-    .evento-card-img img {
-      width: 100%; height: 220px;
-      object-fit: cover; display: block;
-      transition: transform 0.35s ease;
+    .evento-card-body {
+      padding: 1.5rem 1.5rem 1.25rem;
+      text-align: center;
     }
-    .evento-card:hover .evento-card-img img { transform: scale(1.04); }
-    .evento-card-body { padding: 1.25rem 1.4rem 1.5rem; }
     .evento-card-body h3 {
-      color: #fff; font-weight: 700; font-size: 1rem;
-      font-family: 'Poppins', sans-serif; margin-bottom: 0.5rem;
+      color: #fff; font-weight: 700; font-size: 1.05rem;
+      font-family: 'Poppins', sans-serif; margin-bottom: 0.55rem;
     }
     .evento-card-body p {
-      color: #94afc8; font-size: 0.85rem; line-height: 1.6;
+      color: #94afc8; font-size: 0.84rem; line-height: 1.62;
       font-family: 'Poppins', sans-serif;
     }
+    .evento-card-img { overflow: hidden; }
+    .evento-card-img img {
+      width: 100%; display: block;
+      transition: transform 0.35s ease;
+    }
+    .evento-card:hover .evento-card-img img { transform: scale(1.03); }
 
     /* ── YouTube facade ──────────────────────────────────── */
     .yt-wrap { position: relative; cursor: pointer; }
@@ -675,163 +676,12 @@
 
 
   <!-- ═══════════════════════════════════════════════════════
-       COMO FUNCIONA
-  ═══════════════════════════════════════════════════════ -->
-  <section id="como-funciona" style="background:#f4f6f8; padding:80px 20px;">
-    <div style="max-width:1100px; margin:0 auto;">
-
-      <!-- Header -->
-      <div class="fi" style="text-align:center; margin-bottom:48px;">
-        <h2 class="fi d1" style="font-size:32px; font-weight:700; color:#033566; font-family:'Poppins',sans-serif; margin-bottom:10px;">
-          Como funciona
-        </h2>
-        <p class="fi d2" style="font-size:16px; color:#666; font-family:'Poppins',sans-serif;">
-          Sua frota vista de dentro para fora.
-        </p>
-      </div>
-
-      <!-- Step panel -->
-      <div class="cf-panel">
-
-        <!-- Step 01 -->
-        <div class="cf-step active" id="cf-step-0">
-          <div class="cf-step-left">
-            <div class="cf-big-num">01</div>
-            <h3 class="cf-step-title">Diagnóstico da frota e desenho do projeto</h3>
-            <p class="cf-step-text">Criamos o projeto especial para sua operação, mapeando veículos, rotas e pontos críticos para uma implementação precisa.</p>
-          </div>
-          <div class="cf-step-right" style="background:linear-gradient(135deg,#033566 0%,#0d2244 100%);">
-            <img src="/assets/como-funciona-01.webp" alt="Diagnóstico da frota" onerror="this.style.display='none'">
-          </div>
-        </div>
-
-        <!-- Step 02 -->
-        <div class="cf-step" id="cf-step-1">
-          <div class="cf-step-left">
-            <div class="cf-big-num">02</div>
-            <h3 class="cf-step-title">Instalação rápida dos equipamentos</h3>
-            <p class="cf-step-text">Instalamos as câmeras com IA embarcada nos veículos da sua frota. Processo rápido, feito por equipe especializada em campo, sem parar sua operação.</p>
-          </div>
-          <div class="cf-step-right" style="background:linear-gradient(135deg,#034075 0%,#0a2244 100%);">
-            <img src="/assets/como-funciona-02.webp" alt="Instalação dos equipamentos" onerror="this.style.display='none'">
-          </div>
-        </div>
-
-        <!-- Step 03 -->
-        <div class="cf-step" id="cf-step-2">
-          <div class="cf-step-left">
-            <div class="cf-big-num">03</div>
-            <h3 class="cf-step-title">Ativação do monitoramento</h3>
-            <p class="cf-step-text">Sistema entra em operação automaticamente. Câmeras capturam imagens em tempo real e a IA começa a gerar alertas sonoros preventivos para o motorista.</p>
-          </div>
-          <div class="cf-step-right" style="background:linear-gradient(135deg,#033566 0%,#1ECB87 100%);">
-            <img src="/assets/como-funciona-03.webp" alt="Ativação do monitoramento" onerror="this.style.display='none'">
-          </div>
-        </div>
-
-        <!-- Step 04 -->
-        <div class="cf-step" id="cf-step-3">
-          <div class="cf-step-left">
-            <div class="cf-big-num">04</div>
-            <h3 class="cf-step-title">Alertas em tempo real</h3>
-            <p class="cf-step-text">Receba notificações instantâneas sobre excesso de velocidade, fadiga, distração, uso de celular e colisões iminentes — antes do acidente acontecer.</p>
-          </div>
-          <div class="cf-step-right" style="background:linear-gradient(135deg,#0a1628 0%,#033566 100%);">
-            <img src="/assets/como-funciona-04.webp" alt="Alertas em tempo real" onerror="this.style.display='none'">
-          </div>
-        </div>
-
-        <!-- Step 05 -->
-        <div class="cf-step" id="cf-step-4">
-          <div class="cf-step-left">
-            <div class="cf-big-num">05</div>
-            <h3 class="cf-step-title">Acesso à plataforma</h3>
-            <p class="cf-step-text">Acompanhe tudo pelo painel virtual: mapas, relatórios, gravações e indicadores de desempenho da frota. Visível de qualquer lugar, a qualquer hora.</p>
-          </div>
-          <div class="cf-step-right" style="background:linear-gradient(135deg,#034075 0%,#0d3060 100%);">
-            <img src="/assets/como-funciona-05.webp" alt="Acesso à plataforma" onerror="this.style.display='none'">
-          </div>
-        </div>
-
-        <!-- Step 06 -->
-        <div class="cf-step" id="cf-step-5">
-          <div class="cf-step-left">
-            <div class="cf-big-num">06</div>
-            <h3 class="cf-step-title">Análise de dados e resultados</h3>
-            <p class="cf-step-text">Relatórios detalhados de comportamento, redução de multas e economia de combustível. Redução de acidentes, queda nos custos operacionais e frota mais produtiva.</p>
-          </div>
-          <div class="cf-step-right" style="background:linear-gradient(135deg,#033566 0%,#1ECB87 100%);">
-            <img src="/assets/como-funciona-06.webp" alt="Análise de dados e resultados" onerror="this.style.display='none'">
-          </div>
-        </div>
-
-      </div><!-- /cf-panel -->
-
-      <!-- Timeline navigation -->
-      <div class="cf-timeline">
-        <div class="cf-tl-track">
-
-          <div class="cf-dot-wrap active" id="cf-dot-0" onclick="cfGo(0)" role="button" aria-label="Passo 1">
-            <div class="cf-dot-circle">01</div>
-            <span class="cf-dot-label">Diagnóstico</span>
-          </div>
-          <div class="cf-connector" id="cf-conn-0"></div>
-
-          <div class="cf-dot-wrap" id="cf-dot-1" onclick="cfGo(1)" role="button" aria-label="Passo 2">
-            <div class="cf-dot-circle">02</div>
-            <span class="cf-dot-label">Instalação</span>
-          </div>
-          <div class="cf-connector" id="cf-conn-1"></div>
-
-          <div class="cf-dot-wrap" id="cf-dot-2" onclick="cfGo(2)" role="button" aria-label="Passo 3">
-            <div class="cf-dot-circle">03</div>
-            <span class="cf-dot-label">Ativação</span>
-          </div>
-          <div class="cf-connector" id="cf-conn-2"></div>
-
-          <div class="cf-dot-wrap" id="cf-dot-3" onclick="cfGo(3)" role="button" aria-label="Passo 4">
-            <div class="cf-dot-circle">04</div>
-            <span class="cf-dot-label">Alertas</span>
-          </div>
-          <div class="cf-connector" id="cf-conn-3"></div>
-
-          <div class="cf-dot-wrap" id="cf-dot-4" onclick="cfGo(4)" role="button" aria-label="Passo 5">
-            <div class="cf-dot-circle">05</div>
-            <span class="cf-dot-label">Plataforma</span>
-          </div>
-          <div class="cf-connector" id="cf-conn-4"></div>
-
-          <div class="cf-dot-wrap" id="cf-dot-5" onclick="cfGo(5)" role="button" aria-label="Passo 6">
-            <div class="cf-dot-circle">06</div>
-            <span class="cf-dot-label">Resultados</span>
-          </div>
-
-        </div>
-      </div><!-- /cf-timeline -->
-
-      <!-- CTA -->
-      <div class="fi" style="text-align:center; margin-top:48px;">
-        <a href="#hero-form-anchor"
-           style="display:inline-flex;align-items:center;gap:8px;background:#00BE69;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;border:none;border-radius:3px;padding:14px 32px;text-decoration:none;cursor:pointer;transition:background .2s;"
-           onmouseover="this.style.background='#009258'"
-           onmouseout="this.style.background='#00BE69'"
-           onclick="push({event:'CTA_Click',cta_text:'Quero proteger minha frota',section:'como-funciona'})">
-          Quero proteger minha frota →
-        </a>
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════════════════
-       PROBLEMA — "Identificação dos principais eventos"
+       PROBLEMA — "Principais eventos"
   ═══════════════════════════════════════════════════════ -->
   <section id="problema" class="py-20 px-4 sm:px-6" style="background:#033566;">
     <div class="max-w-6xl mx-auto">
 
       <div class="text-center mb-12">
-        <span class="inline-block text-xs font-bold uppercase tracking-widest mb-3 fi" style="color:#1ECB87;">Identificação dos principais eventos</span>
         <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4 fi d1">
           Você está pagando o preço da falta de visibilidade
         </h2>
@@ -846,57 +696,57 @@
 
         <!-- Entenda acidentes -->
         <div class="evento-card fi d1" role="article">
+          <div class="evento-card-body">
+            <h3>Entenda acidentes</h3>
+            <p>Os vídeos gravados se tornam provas irrefutáveis para comprovação jurídica em caso de necessidade.</p>
+          </div>
           <div class="evento-card-img">
             <img src="/assets/proximidade%20do%20veiculo.png"
                  alt="Proximidade do veículo — Entenda acidentes"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
             <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/proximidade do veiculo.png</div>
           </div>
-          <div class="evento-card-body">
-            <h3>Entenda acidentes</h3>
-            <p>Os vídeos gravados se tornam provas irrefutáveis para comprovação jurídica em caso de necessidade.</p>
-          </div>
         </div>
 
         <!-- Monitore o uso indevido -->
         <div class="evento-card fi d2" role="article">
+          <div class="evento-card-body">
+            <h3>Monitore o uso indevido</h3>
+            <p>Garanta que os veículos estejam sendo utilizados no horário e rota combinados com seus motoristas.</p>
+          </div>
           <div class="evento-card-img">
             <img src="/assets/uso%20fora%20do%20horario%20noite.webp"
                  alt="Uso fora do horário — Monitore o uso indevido"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
             <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/uso fora do horario noite.webp</div>
           </div>
-          <div class="evento-card-body">
-            <h3>Monitore o uso indevido</h3>
-            <p>Garanta que os veículos estejam sendo utilizados no horário e rota combinados com seus motoristas.</p>
-          </div>
         </div>
 
         <!-- Acompanhe a condução -->
         <div class="evento-card fi d3" role="article">
+          <div class="evento-card-body">
+            <h3>Acompanhe a condução</h3>
+            <p>Tenha total visibilidade da forma como seus motoristas conduzem os veículos. Corrija em tempo real e proteja o motorista e a frota.</p>
+          </div>
           <div class="evento-card-img">
             <img src="/assets/modo%20de%20conducao.webp"
                  alt="Modo de condução — Acompanhe a condução"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
             <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/modo de conducao.webp</div>
           </div>
-          <div class="evento-card-body">
-            <h3>Acompanhe a condução</h3>
-            <p>Tenha total visibilidade da forma como seus motoristas conduzem os veículos. Corrija em tempo real e proteja o motorista e a frota.</p>
-          </div>
         </div>
 
         <!-- Previna acidentes -->
         <div class="evento-card fi d4" role="article">
+          <div class="evento-card-body">
+            <h3>Previna acidentes</h3>
+            <p>Com alertas em tempo real na cabine, a solução detecta e evita possíveis causas de acidentes antes que aconteçam.</p>
+          </div>
           <div class="evento-card-img">
             <img src="/assets/fadiga%20detectada.webp"
                  alt="Fadiga detectada — Previna acidentes"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
             <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/fadiga detectada.webp</div>
-          </div>
-          <div class="evento-card-body">
-            <h3>Previna acidentes</h3>
-            <p>Com alertas em tempo real na cabine, a solução detecta e evita possíveis causas de acidentes antes que aconteçam.</p>
           </div>
         </div>
 
