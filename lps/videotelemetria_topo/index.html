@@ -200,6 +200,38 @@
     .sol-card { transition: transform 0.25s, box-shadow 0.25s; }
     .sol-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(30,203,135,0.18); }
 
+    /* ── Evento cards ────────────────────────────────────── */
+    .evento-card {
+      border: 1px solid rgba(255,255,255,0.15);
+      border-top: 2px solid #1ECB87;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.04);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .evento-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(30,203,135,0.55);
+      border-top-color: #1ECB87;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.25);
+    }
+    .evento-card-img { position: relative; overflow: hidden; }
+    .evento-card-img img {
+      width: 100%; height: 220px;
+      object-fit: cover; display: block;
+      transition: transform 0.35s ease;
+    }
+    .evento-card:hover .evento-card-img img { transform: scale(1.04); }
+    .evento-card-body { padding: 1.25rem 1.4rem 1.5rem; }
+    .evento-card-body h3 {
+      color: #fff; font-weight: 700; font-size: 1rem;
+      font-family: 'Poppins', sans-serif; margin-bottom: 0.5rem;
+    }
+    .evento-card-body p {
+      color: #94afc8; font-size: 0.85rem; line-height: 1.6;
+      font-family: 'Poppins', sans-serif;
+    }
+
     /* ── YouTube facade ──────────────────────────────────── */
     .yt-wrap { position: relative; cursor: pointer; }
     .yt-wrap::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.25); transition:background 0.2s; border-radius:inherit; }
@@ -793,43 +825,81 @@
 
 
   <!-- ═══════════════════════════════════════════════════════
-       PROBLEMA — "O Custo Invisível"
+       PROBLEMA — "Identificação dos principais eventos"
   ═══════════════════════════════════════════════════════ -->
   <section id="problema" class="py-20 px-4 sm:px-6" style="background:#033566;">
     <div class="max-w-6xl mx-auto">
+
       <div class="text-center mb-12">
-        <span class="inline-block text-blue-400 text-xs font-bold uppercase tracking-widest mb-3 fi">O Custo Invisível</span>
+        <span class="inline-block text-xs font-bold uppercase tracking-widest mb-3 fi" style="color:#1ECB87;">Identificação dos principais eventos</span>
         <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4 fi d1">
           Você está pagando o preço da falta de visibilidade
         </h2>
-        <p class="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed fi d2">
+        <p class="text-lg max-w-2xl mx-auto leading-relaxed fi d2" style="color:#94afc8;">
           Gerir uma frota sem visibilidade em tempo real é aceitar riscos financeiros e humanos constantes.
           O custo de um acidente vai muito além do conserto do veículo — envolve passivos judiciais,
           perda de carga e danos à reputação.
         </p>
       </div>
 
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div class="pain-card bg-white/5 border border-white/10 rounded-xl p-6 fi d1" role="article">
-          <div class="text-4xl mb-4" aria-hidden="true">🚛</div>
-          <h3 class="text-white font-bold text-base mb-2">Multas por excesso de velocidade</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Drenam o fluxo de caixa e comprometem o resultado operacional da empresa.</p>
+      <div class="grid sm:grid-cols-2 gap-5">
+
+        <!-- Entenda acidentes -->
+        <div class="evento-card fi d1" role="article">
+          <div class="evento-card-img">
+            <img src="/assets/proximidade%20do%20veiculo.png"
+                 alt="Proximidade do veículo — Entenda acidentes"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/proximidade do veiculo.png</div>
+          </div>
+          <div class="evento-card-body">
+            <h3>Entenda acidentes</h3>
+            <p>Os vídeos gravados se tornam provas irrefutáveis para comprovação jurídica em caso de necessidade.</p>
+          </div>
         </div>
-        <div class="pain-card bg-white/5 border border-white/10 rounded-xl p-6 fi d2" role="article">
-          <div class="text-4xl mb-4" aria-hidden="true">⚠️</div>
-          <h3 class="text-white font-bold text-base mb-2">Colisões traseiras</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Causadas por distração ou fadiga — evitáveis com tecnologia de alerta preventivo.</p>
+
+        <!-- Monitore o uso indevido -->
+        <div class="evento-card fi d2" role="article">
+          <div class="evento-card-img">
+            <img src="/assets/uso%20fora%20do%20horario%20noite.webp"
+                 alt="Uso fora do horário — Monitore o uso indevido"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/uso fora do horario noite.webp</div>
+          </div>
+          <div class="evento-card-body">
+            <h3>Monitore o uso indevido</h3>
+            <p>Garanta que os veículos estejam sendo utilizados no horário e rota combinados com seus motoristas.</p>
+          </div>
         </div>
-        <div class="pain-card bg-white/5 border border-white/10 rounded-xl p-6 fi d3" role="article">
-          <div class="text-4xl mb-4" aria-hidden="true">📱</div>
-          <h3 class="text-white font-bold text-base mb-2">Uso indevido do celular</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Comportamentos de risco que geram responsabilidade civil e passivos trabalhistas.</p>
+
+        <!-- Acompanhe a condução -->
+        <div class="evento-card fi d3" role="article">
+          <div class="evento-card-img">
+            <img src="/assets/modo%20de%20conducao.webp"
+                 alt="Modo de condução — Acompanhe a condução"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/modo de conducao.webp</div>
+          </div>
+          <div class="evento-card-body">
+            <h3>Acompanhe a condução</h3>
+            <p>Tenha total visibilidade da forma como seus motoristas conduzem os veículos. Corrija em tempo real e proteja o motorista e a frota.</p>
+          </div>
         </div>
-        <div class="pain-card bg-white/5 border border-white/10 rounded-xl p-6 fi d4" role="article">
-          <div class="text-4xl mb-4" aria-hidden="true">⚖️</div>
-          <h3 class="text-white font-bold text-base mb-2">Dificuldade em provar inocência</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Sem imagens, o motorista não tem como provar inocência em sinistros e litígios.</p>
+
+        <!-- Previna acidentes -->
+        <div class="evento-card fi d4" role="article">
+          <div class="evento-card-img">
+            <img src="/assets/fadiga%20detectada.webp"
+                 alt="Fadiga detectada — Previna acidentes"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/fadiga detectada.webp</div>
+          </div>
+          <div class="evento-card-body">
+            <h3>Previna acidentes</h3>
+            <p>Com alertas em tempo real na cabine, a solução detecta e evita possíveis causas de acidentes antes que aconteçam.</p>
+          </div>
         </div>
+
       </div>
     </div>
   </section>
