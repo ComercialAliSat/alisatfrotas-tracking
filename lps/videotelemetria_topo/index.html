@@ -268,62 +268,89 @@
       .cf-dot-label { display:none; }
     }
 
-    /* ── Cards setores ───────────────────────────────────── */
-    .setor-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+    /* ── Setores — accordion ────────────────────────────── */
+    #setores { background: #fff; }
+    #setores-dots {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, #b8c8dc 1.3px, transparent 1.3px);
+      background-size: 22px 22px;
+      mask-image: radial-gradient(ellipse 85% 70% at 50% 50%, black 10%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse 85% 70% at 50% 50%, black 10%, transparent 80%);
+      pointer-events: none;
+      z-index: 0;
     }
-    .setor-card {
+    .setor-acc-item {
+      margin-bottom: 0.55rem;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(3,53,102,0.07);
       position: relative;
-      display: block;
-      border-radius: 8px;
       overflow: hidden;
-      aspect-ratio: 16/9;
-      text-decoration: none;
-      border: 1px solid rgba(30,203,135,0.18);
-      border-top: 2px solid rgba(30,203,135,0.4);
-      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+      transition: box-shadow 0.3s ease;
     }
-    .setor-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(30,203,135,0.65);
-      border-top-color: #1ECB87;
-      box-shadow: 0 6px 24px rgba(30,203,135,0.13);
-    }
-    .setor-card-bg {
+    .setor-acc-item::before {
+      content: '';
       position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
+      border-radius: 10px;
+      padding: 2px;
+      background: linear-gradient(135deg, #033566, #1ECB87);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
-    .setor-card-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(3,10,30,0.90) 0%, rgba(3,10,30,0.35) 50%, transparent 100%);
+    .setor-acc-item.active::before { opacity: 1; }
+    .setor-acc-item.active { box-shadow: 0 4px 20px rgba(3,53,102,0.11); }
+    .setor-acc-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem;
+      cursor: pointer; background: #fff;
+      position: relative; z-index: 1;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      transition: border-color 0.25s;
     }
-    .setor-card-label {
-      position: absolute; bottom: 10px; left: 10px;
-      z-index: 2;
-      background: rgba(3,10,28,0.80);
-      border: 1px solid rgba(30,203,135,0.6);
-      border-radius: 3px;
-      padding: 5px 11px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+    .setor-acc-item.active .setor-acc-header {
+      border-color: transparent;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
     }
-    .setor-card-label span {
-      color: #fff;
-      font-weight: 600;
-      font-size: 12px;
+    .setor-acc-header h3 {
+      font-size: 0.95rem; font-weight: 600; color: #033566;
       font-family: 'Poppins', sans-serif;
-      white-space: nowrap;
-      letter-spacing: .03em;
     }
-    @media (max-width: 800px) {
-      .setor-grid { grid-template-columns: repeat(2, 1fr); }
+    .setor-acc-chevron {
+      width: 20px; height: 20px; fill: none;
+      stroke: #1ECB87; stroke-width: 2.2;
+      transition: transform 0.3s ease; flex-shrink: 0;
     }
-    @media (max-width: 480px) {
-      .setor-grid { grid-template-columns: 1fr; }
+    .setor-acc-item.active .setor-acc-chevron { transform: rotate(180deg); }
+    .setor-acc-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0 1.25rem;
+      background: #fff; position: relative; z-index: 1;
+      border: 1px solid transparent; border-top: none;
+      border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
     }
+    .setor-acc-body p {
+      color: #4b5563; font-size: 0.83rem; line-height: 1.65;
+      margin-top: 0.9rem; margin-bottom: 0.9rem;
+    }
+    .btn-setor {
+      display: inline-block; padding: 0.42rem 1.3rem;
+      background: linear-gradient(135deg, #033566, #1E40AF);
+      color: #fff; border-radius: 6px; font-weight: 600; font-size: 0.8rem;
+      text-decoration: none; transition: opacity 0.2s; margin-bottom: 1.1rem;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn-setor:hover { opacity: 0.88; }
+    .setor-img-panel { position: relative; }
+    .setor-img-slide { display: none; }
+    .setor-img-slide.active { display: block; animation: sectorFade .32s ease; }
+    @keyframes sectorFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body class="font-sans antialiased bg-white text-gray-900">
@@ -471,63 +498,144 @@
   <!-- ═══════════════════════════════════════════════════════
        SETORES — "Solução sob medida para o seu setor"
   ═══════════════════════════════════════════════════════ -->
-  <section id="setores" class="py-16 px-4 sm:px-6" style="background:#071120; background-image:linear-gradient(rgba(30,203,135,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(30,203,135,0.04) 1px,transparent 1px); background-size:32px 32px;">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-10 fi">
-        <h2 class="fi d1" style="font-size:26px; font-weight:700; color:#fff; line-height:1.2;">
+  <section id="setores" class="py-16 px-4 sm:px-6 relative overflow-hidden">
+    <div id="setores-dots" aria-hidden="true"></div>
+    <div class="max-w-6xl mx-auto relative z-10">
+
+      <div class="text-center mb-12 fi">
+        <h2 class="fi d1" style="font-size:28px; font-weight:700; color:#033566; line-height:1.2;">
           Solução sob medida para o seu setor
         </h2>
+        <p class="fi d2" style="color:#64748b; font-size:15px; margin-top:8px;">
+          Cada segmento tem desafios únicos. Nossa tecnologia se adapta à sua operação.
+        </p>
       </div>
 
-      <div class="setor-grid fi d2">
+      <div class="flex flex-col lg:flex-row gap-10 lg:gap-14 items-center fi d2">
 
-        <!-- Construção Civil -->
-        <a href="/lps/construcao" class="setor-card" aria-label="Construção Civil e Terraplanagem">
-          <img src="/assets/setor-construcao.webp" alt="Construção Civil" class="setor-card-bg"
-               onerror="this.style.background='linear-gradient(135deg,#2a1f08,#3d2c0a)';this.style.display='block';">
-          <div class="setor-card-overlay"></div>
-<div class="setor-card-label"><span>Construção Civil</span></div>
-        </a>
+        <!-- ── Accordion ── -->
+        <div class="flex-1 w-full" id="setor-accordion">
 
-        <!-- Transporte de Cargas -->
-        <a href="/lps/transporte-carga" class="setor-card" aria-label="Transporte de Cargas">
-          <img src="/assets/setor-transporte-carga.webp" alt="Transporte de Cargas" class="setor-card-bg"
-               onerror="this.style.background='linear-gradient(135deg,#0a1628,#0d2244)';this.style.display='block';">
-          <div class="setor-card-overlay"></div>
-<div class="setor-card-label"><span>Transporte de Cargas</span></div>
-        </a>
+          <!-- Construção Civil -->
+          <div class="setor-acc-item active" data-setor="0">
+            <div class="setor-acc-header" onclick="setorToggle(0)" role="button" aria-expanded="true">
+              <h3>Construção Civil</h3>
+              <svg class="setor-acc-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="setor-acc-body">
+              <p>Monitore caminhões, betoneiras e equipamentos pesados em canteiros de obra. Alertas de fadiga e distração reduzem acidentes e protegem sua equipe em campo.</p>
+              <a href="/lps/construcao" class="btn-setor">Saber mais →</a>
+            </div>
+          </div>
 
-        <!-- Transporte de Passageiros -->
-        <a href="/lps/transporte-passageiros" class="setor-card" aria-label="Transporte de Passageiros">
-          <img src="/assets/setor-transporte-passageiros.webp" alt="Transporte de Passageiros" class="setor-card-bg"
-               onerror="this.style.background='linear-gradient(135deg,#1a0d2e,#2a1548)';this.style.display='block';">
-          <div class="setor-card-overlay"></div>
-          <div class="setor-card-label"><span>Transporte de Passageiros</span></div>
-        </a>
+          <!-- Transporte de Cargas -->
+          <div class="setor-acc-item" data-setor="1">
+            <div class="setor-acc-header" onclick="setorToggle(1)" role="button" aria-expanded="false">
+              <h3>Transporte de Cargas</h3>
+              <svg class="setor-acc-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="setor-acc-body">
+              <p>Proteja cargas valiosas com monitoramento contínuo em longas rotas. Reduza colisões traseiras, eventos de fadiga e passivos jurídicos causados por comportamento de risco.</p>
+              <a href="/lps/transporte-carga" class="btn-setor">Saber mais →</a>
+            </div>
+          </div>
 
-        <!-- Distribuidoras -->
-        <a href="/lps/distribuicao" class="setor-card" aria-label="Distribuidoras">
-          <img src="/assets/setor-distribuicao.webp" alt="Distribuidoras" class="setor-card-bg"
-               onerror="this.style.background='linear-gradient(135deg,#0a1628,#0a2820)';this.style.display='block';">
-          <div class="setor-card-overlay"></div>
-          <div class="setor-card-label"><span>Distribuidoras</span></div>
-        </a>
+          <!-- Transporte de Passageiros -->
+          <div class="setor-acc-item" data-setor="2">
+            <div class="setor-acc-header" onclick="setorToggle(2)" role="button" aria-expanded="false">
+              <h3>Transporte de Passageiros</h3>
+              <svg class="setor-acc-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="setor-acc-body">
+              <p>Garanta a segurança de cada passageiro com IA que detecta distração e fadiga em tempo real. Conformidade com regulações e redução de responsabilidade civil.</p>
+              <a href="/lps/transporte-passageiros" class="btn-setor">Saber mais →</a>
+            </div>
+          </div>
 
-        <!-- Mineração -->
-        <a href="/lps/mineracao" class="setor-card" aria-label="Mineração e Siderurgia">
-          <img src="/assets/setor-mineracao.webp" alt="Mineração" class="setor-card-bg"
-               onerror="this.style.background='linear-gradient(135deg,#2a1208,#1a0c05)';this.style.display='block';">
-          <div class="setor-card-overlay"></div>
-          <div class="setor-card-label"><span>Mineração e Siderurgia</span></div>
-        </a>
+          <!-- Distribuidoras -->
+          <div class="setor-acc-item" data-setor="3">
+            <div class="setor-acc-header" onclick="setorToggle(3)" role="button" aria-expanded="false">
+              <h3>Distribuidoras</h3>
+              <svg class="setor-acc-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="setor-acc-body">
+              <p>Controle sua frota de entrega em rotas urbanas de alto tráfego. Reduza multas, sinistros e melhore a eficiência operacional nas últimas milhas.</p>
+              <a href="/lps/distribuicao" class="btn-setor">Saber mais →</a>
+            </div>
+          </div>
 
-        <!-- Agrícola -->
-        <a href="/lps/agro" class="setor-card" aria-label="Agrícola e Agroindústria">
-          <img src="/assets/setor-agro.webp" alt="Agrícola" class="setor-card-bg"
-               onerror="this.style.background='linear-gradient(135deg,#0a2814,#143d1c)';this.style.display='block';">
-          <div class="setor-card-overlay"></div>
-          <div class="setor-card-label"><span>Agrícola e Agroindústria</span></div>
-        </a>
+          <!-- Mineração e Siderurgia -->
+          <div class="setor-acc-item" data-setor="4">
+            <div class="setor-acc-header" onclick="setorToggle(4)" role="button" aria-expanded="false">
+              <h3>Mineração e Siderurgia</h3>
+              <svg class="setor-acc-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="setor-acc-body">
+              <p>Operações em ambientes extremos exigem tecnologia de ponta. Monitore equipamentos pesados e proteja seus operadores com alertas preventivos em tempo real.</p>
+              <a href="/lps/mineracao" class="btn-setor">Saber mais →</a>
+            </div>
+          </div>
+
+          <!-- Agrícola e Agroindústria -->
+          <div class="setor-acc-item" data-setor="5">
+            <div class="setor-acc-header" onclick="setorToggle(5)" role="button" aria-expanded="false">
+              <h3>Agrícola e Agroindústria</h3>
+              <svg class="setor-acc-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="setor-acc-body">
+              <p>Da lavoura à transportadora, acompanhe máquinas agrícolas e caminhões de safra com rastreamento preciso e relatórios detalhados de desempenho.</p>
+              <a href="/lps/agro" class="btn-setor">Saber mais →</a>
+            </div>
+          </div>
+
+        </div><!-- /accordion -->
+
+        <!-- ── Image panel (desktop only) ── -->
+        <div class="flex-1 w-full setor-img-panel hidden lg:block">
+
+          <div class="setor-img-slide active" id="setor-slide-0">
+            <img src="/assets/setor-construcao.webp" alt="Construção Civil"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Construção Civil<br>/assets/setor-construcao.webp</div>
+          </div>
+
+          <div class="setor-img-slide" id="setor-slide-1">
+            <img src="/assets/setor-transporte-carga.webp" alt="Transporte de Cargas"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Transporte de Cargas<br>/assets/setor-transporte-carga.webp</div>
+          </div>
+
+          <div class="setor-img-slide" id="setor-slide-2">
+            <img src="/assets/setor-transporte-passageiros.webp" alt="Transporte de Passageiros"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Transporte de Passageiros<br>/assets/setor-transporte-passageiros.webp</div>
+          </div>
+
+          <div class="setor-img-slide" id="setor-slide-3">
+            <img src="/assets/setor-distribuicao.webp" alt="Distribuidoras"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Distribuidoras<br>/assets/setor-distribuicao.webp</div>
+          </div>
+
+          <div class="setor-img-slide" id="setor-slide-4">
+            <img src="/assets/setor-mineracao.webp" alt="Mineração e Siderurgia"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Mineração e Siderurgia<br>/assets/setor-mineracao.webp</div>
+          </div>
+
+          <div class="setor-img-slide" id="setor-slide-5">
+            <img src="/assets/setor-agro.webp" alt="Agrícola e Agroindústria"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Agrícola e Agroindústria<br>/assets/setor-agro.webp</div>
+          </div>
+
+        </div><!-- /image panel -->
 
       </div>
     </div>
@@ -1089,6 +1197,29 @@
   };
   const push = obj => window.dataLayer.push(obj);
 
+  // ── Setores accordion ────────────────────────────────────────
+  function setorToggle(n) {
+    const items   = document.querySelectorAll('.setor-acc-item');
+    const slides  = document.querySelectorAll('.setor-img-slide');
+    const headers = document.querySelectorAll('.setor-acc-header');
+    const isActive = items[n].classList.contains('active');
+
+    items.forEach((item, i) => {
+      item.classList.remove('active');
+      item.querySelector('.setor-acc-body').style.maxHeight = '0';
+      if (headers[i]) headers[i].setAttribute('aria-expanded', 'false');
+    });
+    slides.forEach(s => s.classList.remove('active'));
+
+    if (!isActive) {
+      items[n].classList.add('active');
+      const body = items[n].querySelector('.setor-acc-body');
+      body.style.maxHeight = body.scrollHeight + 'px';
+      if (headers[n]) headers[n].setAttribute('aria-expanded', 'true');
+      if (slides[n]) slides[n].classList.add('active');
+    }
+  }
+
   // ── Como funciona — timeline ─────────────────────────────────
   let cfCurrent = 0;
   function cfGo(n) {
@@ -1373,6 +1504,10 @@
   // ── Init ─────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     fillUtms();
+
+    // Init first setor accordion item
+    const firstSetorBody = document.querySelector('.setor-acc-item.active .setor-acc-body');
+    if (firstSetorBody) firstSetorBody.style.maxHeight = firstSetorBody.scrollHeight + 'px';
 
     // Phone masks
     ['h-tel','f-tel'].forEach(id => {
