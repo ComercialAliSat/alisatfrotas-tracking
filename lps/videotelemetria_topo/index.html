@@ -258,6 +258,25 @@
       font-weight:900; color:#fff; line-height:1;
     }
 
+    /* ── Sticky mobile WhatsApp CTA ─────────────────────── */
+    #wha-sticky {
+      display: none;
+      position: fixed; bottom: 20px; right: 20px; z-index: 999;
+      background: #25D366; color: #fff;
+      border-radius: 50px; padding: 13px 20px;
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px;
+      text-decoration: none; align-items: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.45);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #wha-sticky:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,0.5); }
+    @media (max-width: 1023px) { #wha-sticky { display: flex; } }
+
+    /* ── Trust bar dividers ──────────────────────────────── */
+    @media (min-width: 1024px) {
+      #trust-bar .lg\:border-r { border-right: 1px solid rgba(255,255,255,0.08); }
+    }
+
     /* ── Scrollbar ───────────────────────────────────────── */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #033566; }
@@ -388,6 +407,16 @@
 </head>
 <body class="font-sans antialiased bg-white text-gray-900">
 
+  <!-- Sticky WhatsApp CTA (mobile only) -->
+  <a id="wha-sticky"
+     href="https://wa.me/555130342111?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20videotelemetria%20para%20minha%20frota."
+     target="_blank" rel="noopener noreferrer"
+     aria-label="Falar no WhatsApp"
+     onclick="push({event:'CTA_Click',cta_text:'WhatsApp sticky',section:'mobile-fixed'})">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.112 1.522 5.839L.057 23.406a.75.75 0 0 0 .92.921l5.635-1.47A11.956 11.956 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 0 1-4.963-1.358l-.355-.214-3.683.96.984-3.595-.233-.37A9.712 9.712 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+    Falar no WhatsApp
+  </a>
+
   <!-- ═══════════════════════════════════════════════════════
        NAVBAR
   ═══════════════════════════════════════════════════════ -->
@@ -413,26 +442,36 @@
 
         <!-- ── Left: copy ── -->
         <div class="text-white">
-          <h1 class="text-3xl sm:text-4xl xl:text-[2.75rem] font-extrabold leading-[1.15] mb-5 fi">
-            Sua empresa e motoristas estão
-            <span style="color:#1ECB87;"> realmente protegidos</span>
-            contra acidentes e multas evitáveis?
+          <p class="text-xs font-bold uppercase tracking-widest mb-4 fi" style="color:#1ECB87; letter-spacing:.12em;">
+            Videotelemetria com IA Embarcada · Ali Sat
+          </p>
+          <h1 class="text-3xl sm:text-4xl xl:text-[2.75rem] font-extrabold leading-[1.13] mb-6 fi">
+            Veja o que seus motoristas fazem
+            <span style="color:#1ECB87;"> em tempo real</span>
+            — e evite o acidente antes que aconteça
           </h1>
 
-          <p class="text-gray-300 text-lg leading-relaxed mb-8 fi d1">
-            Acidentes nas rodovias geram um prejuízo anual de
-            <strong class="text-white">R$&nbsp;50&nbsp;bilhões</strong> no Brasil.
-            Não permita que sua frota faça parte dessa estatística. Implemente a
-            tecnologia que alerta o motorista
-            <strong class="text-white">antes da colisão acontecer.</strong>
-          </p>
+          <ul class="space-y-3.5 mb-8 fi d1">
+            <li class="flex items-start gap-3 text-sm sm:text-base" style="color:#cbd5e1;">
+              <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>IA embarcada que alerta o motorista antes da colisão — <strong class="text-white">sem depender de internet</strong></span>
+            </li>
+            <li class="flex items-start gap-3 text-sm sm:text-base" style="color:#cbd5e1;">
+              <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>Gravação contínua como <strong class="text-white">prova jurídica</strong> em sinistros e disputas trabalhistas</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm sm:text-base" style="color:#cbd5e1;">
+              <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>Dashboard de gestão para <strong class="text-white">frotas a partir de 20 veículos</strong> — dados em tempo real</span>
+            </li>
+          </ul>
 
           <!-- Mobile CTA -->
           <a href="#hero-form-anchor"
-             class="lg:hidden inline-block text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all mt-8 fi d3"
+             class="lg:hidden inline-block text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all fi d3"
              style="background:#00BE69;"
-             onclick="trackCTA('Quero proteger minha frota','hero')">
-            Quero proteger minha frota →
+             onclick="trackCTA('Agendar diagnóstico gratuito','hero')">
+            Agendar diagnóstico gratuito →
           </a>
         </div>
 
@@ -443,7 +482,7 @@
             <!-- Header -->
             <div class="flex items-start justify-between mb-5">
               <div>
-                <p class="font-bold text-lg" style="color:#033566;">Diagnóstico gratuito</p>
+                <p class="font-bold text-lg" style="color:#033566;">Diagnóstico gratuito da sua frota</p>
                 <p class="text-sm mt-0.5" style="color:#6b7280;" id="hero-step-label">Etapa 1 de 2 — Seus dados</p>
               </div>
               <div class="flex gap-2 mt-1" aria-label="Progresso do formulário">
@@ -486,11 +525,12 @@
                   </label>
 
                   <button type="button" onclick="heroAdvance()"
-                          class="w-full text-white font-bold py-3 transition-all shadow-lg ab-test-hero-cta"
+                          class="w-full text-white font-bold py-3 transition-all shadow-lg ab-test-hero-cta btn-pulse"
                           style="background:#00BE69; border-radius:3px; font-family:'Poppins',sans-serif; font-size:14px;"
                           aria-label="Avançar para a próxima etapa">
-                    Quero proteger minha frota →
+                    Agendar diagnóstico gratuito →
                   </button>
+                  <p class="text-center text-xs mt-1.5" style="color:#9ca3af;">Sem compromisso · Retorno em até 1h útil</p>
                 </div>
               </div>
 
@@ -521,6 +561,38 @@
 
             </div><!-- /.form-body -->
           </div><!-- /.form-wrap -->
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TRUST BAR
+  ═══════════════════════════════════════════════════════ -->
+  <section id="trust-bar" style="background:#021e3d; border-top:1px solid rgba(30,203,135,0.18); border-bottom:1px solid rgba(30,203,135,0.12);">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-4 lg:gap-y-0" style="border-color:rgba(255,255,255,0.08);">
+
+        <div class="text-center lg:border-r" style="border-color:rgba(255,255,255,0.08); padding:0 1.5rem;">
+          <div class="text-2xl sm:text-3xl font-black text-white leading-none">8+</div>
+          <div class="text-xs font-semibold mt-1 uppercase tracking-wide" style="color:#64a8d0;">Anos no mercado</div>
+        </div>
+
+        <div class="text-center lg:border-r" style="border-color:rgba(255,255,255,0.08); padding:0 1.5rem;">
+          <div class="text-2xl sm:text-3xl font-black leading-none" style="color:#1ECB87;">−60%</div>
+          <div class="text-xs font-semibold mt-1 uppercase tracking-wide" style="color:#64a8d0;">Em colisões com frotas</div>
+        </div>
+
+        <div class="text-center lg:border-r" style="border-color:rgba(255,255,255,0.08); padding:0 1.5rem;">
+          <div class="text-2xl sm:text-3xl font-black text-white leading-none">−40%</div>
+          <div class="text-xs font-semibold mt-1 uppercase tracking-wide" style="color:#64a8d0;">Em multas por veículo</div>
+        </div>
+
+        <div class="text-center" style="padding:0 1.5rem;">
+          <div class="text-2xl sm:text-3xl font-black text-white leading-none">24h</div>
+          <div class="text-xs font-semibold mt-1 uppercase tracking-wide" style="color:#64a8d0;">Monitoramento ativo</div>
         </div>
 
       </div>
@@ -627,45 +699,33 @@
         <div class="flex-1 w-full setor-img-panel hidden lg:block">
 
           <div class="setor-img-slide active" id="setor-slide-0">
-            <img src="/assets/setor-construcao.webp" alt="Construção Civil"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Construção Civil<br>/assets/setor-construcao.webp</div>
+            <img src="/assets/construcaocivil.png" alt="Construção Civil e Terraplanagem"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
           </div>
 
           <div class="setor-img-slide" id="setor-slide-1">
-            <img src="/assets/setor-transporte-carga.webp" alt="Transporte de Cargas"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Transporte de Cargas<br>/assets/setor-transporte-carga.webp</div>
+            <img src="/assets/linha.png" alt="Transporte de Cargas"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
           </div>
 
           <div class="setor-img-slide" id="setor-slide-2">
-            <img src="/assets/setor-transporte-passageiros.webp" alt="Transporte de Passageiros"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Transporte de Passageiros<br>/assets/setor-transporte-passageiros.webp</div>
+            <img src="/assets/motorista.png" alt="Transporte de Passageiros"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
           </div>
 
           <div class="setor-img-slide" id="setor-slide-3">
-            <img src="/assets/setor-distribuicao.webp" alt="Distribuidoras"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Distribuidoras<br>/assets/setor-distribuicao.webp</div>
+            <img src="/assets/distribuidora.png" alt="Distribuidoras"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
           </div>
 
           <div class="setor-img-slide" id="setor-slide-4">
-            <img src="/assets/setor-mineracao.webp" alt="Mineração e Siderurgia"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Mineração e Siderurgia<br>/assets/setor-mineracao.webp</div>
+            <img src="/assets/pa.png" alt="Mineração e Siderurgia"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
           </div>
 
           <div class="setor-img-slide" id="setor-slide-5">
-            <img src="/assets/setor-agro.webp" alt="Agrícola e Agroindústria"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph" style="height:420px;border-radius:16px;display:none;">📷 Agrícola e Agroindústria<br>/assets/setor-agro.webp</div>
+            <img src="/assets/terra.png" alt="Agrícola e Agroindústria"
+                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
           </div>
 
         </div><!-- /image panel -->
@@ -701,10 +761,7 @@
             <p>Os vídeos gravados se tornam provas irrefutáveis para comprovação jurídica em caso de necessidade.</p>
           </div>
           <div class="evento-card-img">
-            <img src="/assets/proximidade%20do%20veiculo.png"
-                 alt="Proximidade do veículo — Entenda acidentes"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/proximidade do veiculo.png</div>
+            <img src="/assets/proximidade.png" alt="Proximidade do veículo — Entenda acidentes">
           </div>
         </div>
 
@@ -715,10 +772,7 @@
             <p>Garanta que os veículos estejam sendo utilizados no horário e rota combinados com seus motoristas.</p>
           </div>
           <div class="evento-card-img">
-            <img src="/assets/uso%20fora%20do%20horario%20noite.webp"
-                 alt="Uso fora do horário — Monitore o uso indevido"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/uso fora do horario noite.webp</div>
+            <img src="/assets/horarionoite.webp" alt="Uso fora do horário — Monitore o uso indevido">
           </div>
         </div>
 
@@ -729,10 +783,7 @@
             <p>Tenha total visibilidade da forma como seus motoristas conduzem os veículos. Corrija em tempo real e proteja o motorista e a frota.</p>
           </div>
           <div class="evento-card-img">
-            <img src="/assets/modo%20de%20conducao.webp"
-                 alt="Modo de condução — Acompanhe a condução"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/modo de conducao.webp</div>
+            <img src="/assets/conducao.webp" alt="Modo de condução — Acompanhe a condução">
           </div>
         </div>
 
@@ -743,10 +794,7 @@
             <p>Com alertas em tempo real na cabine, a solução detecta e evita possíveis causas de acidentes antes que aconteçam.</p>
           </div>
           <div class="evento-card-img">
-            <img src="/assets/fadiga%20detectada.webp"
-                 alt="Fadiga detectada — Previna acidentes"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="img-ph-dark" style="height:220px;display:none;">📷 /assets/fadiga detectada.webp</div>
+            <img src="/assets/fadiga.webp" alt="Fadiga detectada — Previna acidentes">
           </div>
         </div>
 
@@ -772,9 +820,11 @@
         </p>
       </div>
 
-      <!-- Solution image placeholder -->
-      <div class="img-ph mx-auto mb-12 fi" style="max-width:860px; height:300px;">
-        📷 Imagem da solução / câmeras instaladas — /assets/solucao-cameras.webp
+      <!-- Dashboard visual -->
+      <div class="mx-auto mb-12 fi" style="max-width:860px; border-radius:16px; overflow:hidden; box-shadow:0 8px 48px rgba(3,53,102,0.13); border:1px solid #e2e8f0;">
+        <img src="/assets/dash.svg" alt="Dashboard Ali Sat — visão geral da frota em tempo real"
+             style="width:100%; display:block;"
+             onerror="this.style.display='none'">
       </div>
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
