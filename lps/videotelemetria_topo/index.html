@@ -403,6 +403,51 @@
     .setor-img-slide { display: none; }
     .setor-img-slide.active { display: block; animation: sectorFade .32s ease; }
     @keyframes sectorFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Logos de clientes ───────────────────────────────── */
+    .logo-cliente {
+      height: 52px; width: auto; max-width: 140px;
+      object-fit: contain;
+      filter: grayscale(1); opacity: 0.72;
+      transition: filter 0.28s, opacity 0.28s;
+    }
+    .logo-cliente:hover { filter: grayscale(0); opacity: 1; }
+
+    /* ── ADAS/DMS dot bullet ─────────────────────────────── */
+    .adas-dot {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #1ECB87; flex-shrink: 0; margin-top: 4px;
+      box-shadow: 0 0 0 4px rgba(30,203,135,0.22);
+    }
+
+    /* ── ADAS/DMS composite image ────────────────────────── */
+    .adas-img-wrap {
+      position: relative; min-height: 400px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .adas-tech-bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; opacity: 0.45; pointer-events: none;
+    }
+    .adas-camera {
+      position: relative; z-index: 3; width: 72%;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 48px rgba(0,0,0,0.65));
+    }
+    .adas-screen {
+      position: absolute; z-index: 2;
+      border-radius: 6px;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.55);
+    }
+    .adas-screen-top { top: 4%; right: 0; width: 46%; }
+    .adas-screen-bot { bottom: 4%; right: 3%; width: 42%; }
+    @media (max-width: 767px) {
+      .adas-img-wrap { min-height: 270px; }
+      .adas-camera { width: 60%; }
+      .adas-screen-top { width: 38%; }
+      .adas-screen-bot { width: 34%; }
+    }
   </style>
 </head>
 <body class="font-sans antialiased bg-white text-gray-900">
@@ -648,102 +693,74 @@
   <!-- ═══════════════════════════════════════════════════════
        CLIENTES + TECNOLOGIA — "Quem já utiliza" + ADAS/DMS
   ═══════════════════════════════════════════════════════ -->
-  <section id="clientes" style="background:#fff; padding:56px 1rem 64px; border-top:1px solid #e8edf3;">
-    <div class="max-w-6xl mx-auto">
+  <section id="clientes">
 
-      <!-- Título -->
-      <div class="text-center mb-10 fi">
-        <h2 class="fi d1" style="font-size:clamp(1.15rem,2.5vw,1.55rem); font-weight:700; color:#033566; font-family:'Poppins',sans-serif;">
+    <!-- ── Logos (fundo claro) ── -->
+    <div style="background:#f5f7fa; padding:48px 1rem 52px;">
+      <div class="max-w-5xl mx-auto">
+        <h2 class="fi" style="text-align:center; color:#033566; font-size:clamp(1.05rem,2.3vw,1.4rem); font-weight:700; font-family:'Poppins',sans-serif; margin-bottom:36px;">
           Quem já utiliza nossas soluções e aprova:
         </h2>
-      </div>
-
-      <!-- Logos -->
-      <div class="fi d2" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:20px 36px; margin-bottom:52px; padding:0 1rem;">
-        <!-- Adicione aqui as tags <img src="/assets/logo-empresa.png" ...> quando os arquivos estiverem disponíveis -->
-        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
-          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA A</span>
+        <div class="fi d1" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:16px 52px;">
+          <img src="/assets/mica.webp"           alt="Mica"          class="logo-cliente">
+          <img src="/assets/ccl.webp"            alt="CCL Concreto"  class="logo-cliente">
+          <img src="/assets/casa%20maria.webp"   alt="Casa Maria"    class="logo-cliente">
+          <img src="/assets/coesul.png"          alt="Coesul"        class="logo-cliente">
+          <img src="/assets/franciscon.webp"     alt="Franciscon"    class="logo-cliente">
         </div>
-        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
-          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA B</span>
-        </div>
-        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
-          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA C</span>
-        </div>
-        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
-          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA D</span>
-        </div>
-        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
-          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA E</span>
-        </div>
-        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
-          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA F</span>
-        </div>
-      </div>
-
-      <!-- ADAS + DMS -->
-      <div class="grid md:grid-cols-2 gap-6 fi d3">
-
-        <!-- ADAS -->
-        <div style="border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; background:#fff; box-shadow:0 2px 16px rgba(3,53,102,0.07);">
-          <div style="overflow:hidden; height:200px;">
-            <img src="/assets/proximidade.png" alt="Câmera ADAS — Detecção de colisão e faixa"
-                 style="width:100%; height:100%; object-fit:cover; display:block;">
-          </div>
-          <div style="padding:24px 26px;">
-            <div style="display:inline-flex; align-items:center; gap:7px; background:#033566; border-radius:20px; padding:5px 14px; margin-bottom:14px;">
-              <span style="color:#1ECB87; font-size:10px; font-weight:700; letter-spacing:0.1em; font-family:'Poppins',sans-serif; text-transform:uppercase;">CÂMERA ADAS</span>
-            </div>
-            <h3 style="color:#033566; font-size:1.1rem; font-weight:700; font-family:'Poppins',sans-serif; margin-bottom:10px; line-height:1.3;">Copiloto inteligente para sua frota</h3>
-            <p style="color:#4b5563; font-size:0.83rem; line-height:1.65; font-family:'Poppins',sans-serif; margin-bottom:14px;">A câmera ADAS atua como um copiloto inteligente, identificando situações de perigo em tempo real e emitindo alertas contra colisões, proximidade excessiva e mudanças involuntárias de faixa.</p>
-            <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:7px;">
-              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
-                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Redução de acidentes e custos de manutenção
-              </li>
-              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
-                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Maior proteção veicular e patrimonial
-              </li>
-              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
-                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Conformidade com exigências de embarcadores
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- DMS -->
-        <div style="border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; background:#fff; box-shadow:0 2px 16px rgba(3,53,102,0.07);">
-          <div style="overflow:hidden; height:200px;">
-            <img src="/assets/fadiga.webp" alt="Câmera DMS — Monitoramento do motorista"
-                 style="width:100%; height:100%; object-fit:cover; display:block;">
-          </div>
-          <div style="padding:24px 26px;">
-            <div style="display:inline-flex; align-items:center; gap:7px; background:#033566; border-radius:20px; padding:5px 14px; margin-bottom:14px;">
-              <span style="color:#1ECB87; font-size:10px; font-weight:700; letter-spacing:0.1em; font-family:'Poppins',sans-serif; text-transform:uppercase;">CÂMERA DMS</span>
-            </div>
-            <h3 style="color:#033566; font-size:1.1rem; font-weight:700; font-family:'Poppins',sans-serif; margin-bottom:10px; line-height:1.3;">Monitoramento total do comportamento do motorista</h3>
-            <p style="color:#4b5563; font-size:0.83rem; line-height:1.65; font-family:'Poppins',sans-serif; margin-bottom:14px;">Sistema que acompanha o comportamento do motorista em tempo real, detectando fadiga, distração, uso de celular e sonolência antes que causem um acidente.</p>
-            <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:7px;">
-              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
-                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Prevenção de falhas humanas no volante
-              </li>
-              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
-                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Redução significativa de sinistros
-              </li>
-              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
-                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Menor custo com seguros e manutenção preventiva
-              </li>
-            </ul>
-          </div>
-        </div>
-
       </div>
     </div>
+
+    <!-- ── ADAS + DMS (fundo navy) ── -->
+    <div style="background:#033566; padding:72px 1rem 80px;">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+          <!-- Texto -->
+          <div class="fi d1">
+
+            <!-- ADAS -->
+            <div style="display:flex; gap:20px; margin-bottom:32px; align-items:flex-start;">
+              <div class="adas-dot"></div>
+              <div>
+                <p style="color:#fff; font-weight:700; font-size:1.05rem; font-family:'Poppins',sans-serif; line-height:1.25; margin-bottom:3px;">Câmera ADAS</p>
+                <p style="color:#1ECB87; font-weight:700; font-size:0.82rem; font-family:'Poppins',sans-serif; margin-bottom:10px;">(Advanced Driver Assistance System)</p>
+                <p style="color:#94afc8; font-size:0.83rem; line-height:1.74; font-family:'Poppins',sans-serif;">A câmera ADAS atua como um copiloto inteligente, identificando situações de perigo em tempo real. Ela emite alertas contra colisões, mudanças involuntárias de faixa, distância insegura de outros veículos e até excesso de velocidade. Reduzindo acidentes e custos com manutenção. Mais proteção para motoristas e veículos e conformidade com práticas de segurança exigidas por grandes embarcadores.</p>
+              </div>
+            </div>
+
+            <!-- DMS -->
+            <div style="display:flex; gap:20px; margin-bottom:40px; align-items:flex-start;">
+              <div class="adas-dot"></div>
+              <div>
+                <p style="color:#fff; font-weight:700; font-size:1.05rem; font-family:'Poppins',sans-serif; line-height:1.25; margin-bottom:3px;">Câmera DMS</p>
+                <p style="color:#1ECB87; font-weight:700; font-size:0.82rem; font-family:'Poppins',sans-serif; margin-bottom:10px;">(Driver Monitoring System)</p>
+                <p style="color:#94afc8; font-size:0.83rem; line-height:1.74; font-family:'Poppins',sans-serif;">A câmera DMS acompanha o comportamento do condutor, identificando sinais de fadiga, distração, uso de celular ou sonolência ao volante. Assim, é possível agir antes que um acidente aconteça. Prevenção de falhas humanas, principal causa de acidentes. Redução de sinistros e custos com seguros e mais eficiência e segurança para toda a frota.</p>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <a href="#hero-form-anchor"
+               style="display:inline-block; background:#1ECB87; color:#033566; font-weight:800; font-size:0.92rem; padding:15px 38px; border-radius:50px; font-family:'Poppins',sans-serif; text-decoration:none; letter-spacing:0.02em; box-shadow:0 4px 20px rgba(30,203,135,0.35); transition:background .2s, transform .2s, box-shadow .2s;"
+               onmouseover="this.style.background='#00BE69';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(30,203,135,0.45)'"
+               onmouseout="this.style.background='#1ECB87';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(30,203,135,0.35)'"
+               onclick="trackCTA('Quero conhecer','adas-dms')">
+              Quero conhecer
+            </a>
+          </div>
+
+          <!-- Imagem composta -->
+          <div class="adas-img-wrap fi d2">
+            <img src="/assets/tech.webp" alt="" aria-hidden="true" class="adas-tech-bg">
+            <img src="/assets/dentro.gif"    alt="Câmera interna — monitoramento do motorista em tempo real" class="adas-screen adas-screen-top">
+            <img src="/assets/movimento.gif" alt="Câmera frontal — visão da estrada em tempo real"          class="adas-screen adas-screen-bot">
+            <img src="/assets/cameras.webp"  alt="Equipamento de videotelemetria com IA embarcada — Ali Sat" class="adas-camera">
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </section>
 
 
