@@ -130,7 +130,7 @@
 
     /* ── Stat numbers ────────────────────────────────────── */
     .stat-num {
-      font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
       font-weight: 900; line-height: 1;
       font-variant-numeric: tabular-nums;
     }
@@ -406,7 +406,7 @@
 
     /* ── Logos de clientes ───────────────────────────────── */
     .logo-cliente {
-      height: 52px; width: auto; max-width: 140px;
+      height: 68px; width: auto; max-width: 180px;
       object-fit: contain;
       filter: grayscale(1); opacity: 0.72;
       transition: filter 0.28s, opacity 0.28s;
@@ -417,36 +417,39 @@
     .adas-dot {
       width: 16px; height: 16px; border-radius: 50%;
       background: #1ECB87; flex-shrink: 0; margin-top: 4px;
-      box-shadow: 0 0 0 4px rgba(30,203,135,0.22);
+      box-shadow: 0 0 0 5px rgba(30,203,135,0.22);
     }
 
     /* ── ADAS/DMS composite image ────────────────────────── */
     .adas-img-wrap {
-      position: relative; min-height: 400px;
-      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      height: 420px;
+      overflow: hidden;
     }
     .adas-tech-bg {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
-      object-fit: cover; opacity: 0.45; pointer-events: none;
+      object-fit: cover; opacity: 0.42;
+      pointer-events: none; z-index: 0;
     }
     .adas-camera {
-      position: relative; z-index: 3; width: 72%;
-      object-fit: contain;
-      filter: drop-shadow(0 16px 48px rgba(0,0,0,0.65));
+      position: absolute;
+      left: -2%; top: 50%; transform: translateY(-50%);
+      width: 62%; z-index: 3;
+      filter: drop-shadow(0 12px 40px rgba(0,0,0,0.70));
     }
     .adas-screen {
       position: absolute; z-index: 2;
-      border-radius: 6px;
-      box-shadow: 0 6px 28px rgba(0,0,0,0.55);
+      border-radius: 8px;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.60);
     }
-    .adas-screen-top { top: 4%; right: 0; width: 46%; }
-    .adas-screen-bot { bottom: 4%; right: 3%; width: 42%; }
+    .adas-screen-top { top: 4%;  right: 0; width: 50%; }
+    .adas-screen-bot { bottom: 4%; right: 2%; width: 46%; }
     @media (max-width: 767px) {
-      .adas-img-wrap { min-height: 270px; }
-      .adas-camera { width: 60%; }
-      .adas-screen-top { width: 38%; }
-      .adas-screen-bot { width: 34%; }
+      .adas-img-wrap { height: 260px; }
+      .adas-camera { width: 55%; left: -1%; }
+      .adas-screen-top { width: 43%; }
+      .adas-screen-bot { width: 39%; }
     }
   </style>
 </head>
@@ -481,7 +484,7 @@
   <!-- ═══════════════════════════════════════════════════════
        HERO
   ═══════════════════════════════════════════════════════ -->
-  <section id="hero" class="min-h-screen flex items-center pt-16 pb-16">
+  <section id="hero" class="flex items-center pt-14 pb-12" style="min-height:680px;">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 w-full relative z-10">
       <div class="grid lg:grid-cols-2 gap-10 xl:gap-16 items-center">
 
@@ -490,7 +493,7 @@
           <p class="text-xs font-bold uppercase tracking-widest mb-3 fi" style="color:#1ECB87; letter-spacing:.12em;">
             Videotelemetria com IA Embarcada · Ali Sat
           </p>
-          <h1 class="text-3xl sm:text-4xl xl:text-[2.75rem] font-extrabold leading-[1.13] mb-4 fi">
+          <h1 class="text-2xl sm:text-3xl xl:text-[2.2rem] font-extrabold leading-[1.15] mb-3 fi">
             Veja o que seus motoristas fazem
             <span style="color:#1ECB87;"> em tempo real</span>
             — e evite o acidente antes que aconteça
@@ -500,7 +503,7 @@
           <div class="fi d1" style="margin: 0.25rem 0 1rem;">
             <img src="/assets/motorista.png"
                  alt="Motorista monitorado com videotelemetria IA embarcada — Ali Sat"
-                 style="width:100%; max-height:280px; object-fit:contain; display:block; filter:drop-shadow(0 8px 28px rgba(0,0,0,0.5));">
+                 style="width:100%; max-height:220px; object-fit:contain; display:block; filter:drop-shadow(0 8px 28px rgba(0,0,0,0.5));">
           </div>
 
           <!-- Mobile CTA -->
@@ -631,11 +634,11 @@
   <!-- ═══════════════════════════════════════════════════════
        PROBLEMA — "Você está pagando o preço"
   ═══════════════════════════════════════════════════════ -->
-  <section id="problema" style="background:#033566; padding:56px 1rem 64px;">
+  <section id="problema" style="background:#033566; padding:40px 1rem 48px;">
     <div class="max-w-6xl mx-auto">
 
-      <div class="text-center mb-10 fi">
-        <h2 class="fi d1" style="font-size:clamp(1.4rem,3vw,2rem); font-weight:800; color:#fff; line-height:1.2; font-family:'Poppins',sans-serif;">
+      <div class="text-center mb-7 fi">
+        <h2 class="fi d1" style="font-size:clamp(1.2rem,2.5vw,1.65rem); font-weight:800; color:#fff; line-height:1.2; font-family:'Poppins',sans-serif;">
           Você está pagando o preço da falta de visibilidade
         </h2>
         <p class="fi d2" style="color:#94afc8; font-size:0.875rem; margin-top:10px; max-width:560px; margin-left:auto; margin-right:auto; line-height:1.6; font-family:'Poppins',sans-serif;">
@@ -696,9 +699,9 @@
   <section id="clientes">
 
     <!-- ── Logos (fundo claro) ── -->
-    <div style="background:#f5f7fa; padding:48px 1rem 52px;">
+    <div style="background:#f5f7fa; padding:32px 1rem 36px;">
       <div class="max-w-5xl mx-auto">
-        <h2 class="fi" style="text-align:center; color:#033566; font-size:clamp(1.05rem,2.3vw,1.4rem); font-weight:700; font-family:'Poppins',sans-serif; margin-bottom:36px;">
+        <h2 class="fi" style="text-align:center; color:#033566; font-size:clamp(1rem,2vw,1.25rem); font-weight:700; font-family:'Poppins',sans-serif; margin-bottom:28px;">
           Quem já utiliza nossas soluções e aprova:
         </h2>
         <div class="fi d1" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:16px 52px;">
@@ -712,7 +715,7 @@
     </div>
 
     <!-- ── ADAS + DMS (fundo navy) ── -->
-    <div style="background:#033566; padding:72px 1rem 80px;">
+    <div style="background:#033566; padding:52px 1rem 60px;">
       <div class="max-w-6xl mx-auto">
         <div class="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
 
@@ -767,15 +770,15 @@
   <!-- ═══════════════════════════════════════════════════════
        SETORES — "Solução sob medida para o seu setor"
   ═══════════════════════════════════════════════════════ -->
-  <section id="setores" class="py-16 px-4 sm:px-6 relative overflow-hidden">
+  <section id="setores" class="py-10 px-4 sm:px-6 relative overflow-hidden">
     <div id="setores-dots" aria-hidden="true"></div>
     <div class="max-w-6xl mx-auto relative z-10">
 
-      <div class="text-center mb-12 fi">
-        <h2 class="fi d1" style="font-size:28px; font-weight:700; color:#033566; line-height:1.2;">
+      <div class="text-center mb-8 fi">
+        <h2 class="fi d1" style="font-size:22px; font-weight:700; color:#033566; line-height:1.2;">
           Solução sob medida para o seu setor
         </h2>
-        <p class="fi d2" style="color:#64748b; font-size:15px; margin-top:8px;">
+        <p class="fi d2" style="color:#64748b; font-size:14px; margin-top:6px;">
           Cada segmento tem desafios únicos. Nossa tecnologia se adapta à sua operação.
         </p>
       </div>
@@ -852,27 +855,27 @@
 
           <div class="setor-img-slide active" id="setor-slide-0">
             <img src="/assets/construcaocivil.png" alt="Construção Civil e Terraplanagem"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
+                 style="width:100%;height:340px;object-fit:cover;border-radius:14px;">
           </div>
 
           <div class="setor-img-slide" id="setor-slide-1">
             <img src="/assets/transportecargas.png" alt="Transporte de Cargas"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
+                 style="width:100%;height:340px;object-fit:cover;border-radius:14px;">
           </div>
 
           <div class="setor-img-slide" id="setor-slide-2">
             <img src="/assets/transportepessoas.png" alt="Transporte de Passageiros"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
+                 style="width:100%;height:340px;object-fit:cover;border-radius:14px;">
           </div>
 
           <div class="setor-img-slide" id="setor-slide-3">
             <img src="/assets/distribuidora.png" alt="Distribuidoras"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
+                 style="width:100%;height:340px;object-fit:cover;border-radius:14px;">
           </div>
 
           <div class="setor-img-slide" id="setor-slide-4">
             <img src="/assets/minera%C3%A7%C3%A3o.png" alt="Mineração e Siderurgia"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
+                 style="width:100%;height:340px;object-fit:cover;border-radius:14px;">
           </div>
 
         </div><!-- /image panel -->
@@ -885,14 +888,14 @@
   <!-- ═══════════════════════════════════════════════════════
        SOLUÇÃO — "Tecnologia que Antecipa o Risco"
   ═══════════════════════════════════════════════════════ -->
-  <section id="solucao" class="bg-white py-20 px-4 sm:px-6">
+  <section id="solucao" class="bg-white py-12 px-4 sm:px-6">
     <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-12">
-        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-3 fi">A Solução</span>
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 fi d1">
+      <div class="text-center mb-8">
+        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-2 fi">A Solução</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-3 fi d1">
           Tecnologia que Antecipa o Risco
         </h2>
-        <p class="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed fi d2">
+        <p class="text-gray-600 text-base max-w-3xl mx-auto leading-relaxed fi d2">
           A Ali Sat entrega <strong>Inteligência Artificial embarcada.</strong>
           Diferente de sistemas comuns que dependem da nuvem, nossa IA processa as imagens no próprio
           veículo, gerando alertas sonoros instantâneos para o motorista.
@@ -900,7 +903,7 @@
       </div>
 
       <!-- Dashboard visual -->
-      <div class="mx-auto mb-12 fi" style="max-width:860px; border-radius:16px; overflow:hidden; box-shadow:0 8px 48px rgba(3,53,102,0.13); border:1px solid #e2e8f0;">
+      <div class="mx-auto mb-8 fi" style="max-width:760px; border-radius:14px; overflow:hidden; box-shadow:0 6px 36px rgba(3,53,102,0.12); border:1px solid #e2e8f0;">
         <img src="/assets/dash.svg" alt="Dashboard Ali Sat — visão geral da frota em tempo real"
              style="width:100%; display:block;"
              onerror="this.style.display='none'">
@@ -935,18 +938,18 @@
   <!-- ═══════════════════════════════════════════════════════
        PROVA SOCIAL + VÍDEO
   ═══════════════════════════════════════════════════════ -->
-  <section id="prova-social" class="py-20 px-4 sm:px-6" style="background:#E9E9E9;">
+  <section id="prova-social" class="py-12 px-4 sm:px-6" style="background:#E9E9E9;">
     <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-10">
-        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-3 fi">Resultados Reais</span>
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3 fi d1">
+      <div class="text-center mb-8">
+        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-2 fi">Resultados Reais</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2 fi d1">
           Inteligência Artificial trabalhando a<br class="hidden sm:block"> seu favor 24 horas por dia!
         </h2>
-        <p class="text-gray-500 text-lg fi d2">Confira o funcionamento real</p>
+        <p class="text-gray-500 text-sm fi d2">Confira o funcionamento real</p>
       </div>
 
       <!-- YouTube Facade -->
-      <div class="max-w-3xl mx-auto mb-14 fi d2">
+      <div class="max-w-3xl mx-auto mb-8 fi d2">
         <div id="yt-facade" class="yt-wrap rounded-2xl overflow-hidden shadow-2xl"
              style="aspect-ratio:16/9;"
              role="button" tabindex="0"
@@ -987,11 +990,11 @@
   <!-- ═══════════════════════════════════════════════════════
        STATS
   ═══════════════════════════════════════════════════════ -->
-  <section id="resultados" class="py-20 px-4 sm:px-6" style="background:#033566;">
+  <section id="resultados" class="py-12 px-4 sm:px-6" style="background:#033566;">
     <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 fi">Resultados comprovados em campo</h2>
-        <p class="text-blue-200 text-lg fi d1">Dados de clientes que implementaram a videotelemetria Ali Sat</p>
+      <div class="text-center mb-8">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2 fi">Resultados comprovados em campo</h2>
+        <p class="text-blue-200 text-sm fi d1">Dados de clientes que implementaram a videotelemetria Ali Sat</p>
       </div>
 
       <div class="grid grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -1017,11 +1020,11 @@
   <!-- ═══════════════════════════════════════════════════════
        FAQ
   ═══════════════════════════════════════════════════════ -->
-  <section id="faq" class="bg-white py-20 px-4 sm:px-6">
+  <section id="faq" class="bg-white py-12 px-4 sm:px-6">
     <div class="max-w-3xl mx-auto">
-      <div class="text-center mb-12">
-        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-3 fi">Dúvidas Frequentes</span>
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 fi d1">Perguntas Frequentes</h2>
+      <div class="text-center mb-7">
+        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-2 fi">Dúvidas Frequentes</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 fi d1">Perguntas Frequentes</h2>
       </div>
 
       <div class="space-y-3 fi d2" role="list">
