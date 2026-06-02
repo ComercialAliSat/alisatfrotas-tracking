@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Reduza colisões, velocidade excessiva e distrações ao volante com tecnologia de videotelemetria e inteligência artificial embarcada. Ali Sat Gestão de Frotas.">
+  <meta name="robots" content="index, follow">
+  <title>Videotelemetria com IA Embarcada | Ali Sat Gestão de Frotas</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Videotelemetria com IA | Ali Sat Gestão de Frotas">
+  <meta property="og:description" content="Reduza colisões, velocidade excessiva e distrações ao volante com IA embarcada. Diagnóstico gratuito.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mkt.alisat.com.br/videotelemetria">
+  <meta property="og:image" content="/assets/og-alisat-videotelemetria.webp">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Videotelemetria com IA Embarcada — Ali Sat Gestão de Frotas",
+    "description": "Videotelemetria com inteligência artificial embarcada para frotas. Diagnóstico gratuito.",
+    "url": "https://mkt.alisat.com.br/videotelemetria",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Ali Sat Rastreamento e Monitoramento LTDA",
+      "url": "https://www.alisat.com.br",
+      "telephone": "+55-51-3034-2111",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rua Porto Mauá, 742",
+        "addressLocality": "Sapucaia do Sul",
+        "addressRegion": "RS",
+        "addressCountry": "BR"
+      }
+    }
+  }
+  </script>
+
+  <!-- LinkedIn Insight Tag — injetado pelo _middleware.js via HTMLRewriter -->
+
+  <!-- Google Fonts: Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy:  { DEFAULT: '#033566', light: '#034075', dark: '#021e3d' },
+            brand: { blue: '#1E40AF', accent: '#1ECB87', light: '#EFF6FF' }
+          },
+          fontFamily: { sans: ['Poppins', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Poppins', sans-serif; }
+
+    /* ── Hero background ─────────────────────────────────── */
+    #hero {
+      background-color: #033566;
+      background-image: url('/assets/tech.svg');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg,
+        rgba(3,53,102,0.88) 0%,
+        rgba(3,53,102,0.75) 50%,
+        rgba(3,64,117,0.60) 100%);
+      pointer-events: none;
+    }
+
+    /* ── Pulse on main CTA ───────────────────────────────── */
+    @keyframes pulse-glow {
+      0%   { box-shadow: 0 0 0 0 rgba(30,203,135,0.55); }
+      70%  { box-shadow: 0 0 0 14px rgba(30,203,135,0); }
+      100% { box-shadow: 0 0 0 0 rgba(30,203,135,0); }
+    }
+    .btn-pulse { animation: pulse-glow 2.4s ease-out infinite; }
+
+    /* ── Scroll fade-in ──────────────────────────────────── */
+    .fi {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fi.on { opacity: 1; transform: translateY(0); }
+    .fi.d1 { transition-delay: 0.10s; }
+    .fi.d2 { transition-delay: 0.20s; }
+    .fi.d3 { transition-delay: 0.30s; }
+    .fi.d4 { transition-delay: 0.40s; }
+
+    /* ── Stat numbers ────────────────────────────────────── */
+    .stat-num {
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      font-weight: 900; line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── FAQ accordion ───────────────────────────────────── */
+    .faq-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.32s ease, padding 0.32s ease;
+    }
+    .faq-body.open { max-height: 220px; }
+    .faq-chevron { transition: transform 0.28s ease; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+    /* ── Navbar ──────────────────────────────────────────── */
+    #nav {
+      background: #033566 !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    #nav.scrolled {
+      background: #033566 !important;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+    }
+
+    /* ── Form inputs ─────────────────────────────────────── */
+    .inp {
+      width: 100%;
+      background: #fff;
+      border: 1px solid #fff;
+      color: #000;
+      border-radius: 2px;
+      padding: 0.5rem 0.65rem;
+      font-size: 0.825rem;
+      font-family: 'Poppins', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .inp::placeholder { color: rgba(0,0,0,0.5); }
+    .inp:focus {
+      outline: none;
+      border-color: #1ECB87;
+      box-shadow: 0 0 0 3px rgba(30,203,135,0.18);
+    }
+    .inp-sel {
+      background-color: #fff;
+      color: #000;
+      appearance: none; -webkit-appearance: none;
+    }
+    .inp-sel option { background: #fff; color: #000; }
+
+    /* ── Form states ─────────────────────────────────────── */
+    .form-wrap.done .form-body { display: none; }
+    .form-wrap .ty { display: none; }
+    .form-wrap.done .ty { display: block; }
+
+    /* ── Evento cards ────────────────────────────────────── */
+    .evento-card {
+      border: 2px solid rgba(255,255,255,0.85);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .evento-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 32px rgba(0,0,0,0.28);
+    }
+    .evento-card-body {
+      padding: 1rem 1.15rem 0.9rem;
+      text-align: center;
+    }
+    .evento-card-body h3 {
+      color: #033566; font-weight: 700; font-size: 1rem;
+      font-family: 'Poppins', sans-serif; margin-bottom: 0.4rem;
+    }
+    .evento-card-body p {
+      color: #374151; font-size: 0.8rem; line-height: 1.55;
+      font-family: 'Poppins', sans-serif;
+    }
+    .evento-card-img { overflow: hidden; }
+    .evento-card-img img {
+      width: 100%; display: block; height: 170px; object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+    .evento-card:hover .evento-card-img img { transform: scale(1.03); }
+
+    /* ── YouTube facade ──────────────────────────────────── */
+    .yt-wrap { position: relative; cursor: pointer; }
+    .yt-wrap::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.25); transition:background 0.2s; border-radius:inherit; }
+    .yt-wrap:hover::after { background:rgba(0,0,0,0.15); }
+    .yt-play {
+      position: absolute; top:50%; left:50%;
+      transform: translate(-50%,-50%);
+      z-index: 10;
+      width: 74px; height: 74px;
+      background: #FF0000;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .yt-wrap:hover .yt-play { transform: translate(-50%,-50%) scale(1.1); background:#CC0000; }
+
+    /* ── Badge ───────────────────────────────────────────── */
+    .badge-anos {
+      background: linear-gradient(135deg,#1E40AF,#3B82F6);
+      border-radius: 50%; width:58px; height:58px;
+      display:inline-flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      font-weight:900; color:#fff; line-height:1;
+    }
+
+    /* ── Logos de clientes ───────────────────────────────── */
+    .logo-cliente {
+      height: 68px; width: auto; max-width: 180px;
+      object-fit: contain;
+      filter: grayscale(1); opacity: 0.72;
+      transition: filter 0.28s, opacity 0.28s;
+    }
+    .logo-cliente:hover { filter: grayscale(0); opacity: 1; }
+
+    /* ── ADAS/DMS dot bullet ─────────────────────────────── */
+    .adas-dot {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #1ECB87; flex-shrink: 0; margin-top: 4px;
+      box-shadow: 0 0 0 5px rgba(30,203,135,0.22);
+    }
+
+    /* ── ADAS/DMS composite image ────────────────────────── */
+    .adas-img-wrap {
+      position: relative;
+      height: 420px;
+      overflow: hidden;
+    }
+    .adas-tech-bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; opacity: 0.42;
+      pointer-events: none; z-index: 0;
+    }
+    .adas-camera {
+      position: absolute;
+      left: -2%; top: 50%; transform: translateY(-50%);
+      width: 62%; z-index: 3;
+      filter: drop-shadow(0 12px 40px rgba(0,0,0,0.70));
+    }
+    .adas-screen {
+      position: absolute; z-index: 2;
+      border-radius: 8px;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.60);
+    }
+    .adas-screen-top { top: 4%;  right: 0; width: 50%; }
+    .adas-screen-bot { bottom: 4%; right: 2%; width: 46%; }
+    @media (max-width: 767px) {
+      .adas-img-wrap { height: 260px; }
+      .adas-camera { width: 55%; left: -1%; }
+      .adas-screen-top { width: 43%; }
+      .adas-screen-bot { width: 39%; }
+    }
+
+    /* ── Sticky mobile WhatsApp CTA ─────────────────────── */
+    #wha-sticky {
+      display: none;
+      position: fixed; bottom: 20px; right: 20px; z-index: 999;
+      background: #25D366; color: #fff;
+      border-radius: 50px; padding: 13px 20px;
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px;
+      text-decoration: none; align-items: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.45);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #wha-sticky:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,0.5); }
+    @media (max-width: 1023px) { #wha-sticky { display: flex; } }
+
+    /* ── Scrollbar ───────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #033566; }
+    ::-webkit-scrollbar-thumb { background: #1ECB87; border-radius: 3px; }
+  </style>
+</head>
+<body class="font-sans antialiased bg-white text-gray-900">
+
+  <!-- Sticky WhatsApp CTA (mobile only) -->
+  <a id="wha-sticky"
+     href="https://wa.me/555130342111?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20videotelemetria%20para%20minha%20frota."
+     target="_blank" rel="noopener noreferrer"
+     aria-label="Falar no WhatsApp"
+     onclick="push({event:'CTA_Click',cta_text:'WhatsApp sticky',section:'mobile-fixed'})">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.112 1.522 5.839L.057 23.406a.75.75 0 0 0 .92.921l5.635-1.47A11.956 11.956 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 0 1-4.963-1.358l-.355-.214-3.683.96.984-3.595-.233-.37A9.712 9.712 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+    Falar no WhatsApp
+  </a>
+
+  <!-- ═══════════════════════════════════════════════════════
+       NAVBAR
+  ═══════════════════════════════════════════════════════ -->
+  <header id="nav" class="sticky top-0 left-0 right-0 z-50 py-3 transition-all duration-300">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-center">
+      <a href="#" aria-label="Ali Sat Gestão de Frotas">
+        <img src="/assets/logobranco.svg" alt="Ali Sat Gestão de Frotas" class="h-14 w-auto"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <span class="hidden items-center gap-1.5 text-white font-extrabold text-xl">
+          <span style="color:#1ECB87;">●</span>Ali Sat
+        </span>
+      </a>
+    </div>
+  </header>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════════════ -->
+  <section id="hero" class="flex items-center pt-14 pb-12" style="min-height:680px;">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 w-full relative z-10">
+      <div class="grid lg:grid-cols-2 gap-10 xl:gap-16 items-center">
+
+        <!-- ── Left: copy ── -->
+        <div class="text-white">
+          <p class="text-xs font-bold uppercase tracking-widest mb-3 fi" style="color:#1ECB87; letter-spacing:.12em;">
+            Videotelemetria com IA Embarcada · Ali Sat
+          </p>
+          <h1 class="text-2xl sm:text-3xl xl:text-[2.2rem] font-extrabold leading-[1.15] mb-3 fi d1">
+            Já imaginou <span style="color:#1ECB87;">estar ao lado</span> dos seus<br>
+            motoristas sem precisar sair da empresa?
+          </h1>
+          <p class="text-base leading-relaxed mb-6 fi d2" style="color:#94afc8;">
+            Reduza colisões, velocidade excessiva e distrações ao volante com tecnologia de videotelemetria e inteligência artificial embarcada.
+          </p>
+
+          <!-- Imagem transparente -->
+          <div class="fi d2" style="margin: 0 0 1rem;">
+            <img src="/assets/motorista.png"
+                 alt="Motorista monitorado com videotelemetria IA embarcada — Ali Sat"
+                 style="width:100%; max-height:220px; object-fit:contain; display:block; filter:drop-shadow(0 8px 28px rgba(0,0,0,0.5));">
+          </div>
+
+          <!-- Mobile CTA -->
+          <a href="#hero-form-anchor"
+             class="lg:hidden inline-block text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all fi d4"
+             style="background:#00BE69;"
+             onclick="push({event:'CTA_Click',cta_text:'Enviar meus dados',section:'hero'})">
+            Quero conhecer →
+          </a>
+        </div>
+
+        <!-- ── Right: form (single-step) ── -->
+        <div id="hero-form-anchor" class="fi d2">
+          <div id="hero-form-wrap" class="form-wrap shadow-2xl" style="background:#F0F3F5; border:1px solid #a3bac6; border-radius:14px; padding:16px 18px;">
+
+            <!-- Form visual header -->
+            <div style="background:linear-gradient(135deg,#033566 0%,#034a8a 100%); margin:-16px -18px 14px; padding:12px 18px; border-radius:13px 13px 0 0; display:flex; align-items:center; gap:10px;">
+              <div style="background:rgba(30,203,135,0.15); border-radius:50%; width:36px; height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3V11z"/></svg>
+              </div>
+              <div>
+                <p style="color:#1ECB87; font-size:9px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; font-family:'Poppins',sans-serif; margin-bottom:2px;">Diagnóstico Gratuito</p>
+                <p style="color:#fff; font-size:12px; font-weight:700; line-height:1.25; font-family:'Poppins',sans-serif;">Fale com um especialista em videotelemetria</p>
+              </div>
+            </div>
+
+            <!-- Thank-you state -->
+            <div class="ty text-center py-6">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style="background:rgba(30,203,135,0.15);">
+                <svg class="w-6 h-6" style="color:#1ECB87;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <h2 class="font-bold text-lg mb-1.5" style="color:#033566;">Dados enviados!</h2>
+              <p class="text-sm" style="color:#4b5563;">Nossa equipe entrará em contato em até 1 hora útil.</p>
+            </div>
+
+            <!-- Form body -->
+            <div class="form-body">
+              <div class="space-y-2">
+                <input type="text"  id="h-nome"    autocomplete="name"         placeholder="* Nome"              required class="inp" aria-required="true">
+                <input type="tel"   id="h-tel"     autocomplete="tel"          placeholder="* Telefone / WhatsApp" required class="inp" aria-required="true">
+                <input type="email" id="h-email"   autocomplete="email"        placeholder="* E-mail"             required class="inp" aria-required="true">
+                <input type="text"  id="h-empresa" autocomplete="organization" placeholder="* Nome da Empresa"    required class="inp" aria-required="true">
+                <select id="h-seg" required class="inp inp-sel">
+                  <option value="" disabled selected>* Segmento de Atuação</option>
+                  <option>Transporte de Cargas</option>
+                  <option>Transporte de Pessoas</option>
+                  <option>Distribuidora</option>
+                  <option>Construção Civil</option>
+                  <option>Mineração e Siderurgia</option>
+                  <option>Agrícola</option>
+                  <option>Outro</option>
+                </select>
+                <input type="text" id="h-cnpj" placeholder="* CNPJ" maxlength="18" required class="inp">
+
+                <!-- UTM hiddens -->
+                <input type="hidden" id="h-utm_source"><input type="hidden" id="h-utm_medium">
+                <input type="hidden" id="h-utm_campaign"><input type="hidden" id="h-utm_content">
+                <input type="hidden" id="h-utm_term"><input type="hidden" id="h-fbclid"><input type="hidden" id="h-gclid">
+
+                <label style="display:flex;align-items:flex-start;gap:7px;cursor:pointer;font-size:11px;color:rgba(0,0,0,0.65);line-height:1.4;margin-bottom:1px;">
+                  <input type="checkbox" id="h-lgpd" required
+                         style="margin-top:2px;width:13px;height:13px;flex-shrink:0;accent-color:#00BE69;cursor:pointer;">
+                  <span>Concordo em fornecer meus dados conforme a
+                    <a href="/politica-de-privacidade" target="_blank" style="color:#033566;text-decoration:underline;">Política de Privacidade</a>
+                    e a LGPD.
+                  </span>
+                </label>
+
+                <button type="button" onclick="heroSubmit()"
+                        class="w-full text-white font-bold py-2.5 transition-all shadow-lg btn-pulse"
+                        style="background:#00BE69; border-radius:3px; font-family:'Poppins',sans-serif; font-size:13px;"
+                        aria-label="Enviar meus dados">
+                  Enviar meus dados →
+                </button>
+                <p class="text-center text-xs" style="color:#9ca3af;">Sem compromisso · Retorno em até 1h útil</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TICKER BAR
+  ═══════════════════════════════════════════════════════ -->
+  <section style="background:#1ECB87; overflow:hidden;">
+    <div style="display:flex; align-items:center; justify-content:center; min-height:54px; padding:12px 1rem;">
+      <p style="color:#fff; font-weight:700; font-size:15px; font-family:'Poppins',sans-serif; letter-spacing:0.06em; text-align:center; line-height:1.4;">
+        VIDEOTELEMETRIA &nbsp;●&nbsp; SENSOR DE FADIGA &nbsp;●&nbsp; SONOLÊNCIA &nbsp;●&nbsp; ADAS &nbsp;●&nbsp; DMS &nbsp;●&nbsp; DISTRAÇÕES
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       IDENTIFICAÇÃO DOS PRINCIPAIS EVENTOS
+  ═══════════════════════════════════════════════════════ -->
+  <section style="background:#033566; padding:40px 1rem 48px;">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="text-center mb-7 fi">
+        <h2 class="fi d1" style="font-size:clamp(1.2rem,2.5vw,1.65rem); font-weight:800; color:#fff; line-height:1.2; font-family:'Poppins',sans-serif;">
+          Identificação dos principais eventos
+        </h2>
+        <p class="fi d2" style="color:#94afc8; font-size:0.875rem; margin-top:10px; max-width:560px; margin-left:auto; margin-right:auto; line-height:1.6; font-family:'Poppins',sans-serif;">
+          Gerir uma frota sem visibilidade em tempo real é aceitar riscos financeiros e humanos constantes.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+
+        <div class="evento-card fi d1" role="article">
+          <div class="evento-card-body">
+            <h3>Entenda acidentes</h3>
+            <p>Os vídeos gravados se tornam provas irrefutáveis para comprovação jurídica em caso de necessidade.</p>
+          </div>
+          <div class="evento-card-img">
+            <img src="/assets/proximidade.png" alt="Proximidade do veículo — Entenda acidentes">
+          </div>
+        </div>
+
+        <div class="evento-card fi d2" role="article">
+          <div class="evento-card-body">
+            <h3>Monitore o uso indevido</h3>
+            <p>Garanta que os veículos estejam sendo utilizados no horário e rota combinados com seus motoristas.</p>
+          </div>
+          <div class="evento-card-img">
+            <img src="/assets/horarionoite.webp" alt="Uso fora do horário — Monitore o uso indevido">
+          </div>
+        </div>
+
+        <div class="evento-card fi d3" role="article">
+          <div class="evento-card-body">
+            <h3>Acompanhe a condução</h3>
+            <p>Tenha total visibilidade da forma como seus motoristas conduzem os veículos. Corrija em tempo real e proteja o motorista e a frota.</p>
+          </div>
+          <div class="evento-card-img">
+            <img src="/assets/conducao.webp" alt="Modo de condução — Acompanhe a condução">
+          </div>
+        </div>
+
+        <div class="evento-card fi d4" role="article">
+          <div class="evento-card-body">
+            <h3>Previna acidentes</h3>
+            <p>Com alertas em tempo real na cabine, a solução detecta e evita possíveis causas de acidentes.</p>
+          </div>
+          <div class="evento-card-img">
+            <img src="/assets/fadiga.webp" alt="Fadiga detectada — Previna acidentes">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       STATS
+  ═══════════════════════════════════════════════════════ -->
+  <section id="resultados" class="py-12 px-4 sm:px-6" style="background:#033566;">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2 fi">
+          A videotelemetria na prática: inteligência artificial embarcada
+        </h2>
+        <p class="text-blue-200 text-sm fi d1">Dados de clientes que implementaram a videotelemetria Ali Sat</p>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div class="text-center fi d1">
+          <div class="stat-num text-white" data-target="80">0%</div>
+          <p class="text-blue-200 text-sm mt-1.5 font-medium">Redução das distrações ao volante</p>
+        </div>
+        <div class="text-center fi d2">
+          <div class="stat-num text-white" data-target="70">0%</div>
+          <p class="text-blue-200 text-sm mt-1.5 font-medium">Aumento do uso do cinto de segurança</p>
+        </div>
+        <div class="text-center fi d3">
+          <div class="stat-num text-white" data-target="65">0%</div>
+          <p class="text-blue-200 text-sm mt-1.5 font-medium">Menos eventos de excesso de velocidade</p>
+        </div>
+        <div class="text-center fi d4">
+          <div class="stat-num text-white" data-target="60">0%</div>
+          <p class="text-blue-200 text-sm mt-1.5 font-medium">Redução no número de colisões</p>
+        </div>
+      </div>
+
+      <div class="text-center fi">
+        <a href="#hero-form-anchor"
+           class="inline-block bg-white text-blue-800 font-bold px-10 py-4 rounded-lg shadow-lg hover:bg-blue-50 transition-all text-base"
+           onclick="push({event:'CTA_Click',cta_text:'Eu quero esses benefícios',section:'resultados'})">
+          Eu quero esses benefícios →
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       PROVA SOCIAL + VÍDEO
+  ═══════════════════════════════════════════════════════ -->
+  <section class="py-12 px-4 sm:px-6" style="background:#E9E9E9;">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-8">
+        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-2 fi">Resultados Reais</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2 fi d1">
+          Inteligência Artificial trabalhando a<br class="hidden sm:block"> seu favor 24 horas por dia!
+        </h2>
+        <p class="text-gray-500 text-sm fi d2">Confira o funcionamento real</p>
+      </div>
+
+      <!-- YouTube Facade -->
+      <div class="max-w-3xl mx-auto mb-10 fi d2">
+        <div id="yt-facade" class="yt-wrap rounded-2xl overflow-hidden shadow-2xl"
+             style="aspect-ratio:16/9;"
+             role="button" tabindex="0"
+             aria-label="Reproduzir vídeo de demonstração Ali Sat Videotelemetria"
+             onclick="loadYT()" onkeydown="if(event.key==='Enter'||event.key===' ')loadYT()">
+          <img src="https://img.youtube.com/vi/t60tY2u4r0Y/maxresdefault.jpg"
+               alt="Demonstração Ali Sat Videotelemetria — clique para assistir"
+               class="w-full h-full object-cover" loading="lazy">
+          <div class="yt-play" aria-hidden="true">
+            <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+        <div id="yt-player-wrap" class="hidden rounded-2xl overflow-hidden shadow-2xl" style="aspect-ratio:16/9;">
+          <iframe id="yt-iframe" width="100%" height="100%" src="" frameborder="0"
+                  title="Demonstração Ali Sat Videotelemetria"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>
+
+      <!-- Quem já utiliza -->
+      <div class="fi">
+        <h2 class="fi" style="text-align:center; color:#033566; font-size:clamp(1rem,2vw,1.25rem); font-weight:700; font-family:'Poppins',sans-serif; margin-bottom:28px;">
+          Quem já utiliza nossas soluções e aprova:
+        </h2>
+        <div class="fi d1" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:16px 52px;">
+          <img src="/assets/mica.webp"           alt="Mica"          class="logo-cliente">
+          <img src="/assets/ccl.webp"            alt="CCL Concreto"  class="logo-cliente">
+          <img src="/assets/casa%20maria.webp"   alt="Casa Maria"    class="logo-cliente">
+          <img src="/assets/coesul.png"          alt="Coesul"        class="logo-cliente">
+          <img src="/assets/franciscon.webp"     alt="Franciscon"    class="logo-cliente">
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       ADAS + DMS
+  ═══════════════════════════════════════════════════════ -->
+  <section style="background:#033566; padding:52px 1rem 60px;">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+        <!-- Texto -->
+        <div class="fi d1">
+          <!-- ADAS -->
+          <div style="display:flex; gap:20px; margin-bottom:32px; align-items:flex-start;">
+            <div class="adas-dot"></div>
+            <div>
+              <p style="color:#fff; font-weight:700; font-size:1.05rem; font-family:'Poppins',sans-serif; line-height:1.25; margin-bottom:3px;">Câmera ADAS</p>
+              <p style="color:#1ECB87; font-weight:700; font-size:0.82rem; font-family:'Poppins',sans-serif; margin-bottom:10px;">(Advanced Driver Assistance System)</p>
+              <p style="color:#94afc8; font-size:0.83rem; line-height:1.74; font-family:'Poppins',sans-serif;">A câmera ADAS atua como um copiloto inteligente, identificando situações de perigo em tempo real. Ela emite alertas contra colisões, mudanças involuntárias de faixa, distância insegura de outros veículos e até excesso de velocidade. Reduzindo acidentes e custos com manutenção. Mais proteção para motoristas e veículos e conformidade com práticas de segurança exigidas por grandes embarcadores.</p>
+            </div>
+          </div>
+
+          <!-- DMS -->
+          <div style="display:flex; gap:20px; margin-bottom:40px; align-items:flex-start;">
+            <div class="adas-dot"></div>
+            <div>
+              <p style="color:#fff; font-weight:700; font-size:1.05rem; font-family:'Poppins',sans-serif; line-height:1.25; margin-bottom:3px;">Câmera DMS</p>
+              <p style="color:#1ECB87; font-weight:700; font-size:0.82rem; font-family:'Poppins',sans-serif; margin-bottom:10px;">(Driver Monitoring System)</p>
+              <p style="color:#94afc8; font-size:0.83rem; line-height:1.74; font-family:'Poppins',sans-serif;">A câmera DMS acompanha o comportamento do condutor, identificando sinais de fadiga, distração, uso de celular ou sonolência ao volante. Assim, é possível agir antes que um acidente aconteça. Prevenção de falhas humanas, principal causa de acidentes. Redução de sinistros e custos com seguros e mais eficiência e segurança para toda a frota.</p>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <a href="#hero-form-anchor"
+             style="display:inline-block; background:#1ECB87; color:#033566; font-weight:800; font-size:0.92rem; padding:15px 38px; border-radius:50px; font-family:'Poppins',sans-serif; text-decoration:none; letter-spacing:0.02em; box-shadow:0 4px 20px rgba(30,203,135,0.35); transition:background .2s, transform .2s, box-shadow .2s;"
+             onmouseover="this.style.background='#00BE69';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(30,203,135,0.45)'"
+             onmouseout="this.style.background='#1ECB87';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(30,203,135,0.35)'"
+             onclick="push({event:'CTA_Click',cta_text:'Quero conhecer',section:'adas-dms'})">
+            Quero conhecer
+          </a>
+        </div>
+
+        <!-- Imagem composta -->
+        <div class="adas-img-wrap fi d2">
+          <img src="/assets/tech.webp" alt="" aria-hidden="true" class="adas-tech-bg">
+          <img src="/assets/dentro.gif"    alt="Câmera interna — monitoramento do motorista em tempo real" class="adas-screen adas-screen-top">
+          <img src="/assets/movimento.gif" alt="Câmera frontal — visão da estrada em tempo real"          class="adas-screen adas-screen-bot">
+          <img src="/assets/cameras.webp"  alt="Equipamento de videotelemetria com IA embarcada — Ali Sat" class="adas-camera">
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       FAQ
+  ═══════════════════════════════════════════════════════ -->
+  <section class="bg-white py-12 px-4 sm:px-6">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-7">
+        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-2 fi">Dúvidas Frequentes</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 fi d1">Perguntas Frequentes</h2>
+      </div>
+
+      <div class="space-y-3 fi d2" role="list">
+
+        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+          <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  onclick="toggleFaq(this)" aria-expanded="false">
+            <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">A videotelemetria serve para qualquer veículo?</span>
+            <svg class="faq-chevron w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">Sim! A solução pode ser aplicada em qualquer tipo de veículo, exceto motos.</p></div>
+        </div>
+
+        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+          <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  onclick="toggleFaq(this)" aria-expanded="false">
+            <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Como funcionam as câmeras?</span>
+            <svg class="faq-chevron w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">São câmeras instaladas no veículo, que se comunicam através de dados móveis, enviando as imagens em tempo real para uma plataforma virtual.</p></div>
+        </div>
+
+        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+          <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  onclick="toggleFaq(this)" aria-expanded="false">
+            <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Como é o armazenamento da câmera?</span>
+            <svg class="faq-chevron w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">As câmeras possuem armazenamento físico através de cartão de memória e em nuvem.</p></div>
+        </div>
+
+        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+          <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  onclick="toggleFaq(this)" aria-expanded="false">
+            <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Posso solicitar as gravações?</span>
+            <svg class="faq-chevron w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">Sim, caso haja necessidade, você pode solicitar as gravações do dia e hora que desejar.</p></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       FINAL CTA + FORM
+  ═══════════════════════════════════════════════════════ -->
+  <section id="form-final" class="py-20 px-4 sm:px-6" style="background:#033566;">
+    <div class="max-w-4xl mx-auto">
+
+      <div class="text-center mb-10">
+        <div class="inline-block bg-yellow-400 text-blue-900 font-bold text-sm px-5 py-2 rounded-full mb-6 fi">
+          🎯 Diagnóstico gratuito da sua frota + Demonstração da plataforma
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4 fi d1">
+          Sua frota protegida 24 horas por dia.<br class="hidden sm:block">
+          Sua empresa com resultados reais.
+        </h2>
+        <p class="text-gray-400 text-lg fi d2">Fale com um especialista e proteja sua frota ainda esta semana.</p>
+      </div>
+
+      <div class="max-w-xl mx-auto fi d2">
+        <div id="final-form-wrap" class="form-wrap bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+
+          <!-- Thank-you state -->
+          <div class="ty text-center py-10">
+            <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h3 class="text-white font-bold text-xl mb-2">Dados enviados com sucesso!</h3>
+            <p class="text-gray-300 text-sm">Nossa equipe entrará em contato em até 1 hora útil.</p>
+            <p class="text-gray-500 text-xs mt-2">Siga-nos no Instagram: @alisatbrasil</p>
+          </div>
+
+          <!-- Form body -->
+          <div class="form-body">
+            <h3 class="text-white font-bold text-lg mb-6 text-center">Preencha seus dados</h3>
+            <div class="space-y-4">
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="f-nome" class="block text-gray-300 text-sm font-medium mb-1.5">Nome <span class="text-red-400">*</span></label>
+                  <input type="text" id="f-nome" autocomplete="name" placeholder="Seu nome" required class="inp">
+                </div>
+                <div>
+                  <label for="f-tel" class="block text-gray-300 text-sm font-medium mb-1.5">Telefone <span class="text-red-400">*</span></label>
+                  <input type="tel" id="f-tel" autocomplete="tel" placeholder="(51) 9 9999-9999" required class="inp">
+                </div>
+              </div>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="f-email" class="block text-gray-300 text-sm font-medium mb-1.5">E-mail <span class="text-red-400">*</span></label>
+                  <input type="email" id="f-email" autocomplete="email" placeholder="seu@email.com" required class="inp">
+                </div>
+                <div>
+                  <label for="f-empresa" class="block text-gray-300 text-sm font-medium mb-1.5">Nome da Empresa <span class="text-red-400">*</span></label>
+                  <input type="text" id="f-empresa" autocomplete="organization" placeholder="Sua empresa" required class="inp">
+                </div>
+              </div>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="f-seg" class="block text-gray-300 text-sm font-medium mb-1.5">Segmento <span class="text-red-400">*</span></label>
+                  <select id="f-seg" required class="inp inp-sel">
+                    <option value="" disabled selected>Selecione...</option>
+                    <option>Transporte de Cargas</option>
+                    <option>Transporte de Pessoas</option>
+                    <option>Distribuidora</option>
+                    <option>Construção Civil</option>
+                    <option>Mineração e Siderurgia</option>
+                    <option>Agrícola</option>
+                    <option>Outro</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="f-cnpj" class="block text-gray-300 text-sm font-medium mb-1.5">CNPJ <span class="text-red-400">*</span></label>
+                  <input type="text" id="f-cnpj" placeholder="00.000.000/0000-00" maxlength="18" required class="inp">
+                </div>
+              </div>
+              <!-- Hidden UTMs -->
+              <input type="hidden" id="f-utm_source"><input type="hidden" id="f-utm_medium">
+              <input type="hidden" id="f-utm_campaign"><input type="hidden" id="f-utm_content">
+              <input type="hidden" id="f-utm_term"><input type="hidden" id="f-fbclid"><input type="hidden" id="f-gclid">
+
+              <button id="final-btn" type="button" onclick="finalSubmit()"
+                      class="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 rounded-lg transition-all shadow-lg text-base mt-2"
+                      aria-label="Enviar meus dados">
+                Enviar meus dados 🚀
+              </button>
+              <p class="text-center text-xs text-gray-500 flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Seus dados estão protegidos conforme a LGPD
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════ -->
+  <footer class="py-10 px-4 sm:px-6 border-t border-white/10" style="background:#060E1A;">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8">
+
+        <div class="flex items-center gap-4">
+          <img src="/assets/logo-alisat.png" alt="Ali Sat Gestão de Frotas" class="h-9 w-auto"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <span class="hidden items-center gap-1.5 text-white font-extrabold text-lg">
+            <span class="text-blue-400">●</span>Ali Sat
+          </span>
+          <div class="badge-anos text-xs" aria-label="8 anos de mercado">
+            <span class="text-lg font-black leading-none">8</span>
+            <span class="text-xs font-bold leading-none">ANOS</span>
+          </div>
+        </div>
+
+        <nav class="flex items-center gap-5" aria-label="Redes sociais">
+          <a href="https://www.instagram.com/alisatbrasil" target="_blank" rel="noopener noreferrer"
+             class="text-gray-400 hover:text-white transition-colors" aria-label="Instagram @alisatbrasil">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/alisatgestaodefrotas" target="_blank" rel="noopener noreferrer"
+             class="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn alisatgestaodefrotas">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://www.youtube.com/channel/UCJ0V--CpWFlnPdl5Ctsllug" target="_blank" rel="noopener noreferrer"
+             class="text-gray-400 hover:text-white transition-colors" aria-label="YouTube Ali Sat">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/alisatbrasil" target="_blank" rel="noopener noreferrer"
+             class="text-gray-400 hover:text-white transition-colors" aria-label="Facebook @alisatbrasil">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+        </nav>
+      </div>
+
+      <div class="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        <p>Ali Sat Rastreamento e Monitoramento LTDA — CNPJ 29.989.683/0001-33</p>
+        <p>© Copyright 2025 — Todos os direitos reservados.</p>
+        <div class="flex items-center gap-4">
+          <a href="tel:+555130342111" class="hover:text-gray-300 transition-colors">(51) 3034-2111</a>
+          <span aria-hidden="true">·</span>
+          <a href="/politica-de-privacidade" class="hover:text-gray-300 transition-colors">Política de Privacidade</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════════════════ -->
+  <script>
+  'use strict';
+
+  window.dataLayer = window.dataLayer || [];
+  const $ = id => document.getElementById(id);
+  const param = k => new URLSearchParams(window.location.search).get(k) || '';
+  const cookie = name => {
+    const v = `; ${document.cookie}`;
+    const p = v.split(`; ${name}=`);
+    return p.length === 2 ? p.pop().split(';').shift() : '';
+  };
+  const push = obj => window.dataLayer.push(obj);
+
+  // ── UTM fill ─────────────────────────────────────────────────
+  function fillUtms() {
+    const keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'];
+    ['h','f'].forEach(prefix => {
+      keys.forEach(k => {
+        const el = $(`${prefix}-${k}`);
+        if (el) el.value = param(k);
+      });
+    });
+  }
+
+  // ── Phone mask ───────────────────────────────────────────────
+  function maskPhone(el) {
+    let v = el.value.replace(/\D/g,'').slice(0,11);
+    if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4})$/,'($1) $2-$3');
+    else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d*)/,'($1) $2-$3');
+    else if (v.length > 2) v = v.replace(/^(\d{2})(\d*)/,'($1) $2');
+    else if (v.length) v = `(${v}`;
+    el.value = v;
+  }
+
+  // ── CNPJ mask ────────────────────────────────────────────────
+  function maskCNPJ(el) {
+    let v = el.value.replace(/\D/g,'').slice(0,14);
+    v = v.replace(/^(\d{2})(\d)/,'$1.$2');
+    v = v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');
+    v = v.replace(/\.(\d{3})(\d)/,'.$1/$2');
+    v = v.replace(/(\d{4})(\d)/,'$1-$2');
+    el.value = v;
+  }
+
+  // ── Validate helpers ─────────────────────────────────────────
+  const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const isPhone = v => v.replace(/\D/g,'').length >= 10;
+  const isCNPJ  = v => v.replace(/\D/g,'').length === 14;
+
+  function alert_(msg) { window.alert(msg); }
+
+  // ── Navbar scroll ────────────────────────────────────────────
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  // ── Fade-in observer ─────────────────────────────────────────
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -36px 0px' });
+  document.querySelectorAll('.fi').forEach(el => io.observe(el));
+
+  // ── Stat counter ─────────────────────────────────────────────
+  let statsRan = false;
+  const statsIo = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting || statsRan) return;
+    statsRan = true;
+    document.querySelectorAll('[data-target]').forEach(el => {
+      const target = +el.dataset.target, fps = 60, dur = 1600;
+      const steps = Math.round(dur / (1000 / fps));
+      let i = 0;
+      const t = setInterval(() => {
+        i++;
+        el.textContent = Math.round(target * (i / steps)) + '%';
+        if (i >= steps) clearInterval(t);
+      }, 1000 / fps);
+    });
+    statsIo.unobserve(document.getElementById('resultados'));
+  }, { threshold: 0.3 });
+  statsIo.observe(document.getElementById('resultados'));
+
+  // ── Scroll depth ─────────────────────────────────────────────
+  const sdFired = new Set();
+  window.addEventListener('scroll', () => {
+    const pct = Math.round(window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100);
+    [25,50,75,100].forEach(t => {
+      if (pct >= t && !sdFired.has(t)) { sdFired.add(t); push({ event:'Scroll_Depth', percent:t }); }
+    });
+  }, { passive: true });
+
+  // ── FAQ ──────────────────────────────────────────────────────
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-body').classList.remove('open');
+      i.querySelector('button').setAttribute('aria-expanded','false');
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      item.querySelector('.faq-body').classList.add('open');
+      btn.setAttribute('aria-expanded','true');
+    }
+  }
+
+  // ── Hero submit (single-step) ─────────────────────────────────
+  function heroSubmit() {
+    const nome    = $('h-nome').value.trim();
+    const tel     = $('h-tel').value.trim();
+    const email   = $('h-email').value.trim();
+    const empresa = $('h-empresa').value.trim();
+    const seg     = $('h-seg').value;
+    const cnpj    = $('h-cnpj').value.trim();
+    const lgpd    = $('h-lgpd')?.checked;
+
+    if (!nome)           { alert_('Por favor, informe seu nome.'); return; }
+    if (!isPhone(tel))   { alert_('Por favor, informe um telefone válido.'); return; }
+    if (!isEmail(email)) { alert_('Por favor, informe um e-mail válido.'); return; }
+    if (!empresa)        { alert_('Por favor, informe o nome da empresa.'); return; }
+    if (!seg)            { alert_('Por favor, selecione o segmento de atuação.'); return; }
+    if (!isCNPJ(cnpj))   { alert_('Por favor, informe um CNPJ válido (14 dígitos).'); return; }
+    if (!lgpd)           { alert_('Por favor, aceite a Política de Privacidade para continuar.'); return; }
+
+    push({ event:'Lead_Qualificado', segmento:seg });
+    postLead({ nome, tel, email, empresa, cnpj, segmento:seg }, 'hero-form-wrap');
+  }
+
+  function finalSubmit() {
+    const nome    = $('f-nome').value.trim();
+    const tel     = $('f-tel').value.trim();
+    const email   = $('f-email').value.trim();
+    const empresa = $('f-empresa').value.trim();
+    const seg     = $('f-seg').value;
+    const cnpj    = $('f-cnpj').value.trim();
+
+    if (!nome)           { alert_('Por favor, informe seu nome.'); return; }
+    if (!isPhone(tel))   { alert_('Por favor, informe um telefone válido.'); return; }
+    if (!isEmail(email)) { alert_('Por favor, informe um e-mail válido.'); return; }
+    if (!empresa)        { alert_('Por favor, informe o nome da empresa.'); return; }
+    if (!seg)            { alert_('Por favor, selecione o segmento de atuação.'); return; }
+    if (!isCNPJ(cnpj))   { alert_('Por favor, informe um CNPJ válido.'); return; }
+
+    push({ event:'Lead_Qualificado', segmento:seg });
+    postLead({ nome, tel, email, empresa, cnpj, segmento:seg }, 'final-form-wrap');
+  }
+
+  // ── Core POST ────────────────────────────────────────────────
+  async function postLead(data, wrapId) {
+    const btn = document.querySelector(`#${wrapId} button[type=button]`);
+    if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+
+    const parts = (data.nome || '').trim().split(/\s+/);
+    const payload = {
+      event_name: 'Lead',
+      event_id: crypto.randomUUID(),
+      event_time: Math.floor(Date.now() / 1000),
+      event_source_url: window.location.href,
+      product: 'videotelemetria',
+      user_data: {
+        em: data.email || '',
+        fn: parts[0] || '',
+        ln: parts.slice(1).join(' ') || '',
+        ph: (data.tel || '').replace(/\D/g,''),
+      },
+      empresa:      data.empresa   || '',
+      cnpj:         data.cnpj      || '',
+      segmento:     data.segmento  || '',
+      utm_source:   param('utm_source'),
+      utm_medium:   param('utm_medium'),
+      utm_campaign: param('utm_campaign'),
+      utm_content:  param('utm_content'),
+      utm_term:     param('utm_term'),
+      fbclid:       param('fbclid'),
+      gclid:        param('gclid'),
+      fbp:          cookie('_fbp'),
+      fbc:          cookie('_fbc'),
+    };
+
+    try {
+      const res = await fetch('/tracker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        ['hero-form-wrap','final-form-wrap'].forEach(id => {
+          const w = document.getElementById(id);
+          if (w) w.classList.add('done');
+        });
+      } else {
+        if (btn) { btn.disabled = false; btn.textContent = 'Enviar meus dados →'; }
+        alert_('Ocorreu um erro. Por favor, tente novamente.');
+      }
+    } catch (err) {
+      console.error('Lead submit error:', err);
+      if (btn) { btn.disabled = false; btn.textContent = 'Enviar meus dados →'; }
+      alert_('Erro de conexão. Por favor, tente novamente.');
+    }
+  }
+
+  // ── YouTube facade ───────────────────────────────────────────
+  let ytLoaded = false;
+  function loadYT() {
+    if (ytLoaded) return;
+    ytLoaded = true;
+    $('yt-facade').style.display = 'none';
+    const wrap = $('yt-player-wrap');
+    wrap.classList.remove('hidden');
+    $('yt-iframe').src = 'https://www.youtube.com/embed/t60tY2u4r0Y?autoplay=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+    push({ event:'Video_View', percent:0, action:'play' });
+  }
+
+  // ── Init ─────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    fillUtms();
+
+    ['h-tel','f-tel'].forEach(id => {
+      const el = $(id);
+      if (el) el.addEventListener('input', () => maskPhone(el));
+    });
+
+    ['h-cnpj','f-cnpj'].forEach(id => {
+      const el = $(id);
+      if (el) el.addEventListener('input', () => maskCNPJ(el));
+    });
+  });
+  </script>
+
+</body>
+</html>
