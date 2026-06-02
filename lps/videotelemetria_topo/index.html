@@ -458,21 +458,6 @@
                  style="width:100%; max-height:280px; object-fit:contain; display:block; filter:drop-shadow(0 8px 28px rgba(0,0,0,0.5));">
           </div>
 
-          <ul class="space-y-2.5 mb-7 fi d2">
-            <li class="flex items-start gap-2.5 text-sm" style="color:#cbd5e1;">
-              <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-              <span>Alerta sonoro antes da colisão — <strong class="text-white">IA embarcada, sem nuvem</strong></span>
-            </li>
-            <li class="flex items-start gap-2.5 text-sm" style="color:#cbd5e1;">
-              <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-              <span>Gravação contínua como <strong class="text-white">prova jurídica</strong> em sinistros</span>
-            </li>
-            <li class="flex items-start gap-2.5 text-sm" style="color:#cbd5e1;">
-              <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-              <span>Dashboard para <strong class="text-white">frotas a partir de 20 veículos</strong></span>
-            </li>
-          </ul>
-
           <!-- Mobile CTA -->
           <a href="#hero-form-anchor"
              class="lg:hidden inline-block text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all fi d4"
@@ -485,6 +470,17 @@
         <!-- ── Right: 2-step form ── -->
         <div id="hero-form-anchor" class="fi d2">
           <div id="hero-form-wrap" class="form-wrap shadow-2xl" style="background:#F0F3F5; border:1px solid #a3bac6; border-radius:14px; padding:20px 22px;">
+
+            <!-- Form visual header -->
+            <div style="background:linear-gradient(135deg,#033566 0%,#034a8a 100%); margin:-20px -22px 20px; padding:18px 22px; border-radius:13px 13px 0 0; display:flex; align-items:center; gap:14px;">
+              <div style="background:rgba(30,203,135,0.15); border-radius:50%; width:46px; height:46px; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3V11z"/></svg>
+              </div>
+              <div>
+                <p style="color:#1ECB87; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; font-family:'Poppins',sans-serif; margin-bottom:3px;">Diagnóstico Gratuito</p>
+                <p style="color:#fff; font-size:14px; font-weight:700; line-height:1.25; font-family:'Poppins',sans-serif;">Fale com um especialista em videotelemetria</p>
+              </div>
+            </div>
 
             <!-- Header -->
             <div class="flex items-start justify-between mb-5">
@@ -550,7 +546,7 @@
                     <option value="" disabled selected>* Segmento de Atuação</option>
                     <option>Transporte de Cargas</option><option>Transporte de Pessoas</option>
                     <option>Distribuidora</option><option>Construção Civil</option>
-                    <option>Mineração e Siderurgia</option><option>Agrícola</option><option>Outro</option>
+                    <option>Mineração</option><option>Outro</option>
                   </select>
                   <select id="h-veic" required class="inp inp-sel">
                     <option value="" disabled selected>* Quantidade de Veículos</option>
@@ -650,6 +646,108 @@
 
 
   <!-- ═══════════════════════════════════════════════════════
+       CLIENTES + TECNOLOGIA — "Quem já utiliza" + ADAS/DMS
+  ═══════════════════════════════════════════════════════ -->
+  <section id="clientes" style="background:#fff; padding:56px 1rem 64px; border-top:1px solid #e8edf3;">
+    <div class="max-w-6xl mx-auto">
+
+      <!-- Título -->
+      <div class="text-center mb-10 fi">
+        <h2 class="fi d1" style="font-size:clamp(1.15rem,2.5vw,1.55rem); font-weight:700; color:#033566; font-family:'Poppins',sans-serif;">
+          Quem já utiliza nossas soluções e aprova:
+        </h2>
+      </div>
+
+      <!-- Logos -->
+      <div class="fi d2" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:20px 36px; margin-bottom:52px; padding:0 1rem;">
+        <!-- Adicione aqui as tags <img src="/assets/logo-empresa.png" ...> quando os arquivos estiverem disponíveis -->
+        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
+          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA A</span>
+        </div>
+        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
+          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA B</span>
+        </div>
+        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
+          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA C</span>
+        </div>
+        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
+          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA D</span>
+        </div>
+        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
+          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA E</span>
+        </div>
+        <div style="height:52px; min-width:130px; background:#f1f5f9; border:1px solid #dde3ea; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 18px;">
+          <span style="color:#64748b; font-weight:700; font-size:0.78rem; font-family:'Poppins',sans-serif; letter-spacing:0.04em;">EMPRESA F</span>
+        </div>
+      </div>
+
+      <!-- ADAS + DMS -->
+      <div class="grid md:grid-cols-2 gap-6 fi d3">
+
+        <!-- ADAS -->
+        <div style="border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; background:#fff; box-shadow:0 2px 16px rgba(3,53,102,0.07);">
+          <div style="overflow:hidden; height:200px;">
+            <img src="/assets/proximidade.png" alt="Câmera ADAS — Detecção de colisão e faixa"
+                 style="width:100%; height:100%; object-fit:cover; display:block;">
+          </div>
+          <div style="padding:24px 26px;">
+            <div style="display:inline-flex; align-items:center; gap:7px; background:#033566; border-radius:20px; padding:5px 14px; margin-bottom:14px;">
+              <span style="color:#1ECB87; font-size:10px; font-weight:700; letter-spacing:0.1em; font-family:'Poppins',sans-serif; text-transform:uppercase;">CÂMERA ADAS</span>
+            </div>
+            <h3 style="color:#033566; font-size:1.1rem; font-weight:700; font-family:'Poppins',sans-serif; margin-bottom:10px; line-height:1.3;">Copiloto inteligente para sua frota</h3>
+            <p style="color:#4b5563; font-size:0.83rem; line-height:1.65; font-family:'Poppins',sans-serif; margin-bottom:14px;">A câmera ADAS atua como um copiloto inteligente, identificando situações de perigo em tempo real e emitindo alertas contra colisões, proximidade excessiva e mudanças involuntárias de faixa.</p>
+            <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:7px;">
+              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
+                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Redução de acidentes e custos de manutenção
+              </li>
+              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
+                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Maior proteção veicular e patrimonial
+              </li>
+              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
+                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Conformidade com exigências de embarcadores
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- DMS -->
+        <div style="border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; background:#fff; box-shadow:0 2px 16px rgba(3,53,102,0.07);">
+          <div style="overflow:hidden; height:200px;">
+            <img src="/assets/fadiga.webp" alt="Câmera DMS — Monitoramento do motorista"
+                 style="width:100%; height:100%; object-fit:cover; display:block;">
+          </div>
+          <div style="padding:24px 26px;">
+            <div style="display:inline-flex; align-items:center; gap:7px; background:#033566; border-radius:20px; padding:5px 14px; margin-bottom:14px;">
+              <span style="color:#1ECB87; font-size:10px; font-weight:700; letter-spacing:0.1em; font-family:'Poppins',sans-serif; text-transform:uppercase;">CÂMERA DMS</span>
+            </div>
+            <h3 style="color:#033566; font-size:1.1rem; font-weight:700; font-family:'Poppins',sans-serif; margin-bottom:10px; line-height:1.3;">Monitoramento total do comportamento do motorista</h3>
+            <p style="color:#4b5563; font-size:0.83rem; line-height:1.65; font-family:'Poppins',sans-serif; margin-bottom:14px;">Sistema que acompanha o comportamento do motorista em tempo real, detectando fadiga, distração, uso de celular e sonolência antes que causem um acidente.</p>
+            <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:7px;">
+              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
+                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Prevenção de falhas humanas no volante
+              </li>
+              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
+                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Redução significativa de sinistros
+              </li>
+              <li style="display:flex; align-items:flex-start; gap:8px; color:#374151; font-size:0.81rem; font-family:'Poppins',sans-serif;">
+                <svg style="width:14px;height:14px;flex-shrink:0;margin-top:2px;" fill="none" stroke="#1ECB87" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Menor custo com seguros e manutenção preventiva
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
        SETORES — "Solução sob medida para o seu setor"
   ═══════════════════════════════════════════════════════ -->
   <section id="setores" class="py-16 px-4 sm:px-6 relative overflow-hidden">
@@ -718,27 +816,15 @@
             </div>
           </div>
 
-          <!-- Mineração e Siderurgia -->
+          <!-- Mineração -->
           <div class="setor-acc-item" data-setor="4">
             <div class="setor-acc-header" onclick="setorToggle(4)" role="button" aria-expanded="false">
-              <h3>Mineração e Siderurgia</h3>
+              <h3>Mineração</h3>
               <svg class="setor-acc-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
             </div>
             <div class="setor-acc-body">
               <p>Operações em ambientes extremos exigem tecnologia de ponta. Monitore equipamentos pesados e proteja seus operadores com alertas preventivos em tempo real.</p>
               <a href="/lps/mineracao" class="btn-setor">Saber mais →</a>
-            </div>
-          </div>
-
-          <!-- Agrícola e Agroindústria -->
-          <div class="setor-acc-item" data-setor="5">
-            <div class="setor-acc-header" onclick="setorToggle(5)" role="button" aria-expanded="false">
-              <h3>Agrícola e Agroindústria</h3>
-              <svg class="setor-acc-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div class="setor-acc-body">
-              <p>Da lavoura à transportadora, acompanhe máquinas agrícolas e caminhões de safra com rastreamento preciso e relatórios detalhados de desempenho.</p>
-              <a href="/lps/agro" class="btn-setor">Saber mais →</a>
             </div>
           </div>
 
@@ -769,11 +855,6 @@
 
           <div class="setor-img-slide" id="setor-slide-4">
             <img src="/assets/minera%C3%A7%C3%A3o.png" alt="Mineração e Siderurgia"
-                 style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
-          </div>
-
-          <div class="setor-img-slide" id="setor-slide-5">
-            <img src="/assets/terra.png" alt="Agrícola e Agroindústria"
                  style="width:100%;height:420px;object-fit:cover;border-radius:16px;">
           </div>
 
@@ -1043,7 +1124,7 @@
                     <option value="" disabled selected>Selecione...</option>
                     <option>Transporte de Cargas</option><option>Transporte de Pessoas</option>
                     <option>Distribuidora</option><option>Construção Civil</option>
-                    <option>Mineração e Siderurgia</option><option>Agrícola</option><option>Outro</option>
+                    <option>Mineração</option><option>Outro</option>
                   </select>
                 </div>
                 <div>
