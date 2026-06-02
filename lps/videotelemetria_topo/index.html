@@ -442,43 +442,47 @@
 
         <!-- ── Left: copy ── -->
         <div class="text-white">
-          <p class="text-xs font-bold uppercase tracking-widest mb-4 fi" style="color:#1ECB87; letter-spacing:.12em;">
+          <p class="text-xs font-bold uppercase tracking-widest mb-3 fi" style="color:#1ECB87; letter-spacing:.12em;">
             Videotelemetria com IA Embarcada · Ali Sat
           </p>
-          <h1 class="text-3xl sm:text-4xl xl:text-[2.75rem] font-extrabold leading-[1.13] mb-6 fi">
+          <h1 class="text-3xl sm:text-4xl xl:text-[2.75rem] font-extrabold leading-[1.13] mb-4 fi">
             Veja o que seus motoristas fazem
             <span style="color:#1ECB87;"> em tempo real</span>
             — e evite o acidente antes que aconteça
           </h1>
 
-          <ul class="space-y-3.5 mb-8 fi d1">
-            <li class="flex items-start gap-3 text-sm sm:text-base" style="color:#cbd5e1;">
-              <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-              <span>IA embarcada que alerta o motorista antes da colisão — <strong class="text-white">sem depender de internet</strong></span>
+          <!-- Imagem transparente logo abaixo do título -->
+          <div class="fi d1" style="margin: 0.25rem 0 1rem;">
+            <img src="/assets/motorista.png"
+                 alt="Motorista monitorado com videotelemetria IA embarcada — Ali Sat"
+                 style="width:100%; max-height:280px; object-fit:contain; display:block; filter:drop-shadow(0 8px 28px rgba(0,0,0,0.5));">
+          </div>
+
+          <!-- Subtítulo — menor e posicionado após a imagem -->
+          <p class="fi d2 mb-6" style="color:#94afc8; font-size:0.82rem; line-height:1.7;">
+            Acidentes nas rodovias custam <strong style="color:#cbd5e1;">R$&nbsp;50&nbsp;bilhões</strong> ao ano no Brasil.
+            Nossa IA processa as imagens no próprio veículo e alerta o motorista antes da colisão —
+            <strong style="color:#cbd5e1;">sem depender de internet.</strong>
+          </p>
+
+          <ul class="space-y-2.5 mb-7 fi d3">
+            <li class="flex items-start gap-2.5 text-sm" style="color:#cbd5e1;">
+              <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>Alerta sonoro antes da colisão — <strong class="text-white">IA embarcada, sem nuvem</strong></span>
             </li>
-            <li class="flex items-start gap-3 text-sm sm:text-base" style="color:#cbd5e1;">
-              <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-              <span>Gravação contínua como <strong class="text-white">prova jurídica</strong> em sinistros e disputas trabalhistas</span>
+            <li class="flex items-start gap-2.5 text-sm" style="color:#cbd5e1;">
+              <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>Gravação contínua como <strong class="text-white">prova jurídica</strong> em sinistros</span>
             </li>
-            <li class="flex items-start gap-3 text-sm sm:text-base" style="color:#cbd5e1;">
-              <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-              <span>Dashboard de gestão para <strong class="text-white">frotas a partir de 20 veículos</strong> — dados em tempo real</span>
+            <li class="flex items-start gap-2.5 text-sm" style="color:#cbd5e1;">
+              <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#1ECB87;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>Dashboard para <strong class="text-white">frotas a partir de 20 veículos</strong></span>
             </li>
           </ul>
 
-          <!-- Hero proof image -->
-          <div class="mt-6 fi d2" style="border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.10); box-shadow:0 8px 36px rgba(0,0,0,0.38); position:relative;">
-            <img src="/assets/motorista.png"
-                 alt="Videotelemetria com IA embarcada — monitoramento em tempo real"
-                 style="width:100%; max-height:230px; object-fit:cover; display:block;">
-            <div style="position:absolute; bottom:12px; left:12px; background:rgba(3,53,102,0.82); border:1px solid rgba(30,203,135,0.55); border-radius:6px; padding:5px 12px; backdrop-filter:blur(6px);">
-              <span style="color:#1ECB87; font-weight:700; font-size:11px; font-family:'Poppins',sans-serif; letter-spacing:.06em; text-transform:uppercase;">IA Embarcada · Monitoramento 24h</span>
-            </div>
-          </div>
-
           <!-- Mobile CTA -->
           <a href="#hero-form-anchor"
-             class="lg:hidden inline-block text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all mt-5 fi d3"
+             class="lg:hidden inline-block text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all fi d4"
              style="background:#00BE69;"
              onclick="trackCTA('Agendar diagnóstico gratuito','hero')">
             Agendar diagnóstico gratuito →
