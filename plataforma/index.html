@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ali Sat — Plataforma</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy:#033566; --navy-l:#0a4a8c; --navy-d:#022550;
+    --bg:#f9fafb; --card:#fff; --border:#e5e7eb;
+    --text:#18181b; --dim:#52525b; --muted:#9ca3af;
+    --green:#16a34a; --amber:#d97706; --red:#dc2626; --blue:#2563eb;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  /* ── Sidebar nav ── */
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;
+    font-size:13.5px;font-weight:500;cursor:pointer;border:none;background:transparent;
+    color:rgba(255,255,255,.60);text-align:left;width:100%;transition:background .15s,color .15s;line-height:1.2}
+  .nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+  .nav-item.active{background:rgba(255,255,255,.15);color:#fff}
+
+  /* ── Funnel card (estilo GreatPages + tokens Ali Sat) ── */
+  .fcard{background:var(--card);border:1px solid var(--border);border-radius:14px;
+    overflow:hidden;transition:box-shadow .2s,border-color .2s;display:flex;flex-direction:column}
+  .fcard:hover{box-shadow:0 6px 24px rgba(3,53,102,.09);border-color:#d1d5db}
+  .fthumb{height:158px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:14px;flex-shrink:0}
+  .fthumb::before{content:'';position:absolute;inset:0;
+    background:repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(255,255,255,.04) 12px,rgba(255,255,255,.04) 13px)}
+  .fthumb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:70px;
+    background:linear-gradient(transparent,rgba(0,0,0,.3))}
+  .fthumb-inner{position:relative;z-index:2}
+
+  /* ── Metric chips ── */
+  .mchip{display:flex;flex-direction:column;align-items:center;background:var(--bg);
+    border:1px solid var(--border);border-radius:8px;padding:6px 10px;flex:1;min-width:0}
+  .mchip-v{font-size:15px;font-weight:700;line-height:1.2}
+  .mchip-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+  /* ── Badges ── */
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+    padding:2px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap}
+  .badge-pub  {background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+  .badge-draft{background:#fefce8;color:#a16207;border:1px solid #fde68a}
+  .badge-det  {background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb}
+
+  /* ── KPI card ── */
+  .kcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+  .klabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);margin-bottom:6px}
+  .kval{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1}
+
+  /* ── Leads table ── */
+  .ltable{width:100%;border-collapse:collapse;font-size:13px}
+  .ltable th{padding:8px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.04em;color:var(--dim);border-bottom:1px solid var(--border)}
+  .ltable td{padding:9px 12px;border-bottom:1px solid #f3f4f6;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ltable tr:hover td{background:#fafafa}
+
+  /* ── Buttons ── */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;
+    font-size:13.5px;font-weight:600;cursor:pointer;border:none;transition:background .15s}
+  .btn-p{background:var(--navy);color:#fff}.btn-p:hover{background:var(--navy-l)}
+  .btn-s{background:var(--card);color:var(--dim);border:1px solid var(--border)}.btn-s:hover{background:var(--bg)}
+
+  /* ── Range buttons ── */
+  .rbtn{padding:6px 14px;font-size:13px;border:1px solid var(--border);background:var(--card);
+    border-radius:8px;cursor:pointer;color:var(--dim);transition:background .15s}
+  .rbtn.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+  /* ── Input ── */
+  .inp{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;
+    font-size:14px;outline:none;transition:border-color .15s;background:var(--card)}
+  .inp:focus{border-color:var(--navy)}
+
+  /* ── Modal overlay ── */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;
+    align-items:center;justify-content:center;z-index:300}
+
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .fi{animation:fi .3s ease-out}
+</style>
+</head>
+<body>
+
+<!-- ── AUTH ── -->
+<div id="d-auth" class="overlay" style="display:none">
+  <div class="kcard" style="width:320px;padding:28px;text-align:center">
+    <div style="width:40px;height:40px;background:var(--navy);border-radius:10px;
+      display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
+        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">Ali Sat — Plataforma</div>
+    <div style="font-size:13px;color:var(--dim);margin-bottom:18px">Insira a chave DASH_KEY</div>
+    <input id="auth-inp" type="password" placeholder="DASH_KEY" class="inp">
+    <div id="auth-err" style="color:var(--red);font-size:12px;min-height:18px;margin-top:6px"></div>
+    <button id="auth-btn" class="btn btn-p" style="width:100%;margin-top:12px;justify-content:center">Entrar</button>
+  </div>
+</div>
+
+<!-- ── LOADING ── -->
+<div id="d-load" style="position:fixed;inset:0;background:var(--bg);display:flex;
+  align-items:center;justify-content:center;z-index:200">
+  <div style="text-align:center">
+    <div style="width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--navy);
+      border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 10px"></div>
+    <div style="color:var(--dim);font-size:14px">Carregando…</div>
+  </div>
+</div>
+
+<!-- ── CRIAR FUNIL MODAL ── -->
+<div id="d-create" class="overlay" style="display:none">
+  <div class="kcard" style="width:440px;padding:28px">
+    <div style="font-size:16px;font-weight:700;margin-bottom:20px">Criar nova página</div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+          color:var(--dim);display:block;margin-bottom:6px">Nome da página</label>
+        <input id="fn-name" type="text" placeholder="Ex: Videotelemetria — Oferta Especial" class="inp">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+          color:var(--dim);display:block;margin-bottom:6px">Slug (URL)</label>
+        <div style="display:flex;align-items:center;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <span style="padding:9px 10px;background:var(--bg);color:var(--muted);font-size:13px;
+            white-space:nowrap;border-right:1px solid var(--border);flex-shrink:0">/lps/</span>
+          <input id="fn-slug" type="text" placeholder="minha-pagina"
+            style="flex:1;border:none;padding:9px 12px;font-size:14px;outline:none;background:transparent">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+          color:var(--dim);display:block;margin-bottom:6px">Status inicial</label>
+        <select id="fn-status" class="inp">
+          <option value="draft">Rascunho</option>
+          <option value="published">Publicado</option>
+        </select>
+      </div>
+    </div>
+    <div id="create-err" style="color:var(--red);font-size:12px;min-height:16px;margin-top:10px"></div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button id="create-cancel" class="btn btn-s" style="flex:1;justify-content:center">Cancelar</button>
+      <button id="create-ok" class="btn btn-p" style="flex:1;justify-content:center">Criar página</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app" style="display:none;height:100vh;overflow:hidden">
+<div style="display:flex;height:100%">
+
+  <!-- SIDEBAR -->
+  <aside style="width:240px;min-width:240px;background:var(--navy);display:flex;
+    flex-direction:column;height:100%;flex-shrink:0">
+
+    <div style="padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.10)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;background:rgba(255,255,255,.12);border-radius:9px;
+          display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.3">
+            <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-4 4"/></svg>
+        </div>
+        <div>
+          <div style="color:#fff;font-weight:700;font-size:14px;line-height:1.2">Ali Sat</div>
+          <div style="color:rgba(255,255,255,.40);font-size:11px">Plataforma</div>
+        </div>
+      </div>
+    </div>
+
+    <nav id="nav" style="padding:12px;flex:1;display:flex;flex-direction:column;gap:2px">
+      <button class="nav-item" data-sec="paginas">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/></svg>
+        Páginas e Funis
+      </button>
+      <button class="nav-item" data-sec="leads">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Leads
+      </button>
+      <button class="nav-item" data-sec="rastreamento">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Rastreamento
+      </button>
+      <button class="nav-item" data-sec="config">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        Configurações
+      </button>
+    </nav>
+
+    <div style="padding:14px 20px;border-top:1px solid rgba(255,255,255,.08)">
+      <div style="color:rgba(255,255,255,.22);font-size:11px">Ali Sat Frotas — v1.0</div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main id="content" style="flex:1;overflow-y:auto;min-width:0">
+
+    <!-- ══ PÁGINAS E FUNIS ══ -->
+    <div id="sec-paginas" style="display:none;padding:32px;min-height:100%">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;
+        margin-bottom:28px;flex-wrap:wrap;gap:14px">
+        <div>
+          <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.2">Páginas e Funis</h1>
+          <p style="color:var(--dim);margin:6px 0 0;font-size:14px">
+            Gerencie funis, acompanhe visitas e conversões em tempo real
+          </p>
+        </div>
+        <button id="btn-criar" class="btn btn-p">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Criar página
+        </button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px">
+        <div class="kcard"><div class="klabel">Páginas</div>
+          <div class="kval" id="kpi-np">—</div></div>
+        <div class="kcard"><div class="klabel">Total Visitas (30d)</div>
+          <div class="kval" id="kpi-pv" style="color:var(--navy)">—</div></div>
+        <div class="kcard"><div class="klabel">Total Leads (30d)</div>
+          <div class="kval" id="kpi-pl" style="color:var(--green)">—</div></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px">
+        <div style="position:relative;flex:1;max-width:380px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="pg-search" type="text" placeholder="Buscar páginas…" class="inp" style="padding-left:34px">
+        </div>
+        <span id="pg-count" style="font-size:13px;color:var(--muted)"></span>
+      </div>
+
+      <div id="pg-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px"></div>
+    </div>
+
+    <!-- ══ LEADS ══ -->
+    <div id="sec-leads" style="display:none;padding:32px;min-height:100%">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;
+        margin-bottom:28px;flex-wrap:wrap;gap:14px">
+        <div>
+          <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.2">Leads</h1>
+          <p id="leads-sub" style="color:var(--dim);margin:6px 0 0;font-size:14px">Formulários capturados</p>
+        </div>
+        <div style="display:flex;gap:6px" id="leads-range">
+          <button class="rbtn" data-days="7">7d</button>
+          <button class="rbtn active" data-days="30">30d</button>
+          <button class="rbtn" data-days="90">90d</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+        <div class="kcard"><div class="klabel">Leads</div>
+          <div class="kval" id="l-l" style="color:var(--green)">—</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:5px">Formulários</div></div>
+        <div class="kcard"><div class="klabel">Visitas</div>
+          <div class="kval" id="l-v" style="color:var(--navy)">—</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:5px">Sessões únicas</div></div>
+        <div class="kcard"><div class="klabel">Conversão</div>
+          <div class="kval" id="l-c" style="color:var(--amber)">—</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:5px">Visita → Lead</div></div>
+        <div class="kcard"><div class="klabel">Média / dia</div>
+          <div class="kval" id="l-a" style="color:var(--blue)">—</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:5px">Leads por dia</div></div>
+      </div>
+
+      <div class="kcard" style="margin-bottom:20px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:14px">Visitas e Leads por Dia</div>
+        <div style="height:220px;position:relative"><canvas id="lc"></canvas></div>
+      </div>
+
+      <div class="kcard" style="overflow:hidden;padding:0">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border);
+          display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700;font-size:15px">Leads Recentes</div>
+          <span id="l-cnt" style="font-size:12px;color:var(--muted)"></span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="ltable">
+            <thead><tr>
+              <th>Data / Hora</th><th>E-mail</th><th>Fonte</th>
+              <th>Campanha</th><th>Dispositivo</th>
+              <th style="text-align:center">Meta</th>
+            </tr></thead>
+            <tbody id="ltbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RASTREAMENTO ══ -->
+    <div id="sec-rastreamento" style="display:none;height:100vh;overflow:hidden;
+      display:flex;flex-direction:column">
+      <div style="height:38px;background:#fff;border-bottom:1px solid var(--border);
+        display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0">
+        <div style="width:7px;height:7px;background:var(--navy);border-radius:50%"></div>
+        <span style="font-size:13px;font-weight:500;color:var(--dim)">
+          Rastreamento — Analytics, UTMs, Saúde do Tracking</span>
+      </div>
+      <iframe id="dash-iframe" src="about:blank"
+        style="flex:1;width:100%;border:none;display:block"></iframe>
+    </div>
+
+    <!-- ══ CONFIGURAÇÕES ══ -->
+    <div id="sec-config" style="display:none;padding:32px;min-height:100%">
+      <div style="margin-bottom:28px">
+        <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.2">Configurações</h1>
+        <p style="color:var(--dim);margin:6px 0 0;font-size:14px">Acesso rápido e informações da plataforma</p>
+      </div>
+      <div style="max-width:560px;display:flex;flex-direction:column;gap:16px">
+        <div class="kcard">
+          <div style="font-weight:700;margin-bottom:16px">Acesso Rápido</div>
+          <div id="cfg-links" style="display:flex;flex-direction:column;gap:10px"></div>
+        </div>
+        <div class="kcard">
+          <div style="font-weight:700;margin-bottom:12px">Sobre</div>
+          <div style="font-size:13px;color:var(--dim);display:flex;flex-direction:column;gap:5px">
+            <p style="margin:0;font-weight:600;color:var(--text);font-size:14px">Ali Sat Plataforma — v1.0</p>
+            <p style="margin:0">Cloudflare Pages + Workers + D1 · Tracking server-side</p>
+            <p style="margin:0">Funis de vendas · Leads e atribuição UTM · Meta CAPI + GA4</p>
+          </div>
+        </div>
+        <div class="kcard">
+          <div style="font-weight:700;margin-bottom:12px">Aplicar Migration D1</div>
+          <div style="font-size:13px;color:var(--dim);display:flex;flex-direction:column;gap:6px">
+            <p style="margin:0">Se ainda não aplicou a migration da tabela <code style="background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12px">marketing_funnels</code>:</p>
+            <code style="background:#1e293b;color:#a5f3fc;padding:10px 12px;border-radius:8px;
+              font-size:12px;display:block;line-height:1.6">
+              wrangler d1 migrations apply &lt;DB_NAME&gt; --remote
+            </code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ── Estado global ─────────────────────────────────────────────────────────
+let KEY = '';
+let days = 30;
+let leadsChart = null;
+let iframeSet = false;
+const loaded = { paginas: false, leads: false };
+let allPages = [];
+
+// ── Auth ──────────────────────────────────────────────────────────────────
+const urlKey = new URLSearchParams(location.search).get('key');
+if (urlKey) {
+  KEY = urlKey; sessionStorage.setItem('dash_key', urlKey); boot();
+} else {
+  const s = sessionStorage.getItem('dash_key');
+  if (s) { KEY = s; boot(); }
+  else   { g('d-load').style.display = 'none'; showEl('d-auth'); }
+}
+
+g('auth-btn').onclick = tryAuth;
+g('auth-inp').onkeydown = e => { if (e.key === 'Enter') tryAuth(); };
+
+function tryAuth() {
+  const v = g('auth-inp').value.trim();
+  if (!v) return;
+  KEY = v; sessionStorage.setItem('dash_key', v);
+  hideEl('d-auth'); showEl('d-load');
+  boot();
+}
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────
+function boot() {
+  g('d-load').style.display = 'none';
+  showEl('app');
+  const sec = location.hash.replace('#','') || 'paginas';
+  nav(sec);
+  buildCfgLinks();
+}
+
+// ── Routing ───────────────────────────────────────────────────────────────
+window.onhashchange = () => nav(location.hash.replace('#','') || 'paginas');
+
+g('nav').addEventListener('click', e => {
+  const b = e.target.closest('[data-sec]');
+  if (b) location.hash = b.dataset.sec;
+});
+
+function nav(sec) {
+  const secs = ['paginas','leads','rastreamento','config'];
+  if (!secs.includes(sec)) sec = 'paginas';
+
+  document.querySelectorAll('[data-sec]').forEach(b =>
+    b.classList.toggle('active', b.dataset.sec === sec));
+
+  secs.forEach(s => g('sec-'+s).style.display = s === sec ? '' : 'none');
+
+  if (sec === 'paginas'     && !loaded.paginas) loadPaginas();
+  if (sec === 'leads'       && !loaded.leads)   loadLeads(days);
+  if (sec === 'rastreamento' && !iframeSet)      setIframe();
+}
+
+// ══ PÁGINAS E FUNIS ══════════════════════════════════════════════════════
+
+async function loadPaginas() {
+  g('pg-grid').innerHTML = skeleton(4);
+
+  const [fr, pr] = await Promise.all([
+    fetch('/api/funnels?key=' + enc(KEY) + '&days=30'),
+    fetch('/api/pages?key='   + enc(KEY) + '&days=30'),
+  ]);
+
+  if (fr.status === 401) { authFail(); return; }
+
+  const fd = fr.ok ? await fr.json() : { funnels: [] };
+  const pd = pr.ok ? await pr.json() : { pages: [] };
+
+  // Slugs já registrados no D1
+  const regSlugs = new Set((fd.funnels || []).map(f => f.slug));
+
+  // Páginas detectadas pelo tracking (que não estão no D1 ainda)
+  const sessionPages = (pd.pages || []).filter(p => {
+    try { return !regSlugs.has(new URL(p.url).pathname.split('/').filter(Boolean).pop()); }
+    catch { return true; }
+  }).map(p => ({
+    type: 'detected', url: p.url,
+    visits: p.visits, leads: p.leads,
+    conversion_rate: p.conversion_rate,
+  }));
+
+  allPages = [
+    ...(fd.funnels || []).map(f => ({ ...f, type: 'funnel' })),
+    ...sessionPages,
+  ];
+
+  const tv = allPages.reduce((s,p) => s + (p.visits||0), 0);
+  const tl = allPages.reduce((s,p) => s + (p.leads ||0), 0);
+  txt('kpi-np', allPages.length);
+  txt('kpi-pv', fmt(tv));
+  txt('kpi-pl', fmt(tl));
+
+  renderPages(allPages);
+  loaded.paginas = true;
+}
+
+g('pg-search').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  renderPages(q
+    ? allPages.filter(p => (p.name || pgName(p.url)).toLowerCase().includes(q) || (p.url||'').toLowerCase().includes(q))
+    : allPages);
+});
+
+function renderPages(list) {
+  txt('pg-count', list.length + ' página' + (list.length !== 1 ? 's' : ''));
+  if (!list.length) {
+    g('pg-grid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:64px 20px;color:var(--muted)">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" style="margin:0 auto 12px;display:block">
+        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/></svg>
+      <div style="font-size:14px;font-weight:500;color:var(--dim)">Nenhuma página encontrada.</div>
+    </div>`;
+    return;
+  }
+  g('pg-grid').innerHTML = list.map(funnelCard).join('');
+}
+
+function funnelCard(p) {
+  const isFunnel = p.type === 'funnel';
+  const name   = p.name || pgName(p.url || '');
+  const url    = p.url  || ('/lps/' + p.slug);
+  const short  = shortUrl(url);
+  const pal    = thumbPal(url);
+  const conv   = (p.conversion_rate || 0).toFixed(1) + '%';
+
+  const badge = isFunnel
+    ? (p.status === 'published'
+        ? `<span class="badge badge-pub"><span style="width:5px;height:5px;background:#22c55e;border-radius:50%;display:inline-block"></span>Publicado</span>`
+        : `<span class="badge badge-draft"><span style="width:5px;height:5px;background:#eab308;border-radius:50%;display:inline-block"></span>Rascunho</span>`)
+    : `<span class="badge badge-det">Detectado</span>`;
+
+  return `<div class="fcard fi">
+    <div class="fthumb" style="background:linear-gradient(140deg,${pal[0]},${pal[1]})">
+      <div class="fthumb-inner">
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);
+          letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px">Ali Sat</div>
+        <div style="font-size:17px;font-weight:800;color:#fff;line-height:1.25;
+          max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(name)}</div>
+      </div>
+    </div>
+    <div style="padding:14px 16px 0;flex:1">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">
+        <span style="font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${esc(name)}</span>
+        ${badge}
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-family:ui-monospace,monospace;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:12px">${esc(short)}</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <div class="mchip"><span class="mchip-v" style="color:var(--navy)">${fmt(p.visits||0)}</span><span class="mchip-l">Visitas</span></div>
+        <div class="mchip"><span class="mchip-v" style="color:var(--green)">${fmt(p.leads||0)}</span><span class="mchip-l">Leads</span></div>
+        <div class="mchip"><span class="mchip-v" style="color:var(--amber)">${conv}</span><span class="mchip-l">Conv.</span></div>
+      </div>
+    </div>
+    <div style="padding:10px 16px 14px;display:flex;gap:8px;border-top:1px solid var(--border)">
+      <a href="${esc(url)}" target="_blank" rel="noopener"
+        style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;
+          background:var(--bg);border:1px solid var(--border);border-radius:7px;font-size:12px;
+          font-weight:500;color:var(--dim);text-decoration:none"
+        onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='var(--bg)'">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ver
+      </a>
+      <button style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;
+        background:var(--navy);border:none;border-radius:7px;font-size:12px;font-weight:600;
+        color:#fff;cursor:pointer"
+        onmouseover="this.style.background='var(--navy-l)'" onmouseout="this.style.background='var(--navy)'">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Editar
+      </button>
+    </div>
+  </div>`;
+}
+
+// Criar funil
+g('btn-criar').onclick = () => showEl('d-create');
+g('create-cancel').onclick = () => hideEl('d-create');
+g('fn-name').oninput = () => { g('fn-slug').value = slugify(g('fn-name').value); };
+g('create-ok').onclick = async function() {
+  const name   = g('fn-name').value.trim();
+  const slug   = g('fn-slug').value.trim();
+  const status = g('fn-status').value;
+  g('create-err').textContent = '';
+  if (!name) { g('create-err').textContent = 'Nome obrigatório.'; return; }
+  if (!slug) { g('create-err').textContent = 'Slug obrigatório.'; return; }
+
+  this.disabled = true; this.textContent = 'Criando…';
+  try {
+    const res  = await fetch('/api/funnels?key=' + enc(KEY), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, slug, status }),
+    });
+    const data = await res.json();
+    if (!res.ok) { g('create-err').textContent = data.error || 'Erro ao criar.'; return; }
+    hideEl('d-create');
+    g('fn-name').value = ''; g('fn-slug').value = '';
+    loaded.paginas = false;
+    loadPaginas();
+  } catch { g('create-err').textContent = 'Erro de conexão.'; }
+  finally { this.disabled = false; this.textContent = 'Criar página'; }
+};
+
+// ══ LEADS ════════════════════════════════════════════════════════════════
+
+g('leads-range').addEventListener('click', e => {
+  const b = e.target.closest('[data-days]');
+  if (!b) return;
+  document.querySelectorAll('#leads-range .rbtn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  days = parseInt(b.dataset.days, 10);
+  loaded.leads = false;
+  loadLeads(days);
+});
+
+async function loadLeads(d) {
+  g('ltbody').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">Carregando…</td></tr>`;
+
+  const [vr, lr] = await Promise.all([
+    fetch('/api/visits?key=' + enc(KEY) + '&days=' + d),
+    fetch('/api/leads?key='  + enc(KEY) + '&days=' + d + '&limit=100'),
+  ]);
+  if (vr.status === 401) { authFail(); return; }
+
+  const vd = vr.ok ? await vr.json() : null;
+  const ld = lr.ok ? await lr.json() : { leads: [] };
+
+  const tot   = vd?.totals ?? { sessions:0, leads:0, conversion_rate:0 };
+  const daily = vd?.daily  ?? [];
+  const leads = ld.leads   ?? [];
+
+  txt('l-l', tot.leads.toLocaleString('pt-BR'));
+  txt('l-v', tot.sessions.toLocaleString('pt-BR'));
+  txt('l-c', tot.conversion_rate.toFixed(1) + '%');
+  txt('l-a', daily.length > 0 ? (tot.leads / daily.length).toFixed(1) : '0');
+  txt('leads-sub', 'Formulários nos últimos ' + d + ' dias');
+
+  renderChart(daily);
+  renderLeadsTable(leads);
+  txt('l-cnt', leads.length + ' registros');
+  loaded.leads = true;
+}
+
+function renderChart(daily) {
+  if (leadsChart) { leadsChart.destroy(); leadsChart = null; }
+  const labels = daily.map(d => { const [,m,day] = d.day.split('-'); return day+'/'+m; });
+  leadsChart = new Chart(g('lc').getContext('2d'), {
+    data: { labels, datasets: [
+      { type:'bar',  label:'Visitas', data:daily.map(d=>d.visits),
+        backgroundColor:'rgba(3,53,102,.10)', borderColor:'rgba(3,53,102,.25)',
+        borderWidth:1, borderRadius:3, yAxisID:'y' },
+      { type:'line', label:'Leads',   data:daily.map(d=>d.leads),
+        borderColor:'#16a34a', backgroundColor:'rgba(22,163,74,.08)',
+        borderWidth:2.5, pointRadius:3, pointBackgroundColor:'#16a34a',
+        tension:.3, fill:true, yAxisID:'y1' },
+    ]},
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ position:'top', labels:{ font:{size:12}, boxWidth:14, padding:14 }} },
+      scales:{
+        x:{ grid:{display:false}, ticks:{font:{size:10}, maxRotation:0} },
+        y:{ position:'left',  grid:{color:'#f3f4f6'}, ticks:{font:{size:10},precision:0},
+          title:{display:true,text:'Visitas',font:{size:10},color:'#6b7280'} },
+        y1:{ position:'right', grid:{drawOnChartArea:false}, ticks:{font:{size:10},precision:0},
+          title:{display:true,text:'Leads',font:{size:10},color:'#16a34a'} },
+      },
+    },
+  });
+}
+
+function renderLeadsTable(leads) {
+  if (!leads.length) {
+    g('ltbody').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted)">Nenhum lead no período.</td></tr>`;
+    return;
+  }
+  g('ltbody').innerHTML = leads.map(r => {
+    const dt   = new Date(r.timestamp * 1000);
+    const date = dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    const time = dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const src  = r.utm_source ? esc(r.utm_source)+(r.utm_medium?'/'+esc(r.utm_medium):'') : '(direto)';
+    const dev  = r.is_mobile
+      ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:3px"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Mobile`
+      : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Desktop`;
+    const meta = r.meta_response_ok
+      ? `<span class="badge badge-pub" style="font-size:10px">OK</span>`
+      : `<span class="badge" style="background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;font-size:10px">Falhou</span>`;
+    return `<tr>
+      <td class="mono" style="font-size:11px;color:var(--dim);white-space:nowrap">${date} ${time}</td>
+      <td>${esc(r.raw_email||'—')}</td>
+      <td style="white-space:nowrap">${src}</td>
+      <td>${esc(r.utm_campaign||'—')}</td>
+      <td style="color:var(--dim);white-space:nowrap">${dev}</td>
+      <td style="text-align:center">${meta}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══ RASTREAMENTO ══════════════════════════════════════════════════════════
+function setIframe() {
+  g('dash-iframe').src = '/dash' + (KEY ? '?key=' + enc(KEY) : '');
+  iframeSet = true;
+}
+
+// ══ CONFIGURAÇÕES ══════════════════════════════════════════════════════════
+function buildCfgLinks() {
+  const links = [
+    { label:'Páginas e Funis',         href:'/plataforma',  desc:'Gerencie funis e acompanhe conversões em tempo real' },
+    { label:'Rastreamento Dashboard',  href:'/dash',        desc:'Analytics, UTMs, receita, saúde do tracking' },
+    { label:'Leads — Visitas',         href:'/dash/leads',  desc:'Visitas por dia, fontes, leads recentes' },
+  ];
+  g('cfg-links').innerHTML = links.map(l => {
+    const href = l.href + (KEY ? '?key=' + enc(KEY) : '');
+    return `<a href="${href}" style="display:flex;align-items:center;justify-content:space-between;
+      padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:9px;
+      text-decoration:none;transition:border-color .15s"
+      onmouseover="this.style.borderColor='#d1d5db'" onmouseout="this.style.borderColor='var(--border)'">
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">${esc(l.label)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(l.desc)}</div>
+      </div>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>`;
+  }).join('');
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function authFail() {
+  sessionStorage.removeItem('dash_key');
+  g('auth-err').textContent = 'Chave inválida.';
+  showEl('d-auth');
+}
+function pgName(url) {
+  try {
+    const last = new URL(url).pathname.split('/').filter(Boolean).pop() || 'Home';
+    return last.replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  } catch { return url; }
+}
+function shortUrl(url) {
+  try { const u = new URL(url); return u.host + u.pathname.replace(/\/$/,''); }
+  catch { return url; }
+}
+function slugify(s) {
+  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+const PALS = [
+  ['#033566','#0a4a8c'],['#7c3aed','#6d28d9'],['#0369a1','#0284c7'],
+  ['#15803d','#16a34a'],['#b45309','#d97706'],['#be185d','#db2777'],
+];
+function thumbPal(url) {
+  let h = 0; for (const c of url) h = (h*31 + c.charCodeAt(0)) | 0;
+  return PALS[Math.abs(h) % PALS.length];
+}
+function skeleton(n) {
+  const c = `<div class="fcard"><div class="fthumb" style="background:#e5e7eb"></div>
+    <div style="padding:14px 16px"><div style="height:15px;background:#f3f4f6;border-radius:4px;margin-bottom:8px;width:70%"></div>
+    <div style="height:11px;background:#f3f4f6;border-radius:4px;width:55%"></div></div></div>`;
+  return Array(n).fill(c).join('');
+}
+function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n); }
+function enc(s) { return encodeURIComponent(s); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function g(id)  { return document.getElementById(id); }
+function txt(id,v) { const e=g(id); if(e) e.textContent=v; }
+function showEl(id) { g(id).style.display='flex'; }
+function hideEl(id) { g(id).style.display='none'; }
+
+})();
+</script>
+</body>
+</html>
