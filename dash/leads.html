@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visitas &amp; Leads — Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f7f8;
+    --card: #ffffff;
+    --border: #e4e4e7;
+    --text: #18181b;
+    --dim: #52525b;
+    --muted: #a1a1aa;
+    --navy: #033566;
+    --green: #16a34a;
+    --amber: #d97706;
+    --blue: #2563eb;
+    --red: #dc2626;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+  .kpi-label { color: var(--dim); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+  .kpi-value { font-size: 2rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1; margin-top: 6px; }
+  .range-btn {
+    padding: 0.35rem 0.75rem; font-size: 0.8125rem;
+    border: 1px solid var(--border); background: var(--card);
+    border-radius: 8px; cursor: pointer; color: var(--dim);
+    transition: background 0.15s, color 0.15s;
+  }
+  .range-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+  .range-btn:hover:not(.active) { background: #f4f4f5; }
+  .row-hover:hover { background: #fafafa; }
+  .badge {
+    display: inline-block; padding: 2px 8px;
+    border-radius: 20px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em;
+  }
+  .badge-ok   { background: #dcfce7; color: #15803d; }
+  .badge-fail { background: #fee2e2; color: #b91c1c; }
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 768px) {
+    #tables-row { grid-template-columns: 1fr !important; }
+    .kpi-value { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── AUTH MODAL ── -->
+<div id="auth-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:1000;">
+  <div class="card" style="padding:2rem;width:320px;text-align:center;">
+    <div style="width:40px;height:40px;background:var(--navy);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+      <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <div style="font-size:1.0625rem;font-weight:700;margin-bottom:4px;">Acesso ao Dashboard</div>
+    <div style="font-size:0.8125rem;color:var(--dim);margin-bottom:1.25rem;">Insira a chave DASH_KEY</div>
+    <input id="auth-input" type="password" placeholder="DASH_KEY"
+      style="width:100%;border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.75rem;font-size:0.9375rem;outline:none;">
+    <div id="auth-error" style="color:var(--red);font-size:0.8rem;margin-top:6px;min-height:18px;"></div>
+    <button id="auth-btn"
+      style="margin-top:0.875rem;width:100%;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:0.65rem;font-size:0.9375rem;cursor:pointer;font-weight:600;">
+      Entrar
+    </button>
+  </div>
+</div>
+
+<!-- ── LOADING ── -->
+<div id="loading" style="position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;">
+  <div style="text-align:center;">
+    <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 12px;"></div>
+    <div style="color:var(--dim);font-size:0.875rem;">Carregando dados…</div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app" style="display:none;min-height:100vh;">
+
+  <!-- Header -->
+  <header style="background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;">
+    <div style="max-width:1200px;margin:0 auto;padding:0.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;background:var(--navy);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-4 4"/></svg>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:0.9375rem;line-height:1.2;">Visitas &amp; Leads</div>
+          <div id="header-sub" style="font-size:0.75rem;color:var(--muted);">Dashboard de aquisição</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;" id="range-picker">
+        <button class="range-btn" data-days="7">7 dias</button>
+        <button class="range-btn active" data-days="30">30 dias</button>
+        <button class="range-btn" data-days="90">90 dias</button>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1200px;margin:0 auto;padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;">
+
+    <!-- KPIs -->
+    <section class="fade-in" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;">
+      <div class="card" style="padding:1.25rem;">
+        <div class="kpi-label">Visitas</div>
+        <div class="kpi-value mono" id="kpi-visits" style="color:var(--navy);">—</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:6px;">Sessões no período</div>
+      </div>
+      <div class="card" style="padding:1.25rem;">
+        <div class="kpi-label">Leads</div>
+        <div class="kpi-value mono" id="kpi-leads" style="color:var(--green);">—</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:6px;">Formulários enviados</div>
+      </div>
+      <div class="card" style="padding:1.25rem;">
+        <div class="kpi-label">Conversão</div>
+        <div class="kpi-value mono" id="kpi-conv" style="color:var(--amber);">—</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:6px;">Visitas → Lead</div>
+      </div>
+      <div class="card" style="padding:1.25rem;">
+        <div class="kpi-label">Média / dia</div>
+        <div class="kpi-value mono" id="kpi-avg" style="color:var(--blue);">—</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:6px;">Leads por dia</div>
+      </div>
+    </section>
+
+    <!-- Chart -->
+    <section class="card fade-in" style="padding:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.125rem;flex-wrap:wrap;gap:0.5rem;">
+        <span style="font-weight:700;font-size:0.9375rem;">Visitas e Leads por Dia</span>
+        <span id="chart-label" style="font-size:0.8rem;color:var(--muted);"></span>
+      </div>
+      <div style="position:relative;height:260px;">
+        <canvas id="chart-daily"></canvas>
+      </div>
+    </section>
+
+    <!-- Sources + Pages -->
+    <section id="tables-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;" class="fade-in">
+      <div class="card" style="padding:1.5rem;">
+        <div style="font-weight:700;font-size:0.9375rem;margin-bottom:1rem;">Fontes de Tráfego</div>
+        <table style="width:100%;border-collapse:collapse;font-size:0.8125rem;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left;padding:5px 4px;color:var(--dim);font-size:0.7rem;text-transform:uppercase;letter-spacing:.04em;">Fonte</th>
+              <th style="text-align:right;padding:5px 4px;color:var(--dim);font-size:0.7rem;text-transform:uppercase;letter-spacing:.04em;">Visitas</th>
+              <th style="text-align:right;padding:5px 4px;color:var(--dim);font-size:0.7rem;text-transform:uppercase;letter-spacing:.04em;">%</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-sources">
+            <tr><td colspan="3" style="padding:14px 4px;color:var(--muted);font-size:0.8rem;">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="padding:1.5rem;">
+        <div style="font-weight:700;font-size:0.9375rem;margin-bottom:1rem;">Páginas de Entrada</div>
+        <table style="width:100%;border-collapse:collapse;font-size:0.8125rem;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left;padding:5px 4px;color:var(--dim);font-size:0.7rem;text-transform:uppercase;letter-spacing:.04em;">Página</th>
+              <th style="text-align:right;padding:5px 4px;color:var(--dim);font-size:0.7rem;text-transform:uppercase;letter-spacing:.04em;">Visitas</th>
+              <th style="text-align:right;padding:5px 4px;color:var(--dim);font-size:0.7rem;text-transform:uppercase;letter-spacing:.04em;">%</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-pages">
+            <tr><td colspan="3" style="padding:14px 4px;color:var(--muted);font-size:0.8rem;">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Leads table -->
+    <section class="card fade-in" style="padding:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+        <span style="font-weight:700;font-size:0.9375rem;">Leads Recentes</span>
+        <span id="leads-count" style="font-size:0.8rem;color:var(--muted);"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left;padding:6px 8px;color:var(--dim);font-size:0.69rem;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;">Data / Hora</th>
+              <th style="text-align:left;padding:6px 8px;color:var(--dim);font-size:0.69rem;text-transform:uppercase;letter-spacing:.04em;">E-mail</th>
+              <th style="text-align:left;padding:6px 8px;color:var(--dim);font-size:0.69rem;text-transform:uppercase;letter-spacing:.04em;">Fonte</th>
+              <th style="text-align:left;padding:6px 8px;color:var(--dim);font-size:0.69rem;text-transform:uppercase;letter-spacing:.04em;">Campanha</th>
+              <th style="text-align:left;padding:6px 8px;color:var(--dim);font-size:0.69rem;text-transform:uppercase;letter-spacing:.04em;">Dispositivo</th>
+              <th style="text-align:center;padding:6px 8px;color:var(--dim);font-size:0.69rem;text-transform:uppercase;letter-spacing:.04em;">Meta</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-leads">
+            <tr><td colspan="6" style="padding:16px 8px;color:var(--muted);text-align:center;">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  let dashKey = '';
+  let currentDays = 30;
+  let chart = null;
+
+  // ── Auth bootstrap ──────────────────────────────────────────────────────────
+  const urlKey = new URLSearchParams(location.search).get('key');
+  if (urlKey) {
+    dashKey = urlKey;
+    sessionStorage.setItem('dash_key', urlKey);
+    startLoad();
+  } else {
+    const stored = sessionStorage.getItem('dash_key');
+    if (stored) { dashKey = stored; startLoad(); }
+    else         { hide('loading'); showAuthModal(); }
+  }
+
+  document.getElementById('auth-btn').addEventListener('click', tryAuth);
+  document.getElementById('auth-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryAuth(); });
+
+  function tryAuth() {
+    const val = document.getElementById('auth-input').value.trim();
+    if (!val) return;
+    dashKey = val;
+    sessionStorage.setItem('dash_key', val);
+    hide('auth-modal');
+    show('loading');
+    load(currentDays);
+  }
+
+  function showAuthModal() {
+    document.getElementById('auth-modal').style.display = 'flex';
+  }
+
+  // ── Range picker ────────────────────────────────────────────────────────────
+  document.getElementById('range-picker').addEventListener('click', e => {
+    const btn = e.target.closest('[data-days]');
+    if (!btn) return;
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentDays = parseInt(btn.dataset.days, 10);
+    load(currentDays);
+  });
+
+  // ── Load ────────────────────────────────────────────────────────────────────
+  function startLoad() {
+    hide('auth-modal');
+    show('loading');
+    hide('app');
+    load(currentDays);
+  }
+
+  async function load(days) {
+    show('loading');
+    hide('app');
+
+    try {
+      const [visitsRes, leadsRes] = await Promise.all([
+        fetch('/api/visits?key=' + enc(dashKey) + '&days=' + days),
+        fetch('/api/leads?key='  + enc(dashKey) + '&days=' + days + '&limit=100'),
+      ]);
+
+      if (visitsRes.status === 401 || leadsRes.status === 401) {
+        sessionStorage.removeItem('dash_key');
+        hide('loading');
+        document.getElementById('auth-error').textContent = 'Chave inválida.';
+        showAuthModal();
+        return;
+      }
+
+      const visits = await visitsRes.json();
+      const leads  = await leadsRes.json();
+
+      if (visits.error) throw new Error(visits.error);
+      if (leads.error)  throw new Error(leads.error);
+
+      renderKPIs(visits);
+      renderChart(visits);
+      renderSources(visits);
+      renderPages(visits);
+      renderLeads(leads);
+
+      document.getElementById('header-sub').textContent = 'Últimos ' + days + ' dias';
+      document.getElementById('chart-label').textContent =
+        visits.totals.sessions.toLocaleString('pt-BR') + ' sessões registradas';
+
+      hide('loading');
+      show('app');
+    } catch (err) {
+      hide('loading');
+      show('app');
+      console.error('[dash] load error:', err);
+    }
+  }
+
+  // ── KPIs ────────────────────────────────────────────────────────────────────
+  function renderKPIs(data) {
+    const { sessions, leads, conversion_rate } = data.totals;
+    setText('kpi-visits', sessions.toLocaleString('pt-BR'));
+    setText('kpi-leads',  leads.toLocaleString('pt-BR'));
+    setText('kpi-conv',   conversion_rate.toFixed(1) + '%');
+    const avg = data.daily.length > 0
+      ? (leads / data.daily.length).toFixed(1)
+      : '0';
+    setText('kpi-avg', avg);
+  }
+
+  // ── Chart ───────────────────────────────────────────────────────────────────
+  function renderChart(data) {
+    const labels   = data.daily.map(d => { const [,m,day] = d.day.split('-'); return day + '/' + m; });
+    const visitPts = data.daily.map(d => d.visits);
+    const leadPts  = data.daily.map(d => d.leads);
+
+    if (chart) { chart.destroy(); chart = null; }
+
+    const ctx = document.getElementById('chart-daily').getContext('2d');
+    chart = new Chart(ctx, {
+      data: {
+        labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Visitas',
+            data: visitPts,
+            backgroundColor: 'rgba(3,53,102,0.10)',
+            borderColor: 'rgba(3,53,102,0.28)',
+            borderWidth: 1,
+            borderRadius: 3,
+            yAxisID: 'y',
+          },
+          {
+            type: 'line',
+            label: 'Leads',
+            data: leadPts,
+            borderColor: '#16a34a',
+            backgroundColor: 'rgba(22,163,74,0.08)',
+            borderWidth: 2.5,
+            pointRadius: 3.5,
+            pointBackgroundColor: '#16a34a',
+            tension: 0.3,
+            fill: true,
+            yAxisID: 'y1',
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'top', labels: { font: { size: 12 }, boxWidth: 14, padding: 16 } },
+          tooltip: {
+            callbacks: {
+              label: item => '  ' + item.dataset.label + ': ' + item.formattedValue,
+            },
+          },
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 11 }, maxRotation: 0, autoSkipPadding: 6 },
+          },
+          y: {
+            type: 'linear', position: 'left',
+            grid: { color: '#f0f0f1' },
+            ticks: { font: { size: 11 }, precision: 0 },
+            title: { display: true, text: 'Visitas', font: { size: 11 }, color: '#52525b' },
+          },
+          y1: {
+            type: 'linear', position: 'right',
+            grid: { drawOnChartArea: false },
+            ticks: { font: { size: 11 }, precision: 0 },
+            title: { display: true, text: 'Leads', font: { size: 11 }, color: '#16a34a' },
+          },
+        },
+      },
+    });
+  }
+
+  // ── Sources table ───────────────────────────────────────────────────────────
+  function renderSources(data) {
+    const total = data.totals.sessions || 1;
+    const tbody = document.getElementById('tbl-sources');
+    if (!data.by_source.length) {
+      tbody.innerHTML = '<tr><td colspan="3" style="padding:14px 4px;color:var(--muted);">Sem dados</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.by_source.map(row => {
+      const pct = ((row.visits / total) * 100).toFixed(1);
+      return `<tr class="row-hover" style="border-bottom:1px solid #f4f4f5;">
+        <td style="padding:8px 4px;font-weight:500;">${esc(row.source)}</td>
+        <td style="padding:8px 4px;text-align:right;" class="mono">${row.visits.toLocaleString('pt-BR')}</td>
+        <td style="padding:8px 4px;text-align:right;color:var(--dim);">${pct}%</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Pages table ─────────────────────────────────────────────────────────────
+  function renderPages(data) {
+    const total = data.totals.sessions || 1;
+    const tbody = document.getElementById('tbl-pages');
+    if (!data.by_page.length) {
+      tbody.innerHTML = '<tr><td colspan="3" style="padding:14px 4px;color:var(--muted);">Sem dados</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.by_page.map(row => {
+      const url   = row.landing_url || '(desconhecido)';
+      const short = url.replace(/^https?:\/\/[^/]+/, '') || '/';
+      const pct   = ((row.visits / total) * 100).toFixed(1);
+      return `<tr class="row-hover" style="border-bottom:1px solid #f4f4f5;">
+        <td style="padding:8px 4px;font-weight:500;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(url)}">${esc(short)}</td>
+        <td style="padding:8px 4px;text-align:right;" class="mono">${row.visits.toLocaleString('pt-BR')}</td>
+        <td style="padding:8px 4px;text-align:right;color:var(--dim);">${pct}%</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Leads table ─────────────────────────────────────────────────────────────
+  function renderLeads(data) {
+    const list  = data.leads || [];
+    const tbody = document.getElementById('tbl-leads');
+    document.getElementById('leads-count').textContent = list.length + ' registros';
+
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="padding:20px 8px;color:var(--muted);text-align:center;">Nenhum lead no período.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = list.map(row => {
+      const dt    = new Date(row.timestamp * 1000);
+      const date  = dt.toLocaleDateString('pt-BR',  { day: '2-digit', month: '2-digit', year: '2-digit' });
+      const time  = dt.toLocaleTimeString('pt-BR',  { hour: '2-digit', minute: '2-digit' });
+      const src   = row.utm_source
+        ? esc(row.utm_source) + (row.utm_medium ? ' <span style="color:var(--muted);">/ ' + esc(row.utm_medium) + '</span>' : '')
+        : '<span style="color:var(--muted);">(direto)</span>';
+      const camp  = row.utm_campaign ? esc(row.utm_campaign) : '<span style="color:var(--muted);">—</span>';
+      const dev   = row.is_mobile ? 'Mobile' : 'Desktop';
+      const meta  = row.meta_response_ok
+        ? '<span class="badge badge-ok">OK</span>'
+        : '<span class="badge badge-fail">Falhou</span>';
+
+      return `<tr class="row-hover" style="border-bottom:1px solid #f4f4f5;">
+        <td style="padding:8px 8px;white-space:nowrap;" class="mono">${date} ${time}</td>
+        <td style="padding:8px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(row.raw_email || '—')}</td>
+        <td style="padding:8px 8px;white-space:nowrap;">${src}</td>
+        <td style="padding:8px 8px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(row.utm_campaign || '')}">${camp}</td>
+        <td style="padding:8px 8px;white-space:nowrap;color:var(--dim);">${dev}</td>
+        <td style="padding:8px 8px;text-align:center;">${meta}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+  function show(id) { document.getElementById(id).style.display = id === 'auth-modal' ? 'flex' : (id === 'app' ? 'block' : 'flex'); }
+  function hide(id) { document.getElementById(id).style.display = 'none'; }
+  function setText(id, val) { document.getElementById(id).textContent = val; }
+  function enc(s) { return encodeURIComponent(s); }
+  function esc(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+})();
+</script>
+</body>
+</html>
