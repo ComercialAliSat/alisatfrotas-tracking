@@ -45,15 +45,15 @@
   .paction:hover{background:#f4f4f5;color:#374151}
 
   /* ── KPI card ── */
-  .kcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
-  .klabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);margin-bottom:6px}
-  .kval{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .kcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px}
+  .klabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin-bottom:8px}
+  .kval{font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1}
 
   /* ── Leads table ── */
-  .ltable{width:100%;border-collapse:collapse;font-size:13px}
-  .ltable th{padding:8px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;
+  .ltable{width:100%;border-collapse:collapse;font-size:14.5px}
+  .ltable th{padding:11px 16px;text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;
     letter-spacing:.04em;color:var(--dim);border-bottom:1px solid var(--border)}
-  .ltable td{padding:9px 12px;border-bottom:1px solid var(--border-l);max-width:180px;
+  .ltable td{padding:13px 16px;border-bottom:1px solid var(--border-l);max-width:200px;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .ltable tr:hover td{background:#fafafa}
 
@@ -66,7 +66,7 @@
   .btn-s{background:var(--card);color:var(--dim);border:1px solid var(--border)}.btn-s:hover{background:var(--bg)}
 
   /* ── Range buttons ── */
-  .rbtn{padding:6px 14px;font-size:13px;border:1px solid var(--border);background:var(--card);
+  .rbtn{padding:8px 18px;font-size:14px;border:1px solid var(--border);background:var(--card);
     border-radius:8px;cursor:pointer;color:var(--dim);transition:background .15s}
   .rbtn.active{background:var(--text);color:#fff;border-color:var(--text)}
 
@@ -85,6 +85,9 @@
   /* ── Modal overlay ── */
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;
     align-items:center;justify-content:center;z-index:300}
+
+  /* Sections — default block layout; rastreamento uses absolute */
+  #sec-paginas,#sec-leads,#sec-config{display:block}
 
   @keyframes spin{to{transform:rotate(360deg)}}
   @keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -264,31 +267,31 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px">
         <div class="kcard"><div class="klabel">Leads</div>
           <div class="kval" id="l-l" style="color:var(--green)">—</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:5px">Formulários</div></div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Formulários</div></div>
         <div class="kcard"><div class="klabel">Visitas</div>
           <div class="kval" id="l-v" style="color:var(--navy)">—</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:5px">Sessões únicas</div></div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Sessões únicas</div></div>
         <div class="kcard"><div class="klabel">Conversão</div>
           <div class="kval" id="l-c" style="color:var(--amber)">—</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:5px">Visita → Lead</div></div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Visita → Lead</div></div>
         <div class="kcard"><div class="klabel">Média / dia</div>
           <div class="kval" id="l-a" style="color:var(--blue)">—</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:5px">Leads por dia</div></div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Leads por dia</div></div>
       </div>
 
-      <div class="kcard" style="margin-bottom:20px">
-        <div style="font-weight:700;font-size:15px;margin-bottom:14px">Visitas e Leads por Dia</div>
-        <div style="height:220px;position:relative"><canvas id="lc"></canvas></div>
+      <div class="kcard" style="margin-bottom:24px">
+        <div style="font-weight:700;font-size:16px;margin-bottom:16px">Visitas e Leads por Dia</div>
+        <div style="height:280px;position:relative"><canvas id="lc"></canvas></div>
       </div>
 
       <div class="kcard" style="overflow:hidden;padding:0">
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border);
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border);
           display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:700;font-size:15px">Leads Recentes</div>
-          <span id="l-cnt" style="font-size:12px;color:var(--muted)"></span>
+          <div style="font-weight:700;font-size:16px">Leads Recentes</div>
+          <span id="l-cnt" style="font-size:13px;color:var(--muted)"></span>
         </div>
         <div style="overflow-x:auto">
           <table class="ltable">
@@ -304,15 +307,15 @@
     </div>
 
     <!-- ══ RASTREAMENTO ══ -->
-    <div id="sec-rastreamento" style="height:100%;overflow:hidden;flex-direction:column">
-      <div style="height:38px;background:var(--card);border-bottom:1px solid var(--border);
-        display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0">
+    <div id="sec-rastreamento" style="position:absolute;inset:0;left:256px;flex-direction:column">
+      <div style="height:44px;background:var(--card);border-bottom:1px solid var(--border);
+        display:flex;align-items:center;padding:0 20px;gap:8px;flex-shrink:0">
         <div style="width:7px;height:7px;background:var(--navy);border-radius:50%"></div>
-        <span style="font-size:13px;font-weight:500;color:var(--dim)">
+        <span style="font-size:14px;font-weight:500;color:var(--dim)">
           Rastreamento — Analytics, UTMs, Saúde do Tracking</span>
       </div>
       <iframe id="dash-iframe" src="about:blank"
-        style="flex:1;width:100%;border:none;display:block"></iframe>
+        style="flex:1;width:100%;border:none;display:block;height:calc(100vh - 44px)"></iframe>
     </div>
 
     <!-- ══ CONFIGURAÇÕES ══ -->
@@ -321,7 +324,7 @@
         <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.3">Configurações</h1>
         <p style="color:var(--dim);margin:4px 0 0;font-size:14px">Acesso rápido e informações da plataforma</p>
       </div>
-      <div style="max-width:560px;display:flex;flex-direction:column;gap:16px">
+      <div style="max-width:720px;display:flex;flex-direction:column;gap:20px">
         <div class="kcard">
           <div style="font-weight:700;margin-bottom:16px">Acesso Rápido</div>
           <div id="cfg-links" style="display:flex;flex-direction:column;gap:10px"></div>
@@ -338,10 +341,11 @@
           <div style="font-weight:700;margin-bottom:12px">Aplicar Migration D1</div>
           <div style="font-size:13px;color:var(--dim);display:flex;flex-direction:column;gap:6px">
             <p style="margin:0">Se ainda não aplicou a migration da tabela <code style="background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12px">marketing_funnels</code>:</p>
-            <code style="background:#1e293b;color:#a5f3fc;padding:10px 12px;border-radius:8px;
-              font-size:12px;display:block;line-height:1.6">
-              wrangler d1 migrations apply &lt;DB_NAME&gt; --remote
+            <code style="background:#1e293b;color:#a5f3fc;padding:10px 14px;border-radius:8px;
+              font-size:13px;display:block;line-height:1.8">
+              wrangler d1 migrations apply alisatfrotas-tracking-db --remote
             </code>
+            <p style="margin:6px 0 0;font-size:12px;color:var(--green)">✓ Migration 0017_marketing_funnels.sql já aplicada.</p>
           </div>
         </div>
       </div>
@@ -362,12 +366,6 @@ let iframeSet = false;
 const loaded = { paginas: false, leads: false };
 let allPages = [];
 
-// Slugs das LPs de leads — adicione aqui ao criar novas páginas
-const LP_SLUGS = new Set([
-  'agro', 'construcao', 'distribuicao', 'mineracao',
-  'transporte-carga', 'transporte-passageiros',
-  'videotelemetria', 'videotelemetria_topo',
-]);
 
 // ── Auth ──────────────────────────────────────────────────────────────────
 const urlKey = new URLSearchParams(location.search).get('key');
@@ -417,7 +415,7 @@ function nav(sec) {
   secs.forEach(s => {
     const el = g('sec-'+s);
     if (s === sec) {
-      el.style.display = s === 'rastreamento' ? 'flex' : '';
+      el.style.display = 'flex';
     } else {
       el.style.display = 'none';
     }
@@ -445,12 +443,13 @@ async function loadPaginas() {
 
   const regSlugs = new Set((fd.funnels || []).map(f => f.slug));
 
-  // Só mostra páginas detectadas que estão na whitelist de LPs de leads
-  // e que ainda não foram registradas como funil no D1
+  // Só mostra páginas detectadas sob /lps/ que ainda não estão no D1
+  // Qualquer nova LP criada em /lps/ aparece automaticamente
   const sessionPages = (pd.pages || []).filter(p => {
     try {
-      const slug = new URL(p.url).pathname.split('/').filter(Boolean).pop() || '';
-      return LP_SLUGS.has(slug) && !regSlugs.has(slug);
+      const parts = new URL(p.url).pathname.split('/').filter(Boolean);
+      const slug  = parts[parts.length - 1] || '';
+      return parts[0] === 'lps' && !regSlugs.has(slug);
     } catch { return false; }
   }).map(p => ({
     type: 'detected', url: p.url,
@@ -513,17 +512,23 @@ function pageRow(p) {
 
   return `<div class="prow fi">
 
-    <!-- Thumbnail -->
-    <div class="pthumb" style="background:linear-gradient(145deg,${pal[0]},${pal[1]})">
+    <!-- Thumbnail clicável -->
+    <a href="${esc(url)}" target="_blank" rel="noopener" class="pthumb"
+      style="background:linear-gradient(145deg,${pal[0]},${pal[1]});text-decoration:none;
+        opacity:1;transition:opacity .12s"
+      onmouseover="this.style.opacity='.82'" onmouseout="this.style.opacity='1'">
       <span style="font-size:26px;font-weight:800;color:rgba(255,255,255,.75);
         font-family:ui-sans-serif,system-ui,-apple-system,sans-serif">${esc(initial)}</span>
-    </div>
+    </a>
 
     <!-- Info -->
     <div style="flex:1;min-width:0">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <span style="font-size:14px;font-weight:600;color:var(--text);
-          overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px">${esc(name)}</span>
+        <a href="${esc(url)}" target="_blank" rel="noopener"
+          style="font-size:15px;font-weight:600;color:var(--text);text-decoration:none;
+            overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px;
+            transition:color .12s"
+          onmouseover="this.style.color='var(--navy)'" onmouseout="this.style.color='var(--text)'">${esc(name)}</a>
         ${badge}
       </div>
       <div style="display:flex;align-items:center;gap:5px">
