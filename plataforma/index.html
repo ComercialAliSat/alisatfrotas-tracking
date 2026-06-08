@@ -8,47 +8,41 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --navy:#033566; --navy-l:#0a4a8c; --navy-d:#022550;
-    --bg:#f9fafb; --card:#fff; --border:#e5e7eb;
-    --text:#18181b; --dim:#52525b; --muted:#9ca3af;
+    --navy:#033566; --navy-l:#0a4a8c;
+    --bg:#f9fafb; --card:#fff; --border:#e5e7eb; --border-l:#f3f4f6;
+    --text:#111827; --dim:#6b7280; --muted:#9ca3af;
     --green:#16a34a; --amber:#d97706; --red:#dc2626; --blue:#2563eb;
   }
   *,*::before,*::after{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
     font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
-  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
-  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:3px}
 
   /* ── Sidebar nav ── */
-  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;
+  .nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;
     font-size:13.5px;font-weight:500;cursor:pointer;border:none;background:transparent;
-    color:rgba(255,255,255,.60);text-align:left;width:100%;transition:background .15s,color .15s;line-height:1.2}
-  .nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
-  .nav-item.active{background:rgba(255,255,255,.15);color:#fff}
+    color:var(--dim);text-align:left;width:100%;transition:background .12s,color .12s;line-height:1.2}
+  .nav-item:hover{background:#f4f4f5;color:var(--text)}
+  .nav-item.active{background:#eef2ff;color:var(--navy);font-weight:600}
 
-  /* ── Funnel card (estilo GreatPages + tokens Ali Sat) ── */
-  .fcard{background:var(--card);border:1px solid var(--border);border-radius:14px;
-    overflow:hidden;transition:box-shadow .2s,border-color .2s;display:flex;flex-direction:column}
-  .fcard:hover{box-shadow:0 6px 24px rgba(3,53,102,.09);border-color:#d1d5db}
-  .fthumb{height:158px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:14px;flex-shrink:0}
-  .fthumb::before{content:'';position:absolute;inset:0;
-    background:repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(255,255,255,.04) 12px,rgba(255,255,255,.04) 13px)}
-  .fthumb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:70px;
-    background:linear-gradient(transparent,rgba(0,0,0,.3))}
-  .fthumb-inner{position:relative;z-index:2}
+  /* ── Page rows ── */
+  .prow{display:flex;align-items:center;gap:16px;padding:14px 20px;
+    border-bottom:1px solid var(--border-l);background:var(--card);
+    transition:background .12s;cursor:default}
+  .prow:last-child{border-bottom:none}
+  .prow:hover{background:#fafafa}
 
-  /* ── Metric chips ── */
-  .mchip{display:flex;flex-direction:column;align-items:center;background:var(--bg);
-    border:1px solid var(--border);border-radius:8px;padding:6px 10px;flex:1;min-width:0}
-  .mchip-v{font-size:15px;font-weight:700;line-height:1.2}
-  .mchip-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+  .pthumb{width:74px;height:58px;border-radius:8px;flex-shrink:0;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;position:relative}
 
-  /* ── Badges ── */
-  .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
-    padding:2px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap}
-  .badge-pub  {background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
-  .badge-draft{background:#fefce8;color:#a16207;border:1px solid #fde68a}
-  .badge-det  {background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb}
+  .prow-stat{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;min-width:76px;text-align:right}
+  .prow-stat-val{font-size:15px;font-weight:700;color:var(--text);line-height:1.2}
+  .prow-stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+  .paction{display:flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:7px;border:none;background:transparent;
+    color:#b0b7c3;cursor:pointer;transition:background .12s,color .12s;text-decoration:none;flex-shrink:0}
+  .paction:hover{background:#f4f4f5;color:#374151}
 
   /* ── KPI card ── */
   .kcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
@@ -59,12 +53,15 @@
   .ltable{width:100%;border-collapse:collapse;font-size:13px}
   .ltable th{padding:8px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;
     letter-spacing:.04em;color:var(--dim);border-bottom:1px solid var(--border)}
-  .ltable td{padding:9px 12px;border-bottom:1px solid #f3f4f6;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ltable td{padding:9px 12px;border-bottom:1px solid var(--border-l);max-width:180px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .ltable tr:hover td{background:#fafafa}
 
   /* ── Buttons ── */
   .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;
     font-size:13.5px;font-weight:600;cursor:pointer;border:none;transition:background .15s}
+  .btn-dark{background:#111827;color:#fff}.btn-dark:hover{background:#1f2937}
+  .btn-outline{background:var(--card);color:var(--dim);border:1px solid var(--border)}.btn-outline:hover{background:var(--bg)}
   .btn-p{background:var(--navy);color:#fff}.btn-p:hover{background:var(--navy-l)}
   .btn-s{background:var(--card);color:var(--dim);border:1px solid var(--border)}.btn-s:hover{background:var(--bg)}
 
@@ -76,15 +73,22 @@
   /* ── Input ── */
   .inp{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;
     font-size:14px;outline:none;transition:border-color .15s;background:var(--card)}
-  .inp:focus{border-color:var(--navy)}
+  .inp:focus{border-color:#d1d5db;box-shadow:0 0 0 3px rgba(3,53,102,.06)}
+
+  /* ── Badges ── */
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;
+    padding:2px 7px;border-radius:20px;flex-shrink:0;white-space:nowrap}
+  .badge-pub  {background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+  .badge-draft{background:#fefce8;color:#a16207;border:1px solid #fde68a}
+  .badge-det  {background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb}
 
   /* ── Modal overlay ── */
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;
     align-items:center;justify-content:center;z-index:300}
 
   @keyframes spin{to{transform:rotate(360deg)}}
-  @keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-  .fi{animation:fi .3s ease-out}
+  @keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .fi{animation:fi .25s ease-out}
 </style>
 </head>
 <body>
@@ -101,7 +105,7 @@
     <div style="font-size:13px;color:var(--dim);margin-bottom:18px">Insira a chave DASH_KEY</div>
     <input id="auth-inp" type="password" placeholder="DASH_KEY" class="inp">
     <div id="auth-err" style="color:var(--red);font-size:12px;min-height:18px;margin-top:6px"></div>
-    <button id="auth-btn" class="btn btn-p" style="width:100%;margin-top:12px;justify-content:center">Entrar</button>
+    <button id="auth-btn" class="btn btn-dark" style="width:100%;margin-top:12px;justify-content:center">Entrar</button>
   </div>
 </div>
 
@@ -115,10 +119,10 @@
   </div>
 </div>
 
-<!-- ── CRIAR FUNIL MODAL ── -->
+<!-- ── CRIAR PÁGINA MODAL ── -->
 <div id="d-create" class="overlay" style="display:none">
   <div class="kcard" style="width:440px;padding:28px">
-    <div style="font-size:16px;font-weight:700;margin-bottom:20px">Criar nova página</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:20px">Adicionar página</div>
     <div style="display:flex;flex-direction:column;gap:14px">
       <div>
         <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
@@ -147,7 +151,7 @@
     <div id="create-err" style="color:var(--red);font-size:12px;min-height:16px;margin-top:10px"></div>
     <div style="display:flex;gap:10px;margin-top:20px">
       <button id="create-cancel" class="btn btn-s" style="flex:1;justify-content:center">Cancelar</button>
-      <button id="create-ok" class="btn btn-p" style="flex:1;justify-content:center">Criar página</button>
+      <button id="create-ok" class="btn btn-dark" style="flex:1;justify-content:center">Criar página</button>
     </div>
   </div>
 </div>
@@ -157,28 +161,28 @@
 <div style="display:flex;height:100%">
 
   <!-- SIDEBAR -->
-  <aside style="width:240px;min-width:240px;background:var(--navy);display:flex;
-    flex-direction:column;height:100%;flex-shrink:0">
+  <aside style="width:230px;min-width:230px;background:var(--card);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;height:100%;flex-shrink:0">
 
-    <div style="padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.10)">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border-l)">
       <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:34px;height:34px;background:rgba(255,255,255,.12);border-radius:9px;
+        <div style="width:32px;height:32px;background:var(--navy);border-radius:8px;
           display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.3">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.3">
             <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-4 4"/></svg>
         </div>
         <div>
-          <div style="color:#fff;font-weight:700;font-size:14px;line-height:1.2">Ali Sat</div>
-          <div style="color:rgba(255,255,255,.40);font-size:11px">Plataforma</div>
+          <div style="color:var(--text);font-weight:700;font-size:14px;line-height:1.2">Ali Sat</div>
+          <div style="color:var(--muted);font-size:11px">Plataforma</div>
         </div>
       </div>
     </div>
 
-    <nav id="nav" style="padding:12px;flex:1;display:flex;flex-direction:column;gap:2px">
+    <nav id="nav" style="padding:8px;flex:1;display:flex;flex-direction:column;gap:2px">
       <button class="nav-item" data-sec="paginas">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/></svg>
-        Páginas e Funis
+        Minhas páginas
       </button>
       <button class="nav-item" data-sec="leads">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -199,60 +203,59 @@
       </button>
     </nav>
 
-    <div style="padding:14px 20px;border-top:1px solid rgba(255,255,255,.08)">
-      <div style="color:rgba(255,255,255,.22);font-size:11px">Ali Sat Frotas — v1.0</div>
+    <div style="padding:12px 16px;border-top:1px solid var(--border-l)">
+      <div style="font-size:11px;color:var(--muted)">Ali Sat Frotas — v1.0</div>
     </div>
   </aside>
 
   <!-- CONTENT -->
-  <main id="content" style="flex:1;overflow-y:auto;min-width:0">
+  <main id="content" style="flex:1;overflow-y:auto;min-width:0;background:var(--bg)">
 
-    <!-- ══ PÁGINAS E FUNIS ══ -->
-    <div id="sec-paginas" style="display:none;padding:32px;min-height:100%">
+    <!-- ══ MINHAS PÁGINAS ══ -->
+    <div id="sec-paginas" style="display:none;padding:32px 36px;min-height:100%">
+
+      <!-- Header -->
       <div style="display:flex;align-items:flex-start;justify-content:space-between;
-        margin-bottom:28px;flex-wrap:wrap;gap:14px">
+        margin-bottom:6px;flex-wrap:wrap;gap:14px">
         <div>
-          <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.2">Páginas e Funis</h1>
-          <p style="color:var(--dim);margin:6px 0 0;font-size:14px">
-            Gerencie funis, acompanhe visitas e conversões em tempo real
+          <h1 style="font-size:22px;font-weight:700;margin:0;line-height:1.3;display:flex;align-items:baseline;gap:8px">
+            Minhas páginas
+            <span id="kpi-np" style="font-size:16px;font-weight:500;color:var(--amber)"></span>
+          </h1>
+          <p style="color:var(--dim);margin:4px 0 0;font-size:14px">
+            Tenha controle total sobre páginas e conversões.
           </p>
         </div>
-        <button id="btn-criar" class="btn btn-p">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <button id="btn-criar" class="btn btn-dark">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Criar página
+          Adicionar página
         </button>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px">
-        <div class="kcard"><div class="klabel">Páginas</div>
-          <div class="kval" id="kpi-np">—</div></div>
-        <div class="kcard"><div class="klabel">Total Visitas (30d)</div>
-          <div class="kval" id="kpi-pv" style="color:var(--navy)">—</div></div>
-        <div class="kcard"><div class="klabel">Total Leads (30d)</div>
-          <div class="kval" id="kpi-pl" style="color:var(--green)">—</div></div>
-      </div>
-
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px">
-        <div style="position:relative;flex:1;max-width:380px">
+      <!-- Search + count -->
+      <div style="display:flex;align-items:center;gap:12px;margin:20px 0 16px">
+        <div style="position:relative;flex:1;max-width:440px">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="pg-search" type="text" placeholder="Buscar páginas…" class="inp" style="padding-left:34px">
+          <input id="pg-search" type="text" placeholder="Encontrar páginas…" class="inp" style="padding-left:34px">
         </div>
         <span id="pg-count" style="font-size:13px;color:var(--muted)"></span>
       </div>
 
-      <div id="pg-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px"></div>
+      <!-- List -->
+      <div id="pg-grid" style="background:var(--card);border:1px solid var(--border);
+        border-radius:12px;overflow:hidden"></div>
     </div>
 
     <!-- ══ LEADS ══ -->
-    <div id="sec-leads" style="display:none;padding:32px;min-height:100%">
+    <div id="sec-leads" style="display:none;padding:32px 36px;min-height:100%">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;
         margin-bottom:28px;flex-wrap:wrap;gap:14px">
         <div>
-          <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.2">Leads</h1>
-          <p id="leads-sub" style="color:var(--dim);margin:6px 0 0;font-size:14px">Formulários capturados</p>
+          <h1 style="font-size:22px;font-weight:700;margin:0;line-height:1.3">Leads</h1>
+          <p id="leads-sub" style="color:var(--dim);margin:4px 0 0;font-size:14px">Formulários capturados</p>
         </div>
         <div style="display:flex;gap:6px" id="leads-range">
           <button class="rbtn" data-days="7">7d</button>
@@ -301,9 +304,8 @@
     </div>
 
     <!-- ══ RASTREAMENTO ══ -->
-    <div id="sec-rastreamento" style="display:none;height:100vh;overflow:hidden;
-      display:flex;flex-direction:column">
-      <div style="height:38px;background:#fff;border-bottom:1px solid var(--border);
+    <div id="sec-rastreamento" style="height:100%;overflow:hidden;flex-direction:column">
+      <div style="height:38px;background:var(--card);border-bottom:1px solid var(--border);
         display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0">
         <div style="width:7px;height:7px;background:var(--navy);border-radius:50%"></div>
         <span style="font-size:13px;font-weight:500;color:var(--dim)">
@@ -314,10 +316,10 @@
     </div>
 
     <!-- ══ CONFIGURAÇÕES ══ -->
-    <div id="sec-config" style="display:none;padding:32px;min-height:100%">
+    <div id="sec-config" style="display:none;padding:32px 36px;min-height:100%">
       <div style="margin-bottom:28px">
-        <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.2">Configurações</h1>
-        <p style="color:var(--dim);margin:6px 0 0;font-size:14px">Acesso rápido e informações da plataforma</p>
+        <h1 style="font-size:22px;font-weight:700;margin:0;line-height:1.3">Configurações</h1>
+        <p style="color:var(--dim);margin:4px 0 0;font-size:14px">Acesso rápido e informações da plataforma</p>
       </div>
       <div style="max-width:560px;display:flex;flex-direction:column;gap:16px">
         <div class="kcard">
@@ -353,7 +355,6 @@
 (function(){
 'use strict';
 
-// ── Estado global ─────────────────────────────────────────────────────────
 let KEY = '';
 let days = 30;
 let leadsChart = null;
@@ -385,7 +386,7 @@ function tryAuth() {
 // ── Bootstrap ─────────────────────────────────────────────────────────────
 function boot() {
   g('d-load').style.display = 'none';
-  showEl('app');
+  g('app').style.display = 'flex';
   const sec = location.hash.replace('#','') || 'paginas';
   nav(sec);
   buildCfgLinks();
@@ -406,17 +407,24 @@ function nav(sec) {
   document.querySelectorAll('[data-sec]').forEach(b =>
     b.classList.toggle('active', b.dataset.sec === sec));
 
-  secs.forEach(s => g('sec-'+s).style.display = s === sec ? '' : 'none');
+  secs.forEach(s => {
+    const el = g('sec-'+s);
+    if (s === sec) {
+      el.style.display = s === 'rastreamento' ? 'flex' : '';
+    } else {
+      el.style.display = 'none';
+    }
+  });
 
-  if (sec === 'paginas'     && !loaded.paginas) loadPaginas();
-  if (sec === 'leads'       && !loaded.leads)   loadLeads(days);
-  if (sec === 'rastreamento' && !iframeSet)      setIframe();
+  if (sec === 'paginas'      && !loaded.paginas) loadPaginas();
+  if (sec === 'leads'        && !loaded.leads)   loadLeads(days);
+  if (sec === 'rastreamento' && !iframeSet)       setIframe();
 }
 
-// ══ PÁGINAS E FUNIS ══════════════════════════════════════════════════════
+// ══ PÁGINAS ══════════════════════════════════════════════════════════════
 
 async function loadPaginas() {
-  g('pg-grid').innerHTML = skeleton(4);
+  g('pg-grid').innerHTML = skeletonRows(4);
 
   const [fr, pr] = await Promise.all([
     fetch('/api/funnels?key=' + enc(KEY) + '&days=30'),
@@ -428,10 +436,8 @@ async function loadPaginas() {
   const fd = fr.ok ? await fr.json() : { funnels: [] };
   const pd = pr.ok ? await pr.json() : { pages: [] };
 
-  // Slugs já registrados no D1
   const regSlugs = new Set((fd.funnels || []).map(f => f.slug));
 
-  // Páginas detectadas pelo tracking (que não estão no D1 ainda)
   const sessionPages = (pd.pages || []).filter(p => {
     try { return !regSlugs.has(new URL(p.url).pathname.split('/').filter(Boolean).pop()); }
     catch { return true; }
@@ -446,11 +452,8 @@ async function loadPaginas() {
     ...sessionPages,
   ];
 
-  const tv = allPages.reduce((s,p) => s + (p.visits||0), 0);
-  const tl = allPages.reduce((s,p) => s + (p.leads ||0), 0);
-  txt('kpi-np', allPages.length);
-  txt('kpi-pv', fmt(tv));
-  txt('kpi-pl', fmt(tl));
+  const n = allPages.length;
+  g('kpi-np').textContent = n ? '(' + n + ')' : '';
 
   renderPages(allPages);
   loaded.paginas = true;
@@ -466,23 +469,30 @@ g('pg-search').addEventListener('input', function() {
 function renderPages(list) {
   txt('pg-count', list.length + ' página' + (list.length !== 1 ? 's' : ''));
   if (!list.length) {
-    g('pg-grid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:64px 20px;color:var(--muted)">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" style="margin:0 auto 12px;display:block">
-        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/></svg>
-      <div style="font-size:14px;font-weight:500;color:var(--dim)">Nenhuma página encontrada.</div>
-    </div>`;
+    g('pg-grid').innerHTML = `
+      <div style="text-align:center;padding:64px 20px;color:var(--muted)">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5"
+          style="margin:0 auto 12px;display:block">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+          <path d="M13 2v7h7"/></svg>
+        <div style="font-size:14px;font-weight:500;color:var(--dim)">Nenhuma página encontrada.</div>
+      </div>`;
     return;
   }
-  g('pg-grid').innerHTML = list.map(funnelCard).join('');
+  g('pg-grid').innerHTML = list.map(pageRow).join('');
 }
 
-function funnelCard(p) {
+function pageRow(p) {
   const isFunnel = p.type === 'funnel';
-  const name   = p.name || pgName(p.url || '');
-  const url    = p.url  || ('/lps/' + p.slug);
-  const short  = shortUrl(url);
-  const pal    = thumbPal(url);
-  const conv   = (p.conversion_rate || 0).toFixed(1) + '%';
+  const name     = p.name || pgName(p.url || '');
+  const url      = p.url  || ('/lps/' + p.slug);
+  const short    = shortUrl(url);
+  const pal      = thumbPal(url);
+  const initial  = name.trim().charAt(0).toUpperCase();
+
+  const dotColor = isFunnel
+    ? (p.status === 'published' ? '#22c55e' : '#f59e0b')
+    : '#9ca3af';
 
   const badge = isFunnel
     ? (p.status === 'published'
@@ -490,52 +500,72 @@ function funnelCard(p) {
         : `<span class="badge badge-draft"><span style="width:5px;height:5px;background:#eab308;border-radius:50%;display:inline-block"></span>Rascunho</span>`)
     : `<span class="badge badge-det">Detectado</span>`;
 
-  return `<div class="fcard fi">
-    <div class="fthumb" style="background:linear-gradient(140deg,${pal[0]},${pal[1]})">
-      <div class="fthumb-inner">
-        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);
-          letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px">Ali Sat</div>
-        <div style="font-size:17px;font-weight:800;color:#fff;line-height:1.25;
-          max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(name)}</div>
-      </div>
+  return `<div class="prow fi">
+
+    <!-- Thumbnail -->
+    <div class="pthumb" style="background:linear-gradient(145deg,${pal[0]},${pal[1]})">
+      <span style="font-size:22px;font-weight:800;color:rgba(255,255,255,.75);
+        font-family:ui-sans-serif,system-ui,-apple-system,sans-serif">${esc(initial)}</span>
     </div>
-    <div style="padding:14px 16px 0;flex:1">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">
-        <span style="font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${esc(name)}</span>
+
+    <!-- Info -->
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-size:14px;font-weight:600;color:var(--text);
+          overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px">${esc(name)}</span>
         ${badge}
       </div>
-      <div style="font-size:11px;color:var(--muted);font-family:ui-monospace,monospace;
-        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:12px">${esc(short)}</div>
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <div class="mchip"><span class="mchip-v" style="color:var(--navy)">${fmt(p.visits||0)}</span><span class="mchip-l">Visitas</span></div>
-        <div class="mchip"><span class="mchip-v" style="color:var(--green)">${fmt(p.leads||0)}</span><span class="mchip-l">Leads</span></div>
-        <div class="mchip"><span class="mchip-v" style="color:var(--amber)">${conv}</span><span class="mchip-l">Conv.</span></div>
+      <div style="display:flex;align-items:center;gap:5px">
+        <span style="width:7px;height:7px;border-radius:50%;background:${dotColor};flex-shrink:0"></span>
+        <span style="font-size:12px;color:var(--dim);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+          overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px">${esc(short)}</span>
+        <button onclick="navigator.clipboard.writeText('${esc(url)}')"
+          style="background:none;border:none;cursor:pointer;padding:2px 3px;color:var(--muted);
+            flex-shrink:0;display:flex;align-items:center;border-radius:4px;transition:color .12s"
+          onmouseover="this.style.color='#374151'" onmouseout="this.style.color='var(--muted)'"
+          title="Copiar URL">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
       </div>
     </div>
-    <div style="padding:10px 16px 14px;display:flex;gap:8px;border-top:1px solid var(--border)">
-      <a href="${esc(url)}" target="_blank" rel="noopener"
-        style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;
-          background:var(--bg);border:1px solid var(--border);border-radius:7px;font-size:12px;
-          font-weight:500;color:var(--dim);text-decoration:none"
-        onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='var(--bg)'">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+    <!-- Métricas -->
+    <div class="prow-stat">
+      <div class="prow-stat-val">${fmt(p.visits||0)}</div>
+      <div class="prow-stat-lbl">Visitas</div>
+    </div>
+    <div class="prow-stat">
+      <div class="prow-stat-val">${fmt(p.leads||0)}</div>
+      <div class="prow-stat-lbl">Conversões</div>
+    </div>
+
+    <!-- Ações -->
+    <div style="display:flex;gap:2px;flex-shrink:0;margin-left:4px">
+      <a href="${esc(url)}" target="_blank" rel="noopener" class="paction" title="Ver página">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
           <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Ver
       </a>
-      <button style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;
-        background:var(--navy);border:none;border-radius:7px;font-size:12px;font-weight:600;
-        color:#fff;cursor:pointer"
-        onmouseover="this.style.background='var(--navy-l)'" onmouseout="this.style.background='var(--navy)'">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        Editar
+      <button class="paction" onclick="location.hash='leads'" title="Ver leads">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </button>
+      <button class="paction" onclick="location.hash='rastreamento'" title="Analytics">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/></svg>
       </button>
     </div>
+
   </div>`;
 }
 
-// Criar funil
+// Criar página
 g('btn-criar').onclick = () => showEl('d-create');
 g('create-cancel').onclick = () => hideEl('d-create');
 g('fn-name').oninput = () => { g('fn-slug').value = slugify(g('fn-name').value); };
@@ -649,7 +679,7 @@ function renderLeadsTable(leads) {
       ? `<span class="badge badge-pub" style="font-size:10px">OK</span>`
       : `<span class="badge" style="background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;font-size:10px">Falhou</span>`;
     return `<tr>
-      <td class="mono" style="font-size:11px;color:var(--dim);white-space:nowrap">${date} ${time}</td>
+      <td style="font-family:ui-monospace,monospace;font-size:11px;color:var(--dim);white-space:nowrap">${date} ${time}</td>
       <td>${esc(r.raw_email||'—')}</td>
       <td style="white-space:nowrap">${src}</td>
       <td>${esc(r.utm_campaign||'—')}</td>
@@ -668,9 +698,9 @@ function setIframe() {
 // ══ CONFIGURAÇÕES ══════════════════════════════════════════════════════════
 function buildCfgLinks() {
   const links = [
-    { label:'Páginas e Funis',         href:'/plataforma',  desc:'Gerencie funis e acompanhe conversões em tempo real' },
-    { label:'Rastreamento Dashboard',  href:'/dash',        desc:'Analytics, UTMs, receita, saúde do tracking' },
-    { label:'Leads — Visitas',         href:'/dash/leads',  desc:'Visitas por dia, fontes, leads recentes' },
+    { label:'Páginas e Funis',        href:'/plataforma', desc:'Gerencie funis e acompanhe conversões em tempo real' },
+    { label:'Rastreamento Dashboard', href:'/dash',       desc:'Analytics, UTMs, receita, saúde do tracking' },
+    { label:'Leads — Visitas',        href:'/dash/leads', desc:'Visitas por dia, fontes, leads recentes' },
   ];
   g('cfg-links').innerHTML = links.map(l => {
     const href = l.href + (KEY ? '?key=' + enc(KEY) : '');
@@ -717,11 +747,19 @@ function thumbPal(url) {
   let h = 0; for (const c of url) h = (h*31 + c.charCodeAt(0)) | 0;
   return PALS[Math.abs(h) % PALS.length];
 }
-function skeleton(n) {
-  const c = `<div class="fcard"><div class="fthumb" style="background:#e5e7eb"></div>
-    <div style="padding:14px 16px"><div style="height:15px;background:#f3f4f6;border-radius:4px;margin-bottom:8px;width:70%"></div>
-    <div style="height:11px;background:#f3f4f6;border-radius:4px;width:55%"></div></div></div>`;
-  return Array(n).fill(c).join('');
+function skeletonRows(n) {
+  const row = `<div style="display:flex;align-items:center;gap:16px;padding:14px 20px;
+    border-bottom:1px solid var(--border-l)">
+    <div style="width:74px;height:58px;background:#f3f4f6;border-radius:8px;flex-shrink:0"></div>
+    <div style="flex:1">
+      <div style="height:14px;background:#f3f4f6;border-radius:4px;width:45%;margin-bottom:8px"></div>
+      <div style="height:11px;background:#f3f4f6;border-radius:4px;width:62%"></div>
+    </div>
+    <div style="width:60px;height:32px;background:#f3f4f6;border-radius:6px"></div>
+    <div style="width:60px;height:32px;background:#f3f4f6;border-radius:6px"></div>
+    <div style="width:96px;height:30px;background:#f3f4f6;border-radius:6px"></div>
+  </div>`;
+  return Array(n).fill(row).join('');
 }
 function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n); }
 function enc(s) { return encodeURIComponent(s); }
