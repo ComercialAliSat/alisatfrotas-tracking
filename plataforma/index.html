@@ -19,25 +19,25 @@
   ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:3px}
 
   /* ── Sidebar nav ── */
-  .nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;
-    font-size:13.5px;font-weight:500;cursor:pointer;border:none;background:transparent;
-    color:var(--dim);text-align:left;width:100%;transition:background .12s,color .12s;line-height:1.2}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:10px 14px;border-radius:9px;
+    font-size:14.5px;font-weight:500;cursor:pointer;border:none;background:transparent;
+    color:var(--dim);text-align:left;width:100%;transition:background .12s,color .12s;line-height:1.25}
   .nav-item:hover{background:#f4f4f5;color:var(--text)}
   .nav-item.active{background:#eef2ff;color:var(--navy);font-weight:600}
 
   /* ── Page rows ── */
-  .prow{display:flex;align-items:center;gap:16px;padding:14px 20px;
+  .prow{display:flex;align-items:center;gap:20px;padding:16px 24px;
     border-bottom:1px solid var(--border-l);background:var(--card);
     transition:background .12s;cursor:default}
   .prow:last-child{border-bottom:none}
   .prow:hover{background:#fafafa}
 
-  .pthumb{width:74px;height:58px;border-radius:8px;flex-shrink:0;overflow:hidden;
+  .pthumb{width:82px;height:66px;border-radius:9px;flex-shrink:0;overflow:hidden;
     display:flex;align-items:center;justify-content:center;position:relative}
 
-  .prow-stat{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;min-width:76px;text-align:right}
-  .prow-stat-val{font-size:15px;font-weight:700;color:var(--text);line-height:1.2}
-  .prow-stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+  .prow-stat{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;min-width:86px;text-align:right}
+  .prow-stat-val{font-size:16px;font-weight:700;color:var(--text);line-height:1.2}
+  .prow-stat-lbl{font-size:11.5px;color:var(--muted);margin-top:3px}
 
   .paction{display:flex;align-items:center;justify-content:center;
     width:30px;height:30px;border-radius:7px;border:none;background:transparent;
@@ -161,24 +161,24 @@
 <div style="display:flex;height:100%">
 
   <!-- SIDEBAR -->
-  <aside style="width:230px;min-width:230px;background:var(--card);border-right:1px solid var(--border);
+  <aside style="width:256px;min-width:256px;background:var(--card);border-right:1px solid var(--border);
     display:flex;flex-direction:column;height:100%;flex-shrink:0">
 
-    <div style="padding:16px 20px;border-bottom:1px solid var(--border-l)">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;background:var(--navy);border-radius:8px;
+    <div style="padding:18px 22px;border-bottom:1px solid var(--border-l)">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="width:36px;height:36px;background:var(--navy);border-radius:9px;
           display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.3">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.3">
             <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-4 4"/></svg>
         </div>
         <div>
-          <div style="color:var(--text);font-weight:700;font-size:14px;line-height:1.2">Ali Sat</div>
-          <div style="color:var(--muted);font-size:11px">Plataforma</div>
+          <div style="color:var(--text);font-weight:700;font-size:15px;line-height:1.2">Ali Sat</div>
+          <div style="color:var(--muted);font-size:11.5px">Plataforma</div>
         </div>
       </div>
     </div>
 
-    <nav id="nav" style="padding:8px;flex:1;display:flex;flex-direction:column;gap:2px">
+    <nav id="nav" style="padding:10px;flex:1;display:flex;flex-direction:column;gap:2px">
       <button class="nav-item" data-sec="paginas">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/></svg>
@@ -212,13 +212,13 @@
   <main id="content" style="flex:1;overflow-y:auto;min-width:0;background:var(--bg)">
 
     <!-- ══ MINHAS PÁGINAS ══ -->
-    <div id="sec-paginas" style="display:none;padding:32px 36px;min-height:100%">
+    <div id="sec-paginas" style="display:none;padding:40px 44px;min-height:100%">
 
       <!-- Header -->
       <div style="display:flex;align-items:flex-start;justify-content:space-between;
         margin-bottom:6px;flex-wrap:wrap;gap:14px">
         <div>
-          <h1 style="font-size:22px;font-weight:700;margin:0;line-height:1.3;display:flex;align-items:baseline;gap:8px">
+          <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.3;display:flex;align-items:baseline;gap:8px">
             Minhas páginas
             <span id="kpi-np" style="font-size:16px;font-weight:500;color:var(--amber)"></span>
           </h1>
@@ -250,11 +250,11 @@
     </div>
 
     <!-- ══ LEADS ══ -->
-    <div id="sec-leads" style="display:none;padding:32px 36px;min-height:100%">
+    <div id="sec-leads" style="display:none;padding:40px 44px;min-height:100%">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;
         margin-bottom:28px;flex-wrap:wrap;gap:14px">
         <div>
-          <h1 style="font-size:22px;font-weight:700;margin:0;line-height:1.3">Leads</h1>
+          <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.3">Leads</h1>
           <p id="leads-sub" style="color:var(--dim);margin:4px 0 0;font-size:14px">Formulários capturados</p>
         </div>
         <div style="display:flex;gap:6px" id="leads-range">
@@ -316,9 +316,9 @@
     </div>
 
     <!-- ══ CONFIGURAÇÕES ══ -->
-    <div id="sec-config" style="display:none;padding:32px 36px;min-height:100%">
+    <div id="sec-config" style="display:none;padding:40px 44px;min-height:100%">
       <div style="margin-bottom:28px">
-        <h1 style="font-size:22px;font-weight:700;margin:0;line-height:1.3">Configurações</h1>
+        <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.3">Configurações</h1>
         <p style="color:var(--dim);margin:4px 0 0;font-size:14px">Acesso rápido e informações da plataforma</p>
       </div>
       <div style="max-width:560px;display:flex;flex-direction:column;gap:16px">
@@ -361,6 +361,13 @@ let leadsChart = null;
 let iframeSet = false;
 const loaded = { paginas: false, leads: false };
 let allPages = [];
+
+// Slugs das LPs de leads — adicione aqui ao criar novas páginas
+const LP_SLUGS = new Set([
+  'agro', 'construcao', 'distribuicao', 'mineracao',
+  'transporte-carga', 'transporte-passageiros',
+  'videotelemetria', 'videotelemetria_topo',
+]);
 
 // ── Auth ──────────────────────────────────────────────────────────────────
 const urlKey = new URLSearchParams(location.search).get('key');
@@ -438,9 +445,13 @@ async function loadPaginas() {
 
   const regSlugs = new Set((fd.funnels || []).map(f => f.slug));
 
+  // Só mostra páginas detectadas que estão na whitelist de LPs de leads
+  // e que ainda não foram registradas como funil no D1
   const sessionPages = (pd.pages || []).filter(p => {
-    try { return !regSlugs.has(new URL(p.url).pathname.split('/').filter(Boolean).pop()); }
-    catch { return true; }
+    try {
+      const slug = new URL(p.url).pathname.split('/').filter(Boolean).pop() || '';
+      return LP_SLUGS.has(slug) && !regSlugs.has(slug);
+    } catch { return false; }
   }).map(p => ({
     type: 'detected', url: p.url,
     visits: p.visits, leads: p.leads,
@@ -504,7 +515,7 @@ function pageRow(p) {
 
     <!-- Thumbnail -->
     <div class="pthumb" style="background:linear-gradient(145deg,${pal[0]},${pal[1]})">
-      <span style="font-size:22px;font-weight:800;color:rgba(255,255,255,.75);
+      <span style="font-size:26px;font-weight:800;color:rgba(255,255,255,.75);
         font-family:ui-sans-serif,system-ui,-apple-system,sans-serif">${esc(initial)}</span>
     </div>
 
@@ -748,9 +759,9 @@ function thumbPal(url) {
   return PALS[Math.abs(h) % PALS.length];
 }
 function skeletonRows(n) {
-  const row = `<div style="display:flex;align-items:center;gap:16px;padding:14px 20px;
+  const row = `<div style="display:flex;align-items:center;gap:20px;padding:16px 24px;
     border-bottom:1px solid var(--border-l)">
-    <div style="width:74px;height:58px;background:#f3f4f6;border-radius:8px;flex-shrink:0"></div>
+    <div style="width:82px;height:66px;background:#f3f4f6;border-radius:9px;flex-shrink:0"></div>
     <div style="flex:1">
       <div style="height:14px;background:#f3f4f6;border-radius:4px;width:45%;margin-bottom:8px"></div>
       <div style="height:11px;background:#f3f4f6;border-radius:4px;width:62%"></div>
