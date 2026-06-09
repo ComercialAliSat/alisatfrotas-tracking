@@ -17,7 +17,7 @@ export async function onRequestGet(context) {
   }
 
   const days = clampInt(url.searchParams.get('days'), 30, 1, 365);
-  const limit = clampInt(url.searchParams.get('limit'), 100, 1, 500);
+  const limit = clampInt(url.searchParams.get('limit'), 100, 1, 2000);
   const includeBots = url.searchParams.get('include_bots') === '1';
   const since = Math.floor(Date.now() / 1000) - days * 86400;
 
