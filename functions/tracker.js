@@ -189,6 +189,23 @@ export async function onRequestPost(context) {
       if (gadsStatus >= 400) console.error('Google Ads lead CAPI non-2xx:', gadsStatus);
     }
 
+    // Geo da Cloudflare (disponível em runtime, vazio em dev local)
+    const country = (request.cf?.country || '').slice(0, 2).toUpperCase();
+    const city    = request.cf?.city    || '';
+    const region  = request.cf?.region  || '';
+
+    // Snapshot de UTMs no momento do evento — imune a mutações futuras da sessão.
+    // Usa sessionData como fonte primária (capturado pelo middleware via URL)
+    // e o body como fallback (LPs enviam UTMs via param() como redundância).
+    const snapshotUtmSource   = sessionData.utm_source   || body.utm_source   || '';
+    const snapshotUtmMedium   = sessionData.utm_medium   || body.utm_medium   || '';
+    const snapshotUtmCampaign = sessionData.utm_campaign || body.utm_campaign || '';
+    const snapshotUtmContent  = sessionData.utm_content  || body.utm_content  || '';
+    const snapshotUtmTerm     = sessionData.utm_term     || body.utm_term     || '';
+
+    // Consent — usa corpo do request ou cookie LGPD do middleware
+    const consentStatus = body.consent_status || cookies['alisat_lgpd'] || 'unknown';
+
     const rawEmail    = userData.em || '';
     const rawName     = [userData.fn, userData.ln].filter(Boolean).join(' ').trim();
     const rawPhone    = userData.ph || '';
@@ -226,18 +243,22 @@ export async function onRequestPost(context) {
                 sent_to_meta, meta_status_code, meta_response_ok, meta_response_body, meta_payload_sent,
                 sent_to_ga4, ga4_status_code, ga4_response_ok, ga4_response_body, ga4_payload_sent,
                 has_email, has_phone, has_name,
-                raw_email, raw_name, raw_phone, raw_form_data
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                raw_email, raw_name, raw_phone, raw_form_data,
+                utm_source, utm_medium, utm_campaign, utm_content, utm_term,
+                country, city, region
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `).bind(
               sessionId, body.event_name, body.event_id, body.event_time,
               browserInfo.browser, browserInfo.version, browserInfo.os, browserInfo.isMobile ? 1 : 0,
               pixelWasBlocked, fbpSource, fbcSource, fbclidSource,
               gaCookiePresent, gaClientIdFallback, fbpSource === 'middleware_http' ? 1 : 0,
-              isBot ? 1 : 0, botReason, body.consent_status || 'unknown',
+              isBot ? 1 : 0, botReason, consentStatus,
               isBot ? 0 : 1, metaStatusCode, metaResponseOk, metaResponseBody, metaPayloadSent ?? null,
               isBot ? 0 : 1, ga4StatusCode, ga4ResponseOk, ga4ResponseBody, ga4PayloadSent ?? null,
               hashedEm ? 1 : 0, hashedPh ? 1 : 0, (hashedFn || hashedLn) ? 1 : 0,
-              rawEmail, rawName, rawPhone, rawFormData
+              rawEmail, rawName, rawPhone, rawFormData,
+              snapshotUtmSource, snapshotUtmMedium, snapshotUtmCampaign, snapshotUtmContent, snapshotUtmTerm,
+              country, city, region
             ).run();
           }
         } catch (e) {

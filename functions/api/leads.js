@@ -38,6 +38,7 @@ export async function onRequestGet(context) {
         e.is_mobile,
         e.is_bot,
         e.bot_reason,
+        e.consent_status,
         e.meta_status_code,
         e.meta_response_ok,
         e.meta_response_body,
@@ -49,11 +50,14 @@ export async function onRequestGet(context) {
         e.fbp_source,
         e.fbc_source,
         e.fbclid_source,
-        s.utm_source,
-        s.utm_medium,
-        s.utm_campaign,
-        s.utm_content,
-        s.utm_term,
+        e.country,
+        e.city,
+        e.region,
+        COALESCE(NULLIF(e.utm_source,''),   s.utm_source)   AS utm_source,
+        COALESCE(NULLIF(e.utm_medium,''),   s.utm_medium)   AS utm_medium,
+        COALESCE(NULLIF(e.utm_campaign,''), s.utm_campaign) AS utm_campaign,
+        COALESCE(NULLIF(e.utm_content,''),  s.utm_content)  AS utm_content,
+        COALESCE(NULLIF(e.utm_term,''),     s.utm_term)     AS utm_term,
         s.fbclid,
         s.gclid,
         s.referrer,
@@ -70,7 +74,7 @@ export async function onRequestGet(context) {
     // Summary counts grouped by utm_source for the summary card above the table.
     const summary = await env.DB.prepare(`
       SELECT
-        COALESCE(NULLIF(s.utm_source, ''), '(direct)') as utm_source,
+        COALESCE(NULLIF(COALESCE(NULLIF(e.utm_source,''), s.utm_source), ''), '(direct)') as utm_source,
         COUNT(*) as count
       FROM event_log e
       LEFT JOIN sessions s ON e.session_id = s.session_id
