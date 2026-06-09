@@ -189,7 +189,21 @@ export async function onRequestPost(context) {
       if (gadsStatus >= 400) console.error('Google Ads lead CAPI non-2xx:', gadsStatus);
     }
 
-    const rawEmail = userData.em || '';
+    const rawEmail    = userData.em || '';
+    const rawName     = [userData.fn, userData.ln].filter(Boolean).join(' ').trim();
+    const rawPhone    = userData.ph || '';
+    // Campos técnicos conhecidos do body — excluídos do rawFormData
+    const knownBodyKeys = new Set([
+      'event_name','event_id','event_time','event_source_url',
+      'product','user_data','utm_source','utm_medium','utm_campaign','utm_content','utm_term',
+      'fbclid','gclid','fbp','fbc','value','currency','consent_status','trk',
+    ]);
+    const extraFields = {};
+    for (const [k, v] of Object.entries(body)) {
+      if (!knownBodyKeys.has(k) && v !== undefined && v !== null && v !== '') extraFields[k] = v;
+    }
+    // Mescla user_data com campos extras do body (empresa, cnpj, segmento, veículos, etc.)
+    const rawFormData = JSON.stringify({ ...userData, ...extraFields });
 
     // --- Log to D1 (background) ---
     // Skip PageView: conversions fire regardless of this log, and the health
@@ -212,8 +226,8 @@ export async function onRequestPost(context) {
                 sent_to_meta, meta_status_code, meta_response_ok, meta_response_body, meta_payload_sent,
                 sent_to_ga4, ga4_status_code, ga4_response_ok, ga4_response_body, ga4_payload_sent,
                 has_email, has_phone, has_name,
-                raw_email
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                raw_email, raw_name, raw_phone, raw_form_data
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `).bind(
               sessionId, body.event_name, body.event_id, body.event_time,
               browserInfo.browser, browserInfo.version, browserInfo.os, browserInfo.isMobile ? 1 : 0,
@@ -223,7 +237,7 @@ export async function onRequestPost(context) {
               isBot ? 0 : 1, metaStatusCode, metaResponseOk, metaResponseBody, metaPayloadSent ?? null,
               isBot ? 0 : 1, ga4StatusCode, ga4ResponseOk, ga4ResponseBody, ga4PayloadSent ?? null,
               hashedEm ? 1 : 0, hashedPh ? 1 : 0, (hashedFn || hashedLn) ? 1 : 0,
-              rawEmail
+              rawEmail, rawName, rawPhone, rawFormData
             ).run();
           }
         } catch (e) {

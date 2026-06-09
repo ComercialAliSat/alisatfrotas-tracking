@@ -759,6 +759,22 @@ function openDetail(idx) {
   g('dp-title').textContent = 'Lead #' + shortId;
   g('dp-date').textContent  = 'Data da conversão: ' + dateStr;
 
+  // Parse raw_form_data para campos personalizados
+  let formData = {};
+  try { formData = JSON.parse(r.raw_form_data || '{}'); } catch {}
+
+  const fieldLabels = {
+    cnpj:'CNPJ', empresa:'Empresa', company:'Empresa', nome_empresa:'Nome da Empresa',
+    segmento:'Segmento', segment:'Segmento', segmento_atuacao:'Segmento de Atuação',
+    veiculos:'Qtd. Veículos', vehicles:'Qtd. Veículos', quantidade_veiculos:'Qtd. Veículos',
+    qty_vehicles:'Qtd. Veículos',
+  };
+  // Chaves já mostradas separadamente ou técnicas — não duplicar no bloco de campos extras
+  const skipKeys = new Set(['em','fn','ln','ph','fbp','fbc','external_id','li_fat_id']);
+  const extraFields = Object.entries(formData)
+    .filter(([k, v]) => !skipKeys.has(k) && v)
+    .map(([k, v]) => drow(fieldLabels[k] || k, esc(String(v))));
+
   const metaBadge = r.meta_response_ok
     ? `<span class="badge badge-pub">Enviado</span>`
     : `<span class="badge" style="background:#fee2e2;color:#b91c1c;border:1px solid #fecaca">Falhou</span>`;
@@ -782,6 +798,9 @@ function openDetail(idx) {
   g('dp-body').innerHTML = `
     <div class="dsec">Dados do Lead</div>
     ${drow('E-mail', esc(r.raw_email || '—'))}
+    ${r.raw_name  ? drow('Nome',     esc(r.raw_name))  : ''}
+    ${r.raw_phone ? drow('Telefone', esc(r.raw_phone)) : ''}
+    ${extraFields.join('')}
     ${drow('Dispositivo', device)}
     ${drow('Navegador / SO', esc(browser))}
 
@@ -963,6 +982,10 @@ function g(id)  { return document.getElementById(id); }
 function txt(id,v) { const e=g(id); if(e) e.textContent=v; }
 function showEl(id) { g(id).style.display='flex'; }
 function hideEl(id) { g(id).style.display='none'; }
+
+// Exposto globalmente para os atributos onclick inline
+window.openDetail  = openDetail;
+window.closeDetail = closeDetail;
 
 })();
 </script>
