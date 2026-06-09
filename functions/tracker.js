@@ -258,11 +258,11 @@ export async function onRequestPost(context) {
     const rawFormData = JSON.stringify({ ...userData, ...extraFields });
 
     // --- Log to D1 (background) ---
-    // Skip PageView: conversions fire regardless of this log, and the health
-    // dashboard only reports Lead/Purchase. Dropping PageView cuts ~70% of
-    // event_log writes so per-instance D1 stays healthy long-term.
+    // PageView is never written to event_log (keeps D1 write volume lean).
+    // Instead, PageView writes a lightweight row to page_views for the Jornada tab.
     const loggedEventName = (body.event_name || '').toLowerCase();
-    const shouldLogEvent = loggedEventName !== 'pageview' && loggedEventName !== 'page_view';
+    const shouldLogEvent  = loggedEventName !== 'pageview' && loggedEventName !== 'page_view';
+    const isPageView      = !shouldLogEvent;
     const browserInfo = parseBrowser(userAgent);
     context.waitUntil(
       (async () => {
@@ -293,6 +293,21 @@ export async function onRequestPost(context) {
               hashedEm ? 1 : 0, hashedPh ? 1 : 0, (hashedFn || hashedLn) ? 1 : 0,
               rawEmail, rawName, rawPhone, rawFormData,
               snapshotUtmSource, snapshotUtmMedium, snapshotUtmCampaign, snapshotUtmContent, snapshotUtmTerm,
+              country, city, region
+            ).run();
+          } else if (env.DB && isPageView && sessionId && !isBot) {
+            // Lightweight page_view row: no PII, no CAPI payloads.
+            await env.DB.prepare(`
+              INSERT INTO page_views (session_id, url, title, utm_source, utm_medium, utm_campaign, timestamp, country, city, region)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `).bind(
+              sessionId,
+              body.event_source_url || '',
+              body.title || '',
+              snapshotUtmSource,
+              snapshotUtmMedium,
+              snapshotUtmCampaign,
+              body.event_time || Math.floor(Date.now() / 1000),
               country, city, region
             ).run();
           }

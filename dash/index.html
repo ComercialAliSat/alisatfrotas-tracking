@@ -317,6 +317,46 @@
       </div>
     </section>
 
+    <!-- Jornada do Lead -->
+    <section class="card p-5 fade-in">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <div class="font-semibold">Jornada do Lead</div>
+          <div class="text-xs text-[color:var(--muted)]">Clique em um lead para ver o histórico de páginas visitadas</div>
+        </div>
+        <input id="journey-search" type="text" placeholder="Buscar por email…"
+          style="border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;width:220px;outline:none;">
+      </div>
+
+      <!-- Split layout: lista esquerda + detalhe direita -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:320px" id="journey-layout">
+
+        <!-- Lead list -->
+        <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+          <table class="w-full text-sm">
+            <thead class="text-xs uppercase tracking-wider text-[color:var(--dim)] border-b border-[color:var(--border)]"
+                   style="background:var(--surface)">
+              <tr>
+                <th class="text-left py-2 px-3">Lead</th>
+                <th class="text-right py-2 px-3">Último acesso</th>
+              </tr>
+            </thead>
+            <tbody id="journey-list">
+              <tr><td colspan="2" class="py-6 text-center text-[color:var(--muted)]">Carregando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Page view detail -->
+        <div id="journey-detail" style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+          <div style="padding:48px 24px;text-align:center;color:var(--muted);font-size:13px">
+            Selecione um lead para ver a jornada
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <footer class="pt-4 pb-10 text-xs text-[color:var(--muted)] text-center">
       Tracking Stack &middot; self-hosted on Cloudflare Pages
     </footer>
@@ -766,6 +806,121 @@
     });
   }
 
+  // -------- Jornada do Lead --------
+  let journeyLeads = [];
+  let journeySelected = null;
+
+  async function loadJourneyList() {
+    const data = await fetchJson('/api/journey');
+    journeyLeads = data.leads || [];
+    renderJourneyList(journeyLeads);
+  }
+
+  function renderJourneyList(leads) {
+    const tbody = qs('#journey-list');
+    if (!leads.length) {
+      tbody.innerHTML = '<tr><td colspan="2" class="py-6 text-center text-[color:var(--muted)]">Nenhum lead ainda</td></tr>';
+      return;
+    }
+    tbody.innerHTML = leads.map(l => {
+      const isActive = journeySelected === l.email;
+      return `<tr data-email="${escapeHtml(l.email)}" style="cursor:pointer;border-bottom:1px solid var(--border);${isActive ? 'background:var(--surface)' : ''}">
+        <td class="py-2 px-3">
+          <div class="font-medium text-sm" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.name || l.email)}</div>
+          <div class="text-xs text-[color:var(--muted)]" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.email)}</div>
+        </td>
+        <td class="py-2 px-3 text-right text-xs text-[color:var(--dim)]">${fmtDateShort(l.last_seen)}</td>
+      </tr>`;
+    }).join('');
+    tbody.querySelectorAll('tr[data-email]').forEach(row => {
+      row.addEventListener('click', () => {
+        journeySelected = row.getAttribute('data-email');
+        renderJourneyList(journeyLeads);
+        loadJourneyDetail(journeySelected);
+      });
+    });
+  }
+
+  async function loadJourneyDetail(email) {
+    const detail = qs('#journey-detail');
+    detail.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--muted);font-size:13px">Carregando…</div>';
+    const data = await fetchJson(`/api/journey?email=${encodeURIComponent(email)}`);
+    const pvs = data.page_views || [];
+    const leadEvents = data.lead_events || [];
+
+    if (!pvs.length && !leadEvents.length) {
+      detail.innerHTML = `<div style="padding:48px 24px;text-align:center;color:var(--muted);font-size:13px">Sem page views registrados para <strong>${escapeHtml(email)}</strong>.<br><span style="font-size:11px">Page views são capturados a partir de agora para novos visitantes.</span></div>`;
+      return;
+    }
+
+    // Merge page_views + lead_events into a single chronological timeline
+    const timeline = [
+      ...pvs.map(p => ({ type: 'pv', ...p })),
+      ...leadEvents.map(l => ({ type: 'lead', ...l })),
+    ].sort((a, b) => a.timestamp - b.timestamp);
+
+    const rows = timeline.map(item => {
+      const ts = fmtDateBRT(item.timestamp);
+      if (item.type === 'lead') {
+        const fd = (() => { try { return JSON.parse(item.raw_form_data || '{}'); } catch { return {}; } })();
+        const empresa = fd.empresa || '';
+        return `<div style="display:flex;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);background:#f0fdf4">
+          <div style="min-width:36px;text-align:center;padding-top:2px">
+            <span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;line-height:24px;text-align:center">L</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:#15803d">Converteu como Lead</div>
+            ${empresa ? `<div style="font-size:11px;color:var(--dim)">${escapeHtml(empresa)}</div>` : ''}
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${ts}${item.utm_source ? ' · ' + escapeHtml(item.utm_source) : ''}${item.utm_medium ? ' / ' + escapeHtml(item.utm_medium) : ''}</div>
+          </div>
+        </div>`;
+      }
+      // page_view
+      const rawUrl = item.url || '';
+      let displayUrl = rawUrl;
+      try { const u = new URL(rawUrl); displayUrl = u.pathname + (u.search || ''); } catch {}
+      const canal = [item.utm_source, item.utm_medium].filter(Boolean).join(' / ') || '(direto)';
+      const pageTitle = item.title || displayUrl;
+      return `<div style="display:flex;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border)">
+        <div style="min-width:36px;text-align:center;padding-top:2px">
+          <span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:var(--border);color:var(--dim);font-size:11px;line-height:24px;text-align:center">P</span>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(rawUrl)}">${escapeHtml(pageTitle)}</div>
+          <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(displayUrl)}</div>
+          <div style="font-size:11px;color:var(--dim);margin-top:1px">${ts} · ${escapeHtml(canal)}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    detail.innerHTML = `
+      <div style="padding:10px 12px 8px;border-bottom:1px solid var(--border);background:var(--surface)">
+        <div style="font-size:13px;font-weight:600">${escapeHtml(email)}</div>
+        <div style="font-size:11px;color:var(--muted)">${pvs.length} page view${pvs.length !== 1 ? 's' : ''} · ${leadEvents.length} lead event${leadEvents.length !== 1 ? 's' : ''}</div>
+      </div>
+      <div style="overflow-y:auto;max-height:460px">${rows}</div>`;
+  }
+
+  function fmtDateShort(ts) {
+    if (!ts) return '—';
+    return new Date(Number(ts) * 1000).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' });
+  }
+
+  function fmtDateBRT(ts) {
+    if (!ts) return '—';
+    return new Date(Number(ts) * 1000).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' });
+  }
+
+  // Journey search filter
+  qs('#journey-search').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    const filtered = q ? journeyLeads.filter(l =>
+      (l.email || '').toLowerCase().includes(q) ||
+      (l.name  || '').toLowerCase().includes(q)
+    ) : journeyLeads;
+    renderJourneyList(filtered);
+  });
+
   // -------- Load orchestration --------
   async function loadAll() {
     await Promise.all([
@@ -776,6 +931,7 @@
       loadLeads(),
       loadPurchases(),
       loadHealth(),
+      loadJourneyList(),
     ]);
   }
 
