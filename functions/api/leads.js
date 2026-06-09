@@ -1,11 +1,6 @@
 // GET /api/leads?key=...&days=30&limit=100
-//
-// Returns Lead events joined to their originating session so each row carries
-// its UTMs / fbclid / gclid. This is the "where did my leads come from" view
-// — the whole reason the tracking stack persists anything at all.
-//
-// Source: event_log (Lead events only) LEFT JOIN sessions via session_id.
-// Bots are excluded by default; pass include_bots=1 to see them.
+//           OR  ?key=...&from=YYYY-MM-DD&to=YYYY-MM-DD&limit=100
+import { parseDateRange } from './_range.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -16,12 +11,10 @@ export async function onRequestGet(context) {
     return json({ error: 'Unauthorized' }, 401);
   }
 
-  const days = clampInt(url.searchParams.get('days'), 30, 1, 365);
-  const limit = clampInt(url.searchParams.get('limit'), 100, 1, 2000);
+  const { since, until } = parseDateRange(url);
+  const limit       = Math.max(1, Math.min(2000, parseInt(url.searchParams.get('limit') || '100', 10) || 100));
   const includeBots = url.searchParams.get('include_bots') === '1';
-  const since = Math.floor(Date.now() / 1000) - days * 86400;
-
-  const botClause = includeBots ? '' : 'AND e.is_bot = 0';
+  const botClause   = includeBots ? '' : 'AND e.is_bot = 0';
 
   try {
     const rows = await env.DB.prepare(`
@@ -65,13 +58,12 @@ export async function onRequestGet(context) {
       FROM event_log e
       LEFT JOIN sessions s ON e.session_id = s.session_id
       WHERE e.event_name = 'Lead'
-        AND e.timestamp >= ?
+        AND e.timestamp >= ? AND e.timestamp <= ?
         ${botClause}
       ORDER BY e.timestamp DESC
       LIMIT ?
-    `).bind(since, limit).all();
+    `).bind(since, until, limit).all();
 
-    // Summary counts grouped by utm_source for the summary card above the table.
     const summary = await env.DB.prepare(`
       SELECT
         COALESCE(NULLIF(COALESCE(NULLIF(e.utm_source,''), s.utm_source), ''), '(direct)') as src,
@@ -79,15 +71,15 @@ export async function onRequestGet(context) {
       FROM event_log e
       LEFT JOIN sessions s ON e.session_id = s.session_id
       WHERE e.event_name = 'Lead'
-        AND e.timestamp >= ?
+        AND e.timestamp >= ? AND e.timestamp <= ?
         AND e.is_bot = 0
       GROUP BY 1
       ORDER BY count DESC
-    `).bind(since).all();
+    `).bind(since, until).all();
 
     return json({
-      days,
-      leads: rows.results || [],
+      since, until,
+      leads:   rows.results    || [],
       summary: summary.results || [],
     });
   } catch (err) {
@@ -98,15 +90,6 @@ export async function onRequestGet(context) {
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
   });
-}
-
-function clampInt(raw, fallback, min, max) {
-  const n = parseInt(raw || '', 10);
-  if (Number.isNaN(n)) return fallback;
-  return Math.max(min, Math.min(max, n));
 }

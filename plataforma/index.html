@@ -290,11 +290,22 @@
           <p id="leads-sub" style="color:var(--dim);margin:4px 0 0;font-size:14px">Formulários capturados</p>
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <div style="display:flex;gap:6px" id="leads-range">
-            <button class="rbtn" data-days="7">7d</button>
-            <button class="rbtn active" data-days="30">30d</button>
-            <button class="rbtn" data-days="90">90d</button>
-            <button class="rbtn" data-days="365">Tudo</button>
+          <!-- Date range picker -->
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="font-size:12px;color:var(--dim);white-space:nowrap">De</span>
+              <input id="leads-from" type="date" class="inp" style="padding:6px 8px;font-size:13px;width:130px;cursor:pointer">
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="font-size:12px;color:var(--dim);white-space:nowrap">Até</span>
+              <input id="leads-to" type="date" class="inp" style="padding:6px 8px;font-size:13px;width:130px;cursor:pointer">
+            </div>
+            <div style="display:flex;gap:4px" id="leads-range">
+              <button class="rbtn" data-days="7" style="padding:6px 10px;font-size:12px">7d</button>
+              <button class="rbtn active" data-days="30" style="padding:6px 10px;font-size:12px">30d</button>
+              <button class="rbtn" data-days="90" style="padding:6px 10px;font-size:12px">90d</button>
+              <button class="rbtn" data-days="365" style="padding:6px 10px;font-size:12px">Tudo</button>
+            </div>
           </div>
           <button id="btn-export" class="btn btn-dark">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -341,14 +352,31 @@
 
     <!-- ══ RASTREAMENTO ══ -->
     <div id="sec-rastreamento" style="position:absolute;inset:0;left:256px;flex-direction:column">
-      <div style="height:44px;background:var(--card);border-bottom:1px solid var(--border);
-        display:flex;align-items:center;padding:0 20px;gap:8px;flex-shrink:0">
-        <div style="width:7px;height:7px;background:var(--navy);border-radius:50%"></div>
-        <span style="font-size:14px;font-weight:500;color:var(--dim)">
-          Rastreamento — Analytics, UTMs, Saúde do Tracking</span>
+      <div style="min-height:52px;background:var(--card);border-bottom:1px solid var(--border);
+        display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <div style="width:7px;height:7px;background:var(--navy);border-radius:50%"></div>
+          <span style="font-size:13px;font-weight:500;color:var(--dim)">Rastreamento</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto">
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="font-size:11px;color:var(--muted)">De</span>
+            <input id="trk-from" type="date" class="inp" style="padding:4px 7px;font-size:12px;width:120px;cursor:pointer">
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="font-size:11px;color:var(--muted)">Até</span>
+            <input id="trk-to" type="date" class="inp" style="padding:4px 7px;font-size:12px;width:120px;cursor:pointer">
+          </div>
+          <div style="display:flex;gap:3px" id="trk-range">
+            <button class="rbtn" data-days="7"   style="padding:4px 9px;font-size:11px">7d</button>
+            <button class="rbtn active" data-days="30"  style="padding:4px 9px;font-size:11px">30d</button>
+            <button class="rbtn" data-days="90"  style="padding:4px 9px;font-size:11px">90d</button>
+            <button class="rbtn" data-days="365" style="padding:4px 9px;font-size:11px">Tudo</button>
+          </div>
+        </div>
       </div>
       <iframe id="dash-iframe" src="about:blank"
-        style="flex:1;width:100%;border:none;display:block;height:calc(100vh - 44px)"></iframe>
+        style="flex:1;width:100%;border:none;display:block;height:calc(100vh - 52px)"></iframe>
     </div>
 
     <!-- ══ CONFIGURAÇÕES ══ -->
@@ -433,11 +461,26 @@
 'use strict';
 
 let KEY = '';
-let days = 30;
 let iframeSet = false;
 const loaded = { paginas: false, leads: false };
 let allPages = [];
 let leadsData = [];
+
+// Returns today as YYYY-MM-DD in local time
+function todayStr() {
+  const d = new Date(); const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+// Returns YYYY-MM-DD for N days ago
+function daysAgoStr(n) {
+  const d = new Date(Date.now() - n * 86400000); const pad = v => String(v).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+// Build ?from=...&to=... or ?days=N query string for the given inputs
+function rangeQuery(fromId, toId) {
+  const f = (g(fromId)||{value:''}).value, t = (g(toId)||{value:''}).value;
+  return (f && t) ? `from=${enc(f)}&to=${enc(t)}` : `days=30`;
+}
 
 
 // ── Auth ──────────────────────────────────────────────────────────────────
@@ -540,7 +583,7 @@ function nav(sec) {
   });
 
   if (sec === 'paginas'      && !loaded.paginas) loadPaginas();
-  if (sec === 'leads'        && !loaded.leads)   loadLeads(days);
+  if (sec === 'leads'        && !loaded.leads)   loadLeads();
   if (sec === 'rastreamento' && !iframeSet)       setIframe();
 }
 
@@ -730,24 +773,46 @@ g('create-ok').onclick = async function() {
 
 // ══ LEADS ════════════════════════════════════════════════════════════════
 
+// Init date inputs to last 30 days
+(function() {
+  const t = todayStr(), f = daysAgoStr(30);
+  if (g('leads-from')) { g('leads-from').value = f; g('leads-from').max = t; }
+  if (g('leads-to'))   { g('leads-to').value   = t; g('leads-to').max   = t; }
+})();
+
 g('leads-range').addEventListener('click', e => {
   const b = e.target.closest('[data-days]');
   if (!b) return;
   document.querySelectorAll('#leads-range .rbtn').forEach(x => x.classList.remove('active'));
   b.classList.add('active');
-  days = parseInt(b.dataset.days, 10);
+  const n = parseInt(b.dataset.days, 10);
+  const t = todayStr();
+  if (g('leads-from')) { g('leads-from').value = daysAgoStr(n === 365 ? 730 : n); }
+  if (g('leads-to'))   { g('leads-to').value   = t; }
   loaded.leads = false;
-  loadLeads(days);
+  loadLeads();
+});
+
+['leads-from','leads-to'].forEach(id => {
+  const el = g(id); if (!el) return;
+  el.addEventListener('change', () => {
+    if (g('leads-from').value && g('leads-to').value) {
+      document.querySelectorAll('#leads-range .rbtn').forEach(x => x.classList.remove('active'));
+      loaded.leads = false;
+      loadLeads();
+    }
+  });
 });
 
 g('btn-export').onclick = exportLeads;
 
-async function loadLeads(d) {
+async function loadLeads() {
   g('ltbody').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Carregando…</td></tr>`;
 
+  const rq = rangeQuery('leads-from', 'leads-to');
   const [vr, lr] = await Promise.all([
-    fetch('/api/visits?key=' + enc(KEY) + '&days=' + d),
-    fetch('/api/leads?key='  + enc(KEY) + '&days=' + d + '&limit=500'),
+    fetch('/api/visits?key=' + enc(KEY) + '&' + rq),
+    fetch('/api/leads?key='  + enc(KEY) + '&' + rq + '&limit=500'),
   ]);
   if (vr.status === 401) { authFail(); return; }
 
@@ -762,7 +827,12 @@ async function loadLeads(d) {
   txt('l-v', tot.sessions.toLocaleString('pt-BR'));
   txt('l-c', tot.conversion_rate.toFixed(1) + '%');
   txt('l-a', daily.length > 0 ? (tot.leads / daily.length).toFixed(1) : '0');
-  txt('leads-sub', 'Formulários nos últimos ' + (d === 365 ? '12 meses' : d + ' dias'));
+
+  const fromVal = (g('leads-from')||{value:''}).value;
+  const toVal   = (g('leads-to')  ||{value:''}).value;
+  txt('leads-sub', fromVal && toVal
+    ? `Formulários de ${fromVal.split('-').reverse().join('/')} a ${toVal.split('-').reverse().join('/')}`
+    : 'Formulários capturados');
 
   renderLeadsTable(leadsData);
   loaded.leads = true;
@@ -1003,8 +1073,44 @@ async function exportLeads() {
 }
 
 // ══ RASTREAMENTO ══════════════════════════════════════════════════════════
+
+// Init rastreamento date inputs to last 30 days
+(function() {
+  const t = todayStr(), f = daysAgoStr(30);
+  if (g('trk-from')) { g('trk-from').value = f; g('trk-from').max = t; }
+  if (g('trk-to'))   { g('trk-to').value   = t; g('trk-to').max   = t; }
+})();
+
+g('trk-range').addEventListener('click', e => {
+  const b = e.target.closest('[data-days]');
+  if (!b) return;
+  document.querySelectorAll('#trk-range .rbtn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  const n = parseInt(b.dataset.days, 10);
+  const t = todayStr();
+  if (g('trk-from')) { g('trk-from').value = daysAgoStr(n === 365 ? 730 : n); }
+  if (g('trk-to'))   { g('trk-to').value   = t; }
+  iframeSet = false;
+  setIframe();
+});
+
+['trk-from','trk-to'].forEach(id => {
+  const el = g(id); if (!el) return;
+  el.addEventListener('change', () => {
+    if (g('trk-from').value && g('trk-to').value) {
+      document.querySelectorAll('#trk-range .rbtn').forEach(x => x.classList.remove('active'));
+      iframeSet = false;
+      setIframe();
+    }
+  });
+});
+
 function setIframe() {
-  g('dash-iframe').src = '/dash' + (KEY ? '?key=' + enc(KEY) : '');
+  const base = KEY ? '/dash?key=' + enc(KEY) : '/dash';
+  const from = (g('trk-from')||{value:''}).value;
+  const to   = (g('trk-to')  ||{value:''}).value;
+  const range = from && to ? '&from=' + enc(from) + '&to=' + enc(to) : '';
+  g('dash-iframe').src = base + range;
   iframeSet = true;
 }
 

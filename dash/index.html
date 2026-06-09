@@ -365,7 +365,17 @@
     app.classList.remove('hidden');
     authGate.classList.add('hidden');
     sessionStorage.setItem('dashKey', key);
-    await loadAll(currentDays);
+    // Read from/to from URL if plataforma passed them via iframe src
+    const urlFrom = url.searchParams.get('from') || '';
+    const urlTo   = url.searchParams.get('to')   || '';
+    if (urlFrom && urlTo) {
+      currentFrom = urlFrom;
+      currentTo   = urlTo;
+    } else {
+      currentFrom = daysAgoYmd(30);
+      currentTo   = todayYmd();
+    }
+    await loadAll();
   }
 
   async function probeKey(k) {
@@ -388,7 +398,8 @@
   })();
 
   // -------- State --------
-  let currentDays = 30;
+  let currentFrom = '';
+  let currentTo   = '';
   let utmDimension = 'utm_source';
   let utmFilters = {};
   let revenueChart = null;
@@ -396,22 +407,37 @@
 
   // -------- Helpers --------
   const fetchJson = path => fetch(`${path}${path.includes('?') ? '&' : '?'}key=${encodeURIComponent(key)}`).then(r => r.json());
+  function todayYmd() {
+    const d = new Date(); const p = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  }
+  function daysAgoYmd(n) {
+    const d = new Date(Date.now() - n * 86400000); const p = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  }
+  function rangeParam() {
+    return currentFrom && currentTo
+      ? 'from=' + encodeURIComponent(currentFrom) + '&to=' + encodeURIComponent(currentTo)
+      : 'days=30';
+  }
   const money = (n, cur = 'BRL') => new Intl.NumberFormat('en-US', { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(Number(n || 0));
   const fmtInt = n => new Intl.NumberFormat('en-US').format(Number(n || 0));
   const fmtDate = ts => new Date(Number(ts) * 1000).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
   // -------- Data loaders --------
-  async function loadRevenue(days) {
-    const data = await fetchJson(`/api/revenue?days=${days}`);
+  async function loadRevenue() {
+    const data = await fetchJson(`/api/revenue?${rangeParam()}`);
     qs('#kpi-revenue').textContent = money(data.gross, data.currency);
-    qs('#kpi-revenue-sub').textContent = `${data.days} days`;
+    qs('#kpi-revenue-sub').textContent = currentFrom && currentTo
+      ? `${currentFrom.split('-').reverse().join('/')} – ${currentTo.split('-').reverse().join('/')}`
+      : '30 dias';
     qs('#kpi-sales').textContent = fmtInt(data.sales);
     qs('#kpi-aov').textContent = money(data.aov, data.currency);
     renderRevenueChart(data.time_series || []);
   }
 
-  async function loadProducts(days) {
-    const data = await fetchJson(`/api/products?days=${days}`);
+  async function loadProducts() {
+    const data = await fetchJson(`/api/products?${rangeParam()}`);
     const container = qs('#product-cards');
     if (!data.products || data.products.length === 0) {
       container.innerHTML = '<div class="text-sm text-[color:var(--muted)]">No products yet.</div>';
@@ -429,8 +455,8 @@
     renderProductsChart(data.time_series || []);
   }
 
-  async function loadAttribution(days) {
-    const data = await fetchJson(`/api/attribution?days=${days}`);
+  async function loadAttribution() {
+    const data = await fetchJson(`/api/attribution?${rangeParam()}`);
     qs('#meta-sales').textContent   = fmtInt(data.groups.meta.sales);
     qs('#meta-revenue').textContent = money(data.groups.meta.revenue);
     qs('#meta-spend').textContent   = data.meta_spend > 0 ? money(data.meta_spend) : '—';
@@ -451,7 +477,13 @@
   }
 
   async function loadUtm() {
-    const params = new URLSearchParams({ days: String(currentDays), dimension: utmDimension });
+    const params = new URLSearchParams({ dimension: utmDimension });
+    if (currentFrom && currentTo) {
+      params.set('from', currentFrom);
+      params.set('to', currentTo);
+    } else {
+      params.set('days', '30');
+    }
     for (const [k, v] of Object.entries(utmFilters)) params.set(k, v);
     const data = await fetchJson(`/api/utm-breakdown?${params.toString()}`);
     renderUtmFilters();
@@ -496,8 +528,8 @@
     });
   }
 
-  async function loadLeads(days) {
-    const data = await fetchJson(`/api/leads?days=${days}&limit=50`);
+  async function loadLeads() {
+    const data = await fetchJson(`/api/leads?${rangeParam()}&limit=50`);
     qs('#kpi-leads').textContent = fmtInt((data.leads || []).length);
     const tbody = qs('#leads-tbody');
     if (!data.leads || data.leads.length === 0) {
@@ -735,14 +767,13 @@
   }
 
   // -------- Load orchestration --------
-  async function loadAll(days) {
-    currentDays = days;
+  async function loadAll() {
     await Promise.all([
-      loadRevenue(days),
-      loadProducts(days),
-      loadAttribution(days),
+      loadRevenue(),
+      loadProducts(),
+      loadAttribution(),
       loadUtm(),
-      loadLeads(days),
+      loadLeads(),
       loadPurchases(),
       loadHealth(),
     ]);
@@ -753,7 +784,10 @@
     btn.addEventListener('click', () => {
       qsa('#range-picker .range-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      loadAll(parseInt(btn.getAttribute('data-days'), 10));
+      const n = parseInt(btn.getAttribute('data-days'), 10);
+      currentTo   = todayYmd();
+      currentFrom = daysAgoYmd(n);
+      loadAll();
     });
   });
   qsa('#utm-tabs .dash-tab').forEach(tab => {

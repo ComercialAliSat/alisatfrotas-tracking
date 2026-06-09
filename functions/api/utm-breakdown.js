@@ -1,15 +1,7 @@
-// GET /api/utm-breakdown?key=...&days=30&dimension=utm_source&utm_source=...&utm_medium=...
-//
-// Returns per-value breakdown of purchases grouped by the chosen dimension,
-// optionally filtered by other utm_* values (cascading filters).
-//
-// dimension ∈ { utm_source, utm_medium, utm_campaign, utm_content, utm_term }
-//
-// Response: { dimension, filters, rows: [{value, sales, revenue, aov}] }
-//
-// Source: purchase_log (UTMs already denormalized onto the row at webhook time).
-// SQL safety: dimension and filter names are strictly allowlisted before use
-// so they can be interpolated into the query without injection risk.
+// GET /api/utm-breakdown?key=...&days=30&dimension=utm_source
+//                    OR ?key=...&from=YYYY-MM-DD&to=YYYY-MM-DD&dimension=...
+// Cascading UTM filters: add &utm_source=Meta&utm_medium=cpc to drill down.
+import { parseDateRange } from './_range.js';
 
 const ALLOWED_DIMENSIONS = new Set([
   'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
@@ -29,13 +21,11 @@ export async function onRequestGet(context) {
     return json({ error: `dimension must be one of ${[...ALLOWED_DIMENSIONS].join(', ')}` }, 400);
   }
 
-  const days = clampInt(url.searchParams.get('days'), 30, 1, 365);
-  const since = Math.floor(Date.now() / 1000) - days * 86400;
+  const { since, until } = parseDateRange(url);
 
-  // Build cascading filters from any other utm_* query params.
-  const filterClauses = [];
-  const filterBindings = [];
-  const activeFilters = {};
+  const filterClauses   = [];
+  const filterBindings  = [];
+  const activeFilters   = {};
   for (const field of ALLOWED_DIMENSIONS) {
     if (field === dimension) continue;
     const val = url.searchParams.get(field);
@@ -48,6 +38,7 @@ export async function onRequestGet(context) {
 
   const whereClause = [
     'created_at >= ?',
+    'created_at <= ?',
     ...filterClauses,
   ].join(' AND ');
 
@@ -64,10 +55,10 @@ export async function onRequestGet(context) {
   `;
 
   try {
-    const rows = await env.DB.prepare(query).bind(since, ...filterBindings).all();
+    const rows = await env.DB.prepare(query).bind(since, until, ...filterBindings).all();
     return json({
       dimension,
-      days,
+      since, until,
       filters: activeFilters,
       rows: rows.results || [],
     });
@@ -79,15 +70,6 @@ export async function onRequestGet(context) {
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
   });
-}
-
-function clampInt(raw, fallback, min, max) {
-  const n = parseInt(raw || '', 10);
-  if (Number.isNaN(n)) return fallback;
-  return Math.max(min, Math.min(max, n));
 }

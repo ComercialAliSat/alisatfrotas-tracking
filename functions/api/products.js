@@ -1,9 +1,6 @@
 // GET /api/products?key=...&days=30
-// Returns: {
-//   products: [{product_id, product_name, revenue, sales, aov}],
-//   time_series: [{date, product_id, product_name, sales, revenue}],
-// }
-// Source: purchase_items (one row per line item in a purchase).
+//             OR   ?key=...&from=YYYY-MM-DD&to=YYYY-MM-DD
+import { parseDateRange } from './_range.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -14,8 +11,7 @@ export async function onRequestGet(context) {
     return json({ error: 'Unauthorized' }, 401);
   }
 
-  const days = clampInt(url.searchParams.get('days'), 30, 1, 365);
-  const since = Math.floor(Date.now() / 1000) - days * 86400;
+  const { since, until } = parseDateRange(url);
 
   try {
     const products = await env.DB.prepare(`
@@ -27,10 +23,10 @@ export async function onRequestGet(context) {
         COALESCE(AVG(value), 0) as aov,
         COALESCE(MAX(currency), 'BRL') as currency
       FROM purchase_items
-      WHERE created_at >= ?
+      WHERE created_at >= ? AND created_at <= ?
       GROUP BY product_id
       ORDER BY revenue DESC
-    `).bind(since).all();
+    `).bind(since, until).all();
 
     const series = await env.DB.prepare(`
       SELECT
@@ -40,15 +36,15 @@ export async function onRequestGet(context) {
         COUNT(*) as sales,
         COALESCE(SUM(value), 0) as revenue
       FROM purchase_items
-      WHERE created_at >= ?
+      WHERE created_at >= ? AND created_at <= ?
       GROUP BY date(created_at, 'unixepoch'), product_id
       ORDER BY date ASC
-    `).bind(since).all();
+    `).bind(since, until).all();
 
     return json({
-      days,
-      products: products.results || [],
-      time_series: series.results || [],
+      since, until,
+      products:    products.results || [],
+      time_series: series.results   || [],
     });
   } catch (err) {
     return json({ error: err.message }, 500);
@@ -58,15 +54,6 @@ export async function onRequestGet(context) {
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
   });
-}
-
-function clampInt(raw, fallback, min, max) {
-  const n = parseInt(raw || '', 10);
-  if (Number.isNaN(n)) return fallback;
-  return Math.max(min, Math.min(max, n));
 }

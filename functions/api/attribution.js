@@ -1,21 +1,6 @@
 // GET /api/attribution?key=...&days=30
-//
-// Splits purchases into three groups by click identifier presence:
-//   - 'meta'    → purchase had an fbc cookie (fbclid captured by middleware)
-//   - 'google'  → purchase had gclid / gbraid / wbraid
-//   - 'organic' → neither
-//
-// Also joins ad_spend to surface Meta spend, CPA, and ROAS when the sync
-// cron has populated that table. Google Ads spend is a v1.1 follow-up.
-//
-// Response: {
-//   days,
-//   groups: { meta: {...}, google: {...}, organic: {...} },
-//   meta_spend,         // from ad_spend (may be 0 if sync isn't configured)
-//   meta_cpa,           // meta_spend / meta.sales (null if sales == 0)
-//   meta_roas,          // meta.revenue / meta_spend (null if spend == 0)
-//   last_synced_at,     // last successful Meta sync timestamp, or null
-// }
+//                OR   ?key=...&from=YYYY-MM-DD&to=YYYY-MM-DD
+import { parseDateRange } from './_range.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -26,8 +11,7 @@ export async function onRequestGet(context) {
     return json({ error: 'Unauthorized' }, 401);
   }
 
-  const days = clampInt(url.searchParams.get('days'), 30, 1, 365);
-  const since = Math.floor(Date.now() / 1000) - days * 86400;
+  const { since, until } = parseDateRange(url);
 
   try {
     const rows = await env.DB.prepare(`
@@ -42,31 +26,30 @@ export async function onRequestGet(context) {
         COUNT(*) as sales,
         COALESCE(SUM(value), 0) as revenue
       FROM purchase_log
-      WHERE created_at >= ?
+      WHERE created_at >= ? AND created_at <= ?
       GROUP BY source_type
-    `).bind(since).all();
+    `).bind(since, until).all();
 
     const groups = { meta: empty(), google: empty(), organic: empty() };
     for (const row of rows.results || []) {
       if (groups[row.source_type]) {
         groups[row.source_type] = {
-          sales: Number(row.sales || 0),
+          sales:   Number(row.sales   || 0),
           revenue: Number(row.revenue || 0),
         };
       }
     }
 
-    // Meta spend from ad_spend table over the same window.
     const sinceDate = ymd(new Date(since * 1000));
+    const untilDate = ymd(new Date(until * 1000));
     const spendRow = await env.DB.prepare(`
       SELECT COALESCE(SUM(spend_cents), 0) as spend_cents
       FROM ad_spend
-      WHERE platform = 'meta' AND date >= ?
-    `).bind(sinceDate).first();
+      WHERE platform = 'meta' AND date >= ? AND date <= ?
+    `).bind(sinceDate, untilDate).first();
 
     const metaSpend = Number(spendRow?.spend_cents || 0) / 100;
 
-    // Last successful Meta sync (for "stale data" warnings in the UI).
     const syncRow = await env.DB.prepare(`
       SELECT MAX(run_at) as last_synced_at
       FROM sync_log
@@ -74,11 +57,11 @@ export async function onRequestGet(context) {
     `).first();
 
     return json({
-      days,
+      since, until,
       groups,
-      meta_spend: metaSpend,
-      meta_cpa: groups.meta.sales > 0 ? metaSpend / groups.meta.sales : null,
-      meta_roas: metaSpend > 0 ? groups.meta.revenue / metaSpend : null,
+      meta_spend:    metaSpend,
+      meta_cpa:      groups.meta.sales  > 0 ? metaSpend / groups.meta.sales  : null,
+      meta_roas:     metaSpend          > 0 ? groups.meta.revenue / metaSpend : null,
       last_synced_at: syncRow?.last_synced_at || null,
     });
   } catch (err) {
@@ -96,15 +79,6 @@ function ymd(d) {
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
   });
-}
-
-function clampInt(raw, fallback, min, max) {
-  const n = parseInt(raw || '', 10);
-  if (Number.isNaN(n)) return fallback;
-  return Math.max(min, Math.min(max, n));
 }
