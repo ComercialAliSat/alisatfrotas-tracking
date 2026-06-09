@@ -230,11 +230,13 @@ export async function onRequestPost(context) {
     // Snapshot de UTMs no momento do evento — imune a mutações futuras da sessão.
     // Usa sessionData como fonte primária (capturado pelo middleware via URL)
     // e o body como fallback (LPs enviam UTMs via param() como redundância).
-    const snapshotUtmSource   = sessionData.utm_source   || body.utm_source   || '';
-    const snapshotUtmMedium   = sessionData.utm_medium   || body.utm_medium   || '';
-    const snapshotUtmCampaign = sessionData.utm_campaign || body.utm_campaign || '';
-    const snapshotUtmContent  = sessionData.utm_content  || body.utm_content  || '';
-    const snapshotUtmTerm     = sessionData.utm_term     || body.utm_term     || '';
+    // body UTMs take strict priority: LPs always send them (even as '') from URL params.
+    // Falls back to session only if the key wasn't sent at all (e.g. non-LP callers).
+    const snapshotUtmSource   = 'utm_source'   in body ? (body.utm_source   || '') : (sessionData.utm_source   || '');
+    const snapshotUtmMedium   = 'utm_medium'   in body ? (body.utm_medium   || '') : (sessionData.utm_medium   || '');
+    const snapshotUtmCampaign = 'utm_campaign' in body ? (body.utm_campaign || '') : (sessionData.utm_campaign || '');
+    const snapshotUtmContent  = 'utm_content'  in body ? (body.utm_content  || '') : (sessionData.utm_content  || '');
+    const snapshotUtmTerm     = 'utm_term'     in body ? (body.utm_term     || '') : (sessionData.utm_term     || '');
 
     // Consent — usa corpo do request ou cookie LGPD do middleware
     const consentStatus = body.consent_status || cookies['alisat_lgpd'] || 'unknown';
