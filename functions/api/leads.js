@@ -74,14 +74,14 @@ export async function onRequestGet(context) {
     // Summary counts grouped by utm_source for the summary card above the table.
     const summary = await env.DB.prepare(`
       SELECT
-        COALESCE(NULLIF(COALESCE(NULLIF(e.utm_source,''), s.utm_source), ''), '(direct)') as utm_source,
+        COALESCE(NULLIF(COALESCE(NULLIF(e.utm_source,''), s.utm_source), ''), '(direct)') as src,
         COUNT(*) as count
       FROM event_log e
       LEFT JOIN sessions s ON e.session_id = s.session_id
       WHERE e.event_name = 'Lead'
         AND e.timestamp >= ?
         AND e.is_bot = 0
-      GROUP BY utm_source
+      GROUP BY 1
       ORDER BY count DESC
     `).bind(since).all();
 
