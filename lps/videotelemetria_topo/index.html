@@ -1398,6 +1398,24 @@
     heroS1.email = email;
     heroS1.tel   = tel;
 
+    // Dispara lead parcial (etapa 1) imediatamente para tracker + Meta/GA4
+    const _eid1 = crypto.randomUUID();
+    heroS1.eid   = _eid1;
+    const _p1    = nome.split(/\s+/);
+    fetch('/tracker', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        event_name:'Lead', event_id:_eid1, event_time:Math.floor(Date.now()/1000),
+        event_source_url:window.location.href, product:'videotelemetria',
+        consent_status:'all',
+        user_data:{em:email, fn:_p1[0]||'', ln:_p1.slice(1).join(' ')||'', ph:tel.replace(/\D/g,'')},
+        utm_source:param('utm_source'), utm_medium:param('utm_medium'),
+        utm_campaign:param('utm_campaign'), utm_content:param('utm_content'),
+        utm_term:param('utm_term'), fbclid:param('fbclid'), gclid:param('gclid'),
+        fbp:cookie('_fbp'), fbc:cookie('_fbc'),
+      }),
+    }).catch(function(){});
+
     push({ event:'Lead_Captura', form_step:1 });
 
     $('hero-s1').classList.add('hidden');
@@ -1419,10 +1437,23 @@
     if (!veic)          { alert_('Por favor, selecione a quantidade de veículos.'); return; }
 
     push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
-    postLead({
-      nome: heroS1.nome, email: heroS1.email, tel: heroS1.tel,
-      empresa, cnpj, segmento:seg, qtd_veiculos:veic,
-    }, 'hero-form-wrap');
+    if (heroS1.eid) {
+      postLeadUpdate({
+        update_for: heroS1.eid,
+        user_data: {
+          em: heroS1.email,
+          fn: (heroS1.nome.split(/\s+/)[0]) || '',
+          ln: (heroS1.nome.split(/\s+/).slice(1).join(' ')) || '',
+          ph: (heroS1.tel || '').replace(/\D/g,''),
+        },
+        empresa, cnpj, segmento:seg, qtd_veiculos:veic,
+      }, 'hero-form-wrap');
+    } else {
+      postLead({
+        nome: heroS1.nome, email: heroS1.email, tel: heroS1.tel,
+        empresa, cnpj, segmento:seg, qtd_veiculos:veic,
+      }, 'hero-form-wrap');
+    }
   }
 
   function finalSubmit() {
@@ -1500,6 +1531,39 @@
       }
     } catch (err) {
       console.error('Lead submit error:', err);
+      if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito 🚀'; }
+      alert_('Erro de conexão. Por favor, tente novamente.');
+    }
+  }
+
+  // ── LeadUpdate: enriquece o lead da etapa 1 com os dados da etapa 2 ──────
+  async function postLeadUpdate(data, wrapId) {
+    const btn = document.querySelector(`#${wrapId} button[type=button]`);
+    if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+    try {
+      const res = await fetch('/tracker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_name:   'LeadUpdate',
+          update_for:   data.update_for,
+          user_data:    data.user_data,
+          empresa:      data.empresa      || '',
+          cnpj:         data.cnpj         || '',
+          segmento:     data.segmento     || '',
+          qtd_veiculos: data.qtd_veiculos || '',
+        }),
+      });
+      if (res.ok) {
+        ['hero-form-wrap','final-form-wrap'].forEach(id => {
+          const w = document.getElementById(id);
+          if (w) w.classList.add('done');
+        });
+      } else {
+        if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito 🚀'; }
+        alert_('Ocorreu um erro. Por favor, tente novamente.');
+      }
+    } catch (err) {
       if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito 🚀'; }
       alert_('Erro de conexão. Por favor, tente novamente.');
     }

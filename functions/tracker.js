@@ -189,6 +189,39 @@ export async function onRequestPost(context) {
       if (gadsStatus >= 400) console.error('Google Ads lead CAPI non-2xx:', gadsStatus);
     }
 
+    // ── Two-step form: step 2 atualiza o lead criado no step 1 ───────────────
+    // LeadUpdate NÃO re-dispara para Meta/GA4 — apenas atualiza D1 in-place.
+    // Segurança: o event_id só é atualizado se session_id corresponde.
+    if ((body.event_name || '').toLowerCase() === 'leadupdate') {
+      const updateForId = (body.update_for || '').trim();
+      if (updateForId && sessionId && env.DB) {
+        const ud2 = body.user_data || {};
+        const rn2 = [ud2.fn, ud2.ln].filter(Boolean).join(' ').trim();
+        const rp2 = ud2.ph || '';
+        const skip2 = new Set(['event_name','event_id','event_time','update_for','user_data',
+          'utm_source','utm_medium','utm_campaign','utm_content','utm_term',
+          'fbclid','gclid','fbp','fbc','consent_status']);
+        const extra2 = {};
+        for (const [k, v] of Object.entries(body)) {
+          if (!skip2.has(k) && v != null && v !== '') extra2[k] = v;
+        }
+        const rfd2 = JSON.stringify({ ...ud2, ...extra2 });
+        context.waitUntil((async () => {
+          try {
+            await env.DB.prepare(
+              'UPDATE event_log SET raw_name=?,raw_phone=?,raw_form_data=? WHERE event_id=? AND session_id=?'
+            ).bind(rn2 || '', rp2 || '', rfd2, updateForId, sessionId).run();
+          } catch (e) {
+            console.error('LeadUpdate D1 error:', e.message);
+          }
+        })());
+      }
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+      });
+    }
+
     // Geo da Cloudflare (disponível em runtime, vazio em dev local)
     const country = (request.cf?.country || '').slice(0, 2).toUpperCase();
     const city    = request.cf?.city    || '';

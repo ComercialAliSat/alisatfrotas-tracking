@@ -286,4 +286,81 @@
     },true);
   });
 })();
+</script>
+<script>
+// ── Formulário Ali Sat — 2 etapas ────────────────────────────────────────
+(function(){
+  var _p=function(k){return new URLSearchParams(window.location.search).get(k)||'';};
+  var _ck=function(n){var v='; '+document.cookie,p=v.split('; '+n+'=');return p.length===2?p.pop().split(';').shift():'';};
+  var _g=function(id){return document.getElementById(id);};
+  var _v=function(el){return el&&el.value?el.value.trim():'';};
+  var _s1={}; // armazena dados do step 1
+
+  function alisatAdvance(){
+    var nome=_v(_g('ah-nome')),email=_v(_g('ah-email')),tel=_v(_g('ah-tel'));
+    var lgpd=_g('ah-lgpd')&&_g('ah-lgpd').checked;
+    if(!nome||!email||!tel){alert('Preencha nome, e-mail e telefone.');return;}
+    if(!lgpd){alert('Por favor, aceite a Política de Privacidade para continuar.');return;}
+
+    var eid=crypto.randomUUID(),parts=nome.split(/\s+/);
+    _s1.eid=eid; _s1.nome=nome; _s1.email=email; _s1.tel=tel.replace(/\D/g,'');
+
+    // Dispara lead parcial (etapa 1) imediatamente — Meta CAPI + GA4
+    fetch('/tracker',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      event_name:'Lead',event_id:eid,event_time:Math.floor(Date.now()/1000),
+      event_source_url:window.location.href,product:'videotelemetria',consent_status:'all',
+      user_data:{em:email,fn:parts[0]||'',ln:parts.slice(1).join(' ')||'',ph:tel.replace(/\D/g,'')},
+      utm_source:_p('utm_source'),utm_medium:_p('utm_medium'),utm_campaign:_p('utm_campaign'),
+      utm_content:_p('utm_content'),utm_term:_p('utm_term'),fbclid:_p('fbclid'),gclid:_p('gclid'),
+      fbp:_ck('_fbp'),fbc:_ck('_fbc')
+    })}).catch(function(){});
+
+    var s1=_g('alisat-s1'),s2=_g('alisat-s2');
+    if(s1)s1.style.display='none';
+    if(s2)s2.style.display='block';
+  }
+
+  function alisatSubmit(){
+    var empresa=_v(_g('ah-empresa')),cnpj=_v(_g('ah-cnpj'));
+    var seg=(_g('ah-seg')||{value:''}).value,veic=(_g('ah-veic')||{value:''}).value;
+    if(!empresa||!cnpj||!seg||!veic){alert('Preencha todos os campos da empresa.');return;}
+
+    var payload;
+    if(_s1.eid){
+      // Atualiza o lead da etapa 1 com os dados da empresa — sem re-disparar para Meta/GA4
+      payload={
+        event_name:'LeadUpdate',update_for:_s1.eid,
+        user_data:{em:_s1.email,fn:(_s1.nome.split(/\s+/)[0])||'',
+          ln:(_s1.nome.split(/\s+/).slice(1).join(' '))||'',ph:_s1.tel||''},
+        empresa:empresa,cnpj:cnpj,segmento:seg,veiculos:veic
+      };
+    } else {
+      // Fallback: dispara lead completo (caso a etapa 1 tenha falhado)
+      var nome=_s1.nome||'',email=_s1.email||'',tel=_s1.tel||'';
+      var parts=(nome||'').split(/\s+/);
+      payload={
+        event_name:'Lead',event_id:crypto.randomUUID(),event_time:Math.floor(Date.now()/1000),
+        event_source_url:window.location.href,product:'videotelemetria',consent_status:'all',
+        user_data:{em:email,fn:parts[0]||'',ln:parts.slice(1).join(' ')||'',ph:tel},
+        empresa:empresa,cnpj:cnpj,segmento:seg,veiculos:veic,
+        utm_source:_p('utm_source'),utm_medium:_p('utm_medium'),utm_campaign:_p('utm_campaign'),
+        utm_content:_p('utm_content'),utm_term:_p('utm_term'),fbclid:_p('fbclid'),gclid:_p('gclid'),
+        fbp:_ck('_fbp'),fbc:_ck('_fbc')
+      };
+    }
+
+    fetch('/tracker',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)}).catch(function(){});
+
+    var box=_g('alisat-form-box');
+    if(box){box.innerHTML='<div style="text-align:center;padding:40px 20px;font-family:Poppins,sans-serif">'+
+      '<div style="font-size:48px;margin-bottom:12px">✅</div>'+
+      '<div style="font-size:20px;font-weight:700;color:#033566;margin-bottom:8px">Obrigado!</div>'+
+      '<div style="font-size:14px;color:#6b7280">Nossa equipe entrará em contato em breve.</div>'+
+      '</div>';}
+  }
+
+  window.alisatAdvance=alisatAdvance;
+  window.alisatSubmit=alisatSubmit;
+})();
 </script></body></html>
