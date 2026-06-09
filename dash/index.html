@@ -810,9 +810,22 @@
   let journeyLeads = [];
   let journeySelected = null;
 
+  // Event delegation: one listener on the tbody, never loses clicks after re-render
+  qs('#journey-list').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-jrn]');
+    if (!row) return;
+    const email = row.getAttribute('data-jrn');
+    journeySelected = email;
+    renderJourneyList(_journeyFiltered);
+    loadJourneyDetail(email);
+  });
+
+  let _journeyFiltered = [];
+
   async function loadJourneyList() {
     const data = await fetchJson('/api/journey');
     journeyLeads = data.leads || [];
+    _journeyFiltered = journeyLeads;
     renderJourneyList(journeyLeads);
   }
 
@@ -822,83 +835,81 @@
       tbody.innerHTML = '<tr><td colspan="2" class="py-6 text-center text-[color:var(--muted)]">Nenhum lead ainda</td></tr>';
       return;
     }
+    // data-jrn stores the raw email (not HTML-escaped) for the delegation handler
     tbody.innerHTML = leads.map(l => {
       const isActive = journeySelected === l.email;
-      return `<tr data-email="${escapeHtml(l.email)}" style="cursor:pointer;border-bottom:1px solid var(--border);${isActive ? 'background:var(--surface)' : ''}">
+      const bg = isActive ? 'background:#f0f9ff;' : '';
+      const border = isActive ? 'border-left:3px solid var(--accent-blue);' : 'border-left:3px solid transparent;';
+      return `<tr data-jrn="${escapeHtml(l.email)}" style="cursor:pointer;border-bottom:1px solid var(--border);${bg}${border}">
         <td class="py-2 px-3">
-          <div class="font-medium text-sm" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.name || l.email)}</div>
-          <div class="text-xs text-[color:var(--muted)]" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.email)}</div>
+          <div style="font-size:13px;font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.name || l.email)}</div>
+          <div style="font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.email)}</div>
         </td>
-        <td class="py-2 px-3 text-right text-xs text-[color:var(--dim)]">${fmtDateShort(l.last_seen)}</td>
+        <td style="padding:8px 12px;text-align:right;font-size:11px;color:var(--dim);white-space:nowrap">${fmtDateShort(l.last_seen)}</td>
       </tr>`;
     }).join('');
-    tbody.querySelectorAll('tr[data-email]').forEach(row => {
-      row.addEventListener('click', () => {
-        journeySelected = row.getAttribute('data-email');
-        renderJourneyList(journeyLeads);
-        loadJourneyDetail(journeySelected);
-      });
-    });
   }
 
   async function loadJourneyDetail(email) {
     const detail = qs('#journey-detail');
     detail.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--muted);font-size:13px">Carregando…</div>';
-    const data = await fetchJson(`/api/journey?email=${encodeURIComponent(email)}`);
-    const pvs = data.page_views || [];
-    const leadEvents = data.lead_events || [];
+    try {
+      const data = await fetchJson(`/api/journey?email=${encodeURIComponent(email)}`);
+      const pvs = data.page_views  || [];
+      const leadEvents = data.lead_events || [];
 
-    if (!pvs.length && !leadEvents.length) {
-      detail.innerHTML = `<div style="padding:48px 24px;text-align:center;color:var(--muted);font-size:13px">Sem page views registrados para <strong>${escapeHtml(email)}</strong>.<br><span style="font-size:11px">Page views são capturados a partir de agora para novos visitantes.</span></div>`;
-      return;
-    }
+      if (!pvs.length && !leadEvents.length) {
+        detail.innerHTML = `<div style="padding:32px 24px;text-align:center;color:var(--muted);font-size:13px">
+          <div style="font-weight:600;margin-bottom:6px">${escapeHtml(email)}</div>
+          Sem eventos registrados ainda.<br>
+          <span style="font-size:11px">Page views começam a aparecer nos próximos acessos.</span>
+        </div>`;
+        return;
+      }
 
-    // Merge page_views + lead_events into a single chronological timeline
-    const timeline = [
-      ...pvs.map(p => ({ type: 'pv', ...p })),
-      ...leadEvents.map(l => ({ type: 'lead', ...l })),
-    ].sort((a, b) => a.timestamp - b.timestamp);
+      const timeline = [
+        ...pvs.map(p => ({ type: 'pv', ...p })),
+        ...leadEvents.map(l => ({ type: 'lead', ...l })),
+      ].sort((a, b) => a.timestamp - b.timestamp);
 
-    const rows = timeline.map(item => {
-      const ts = fmtDateBRT(item.timestamp);
-      if (item.type === 'lead') {
-        const fd = (() => { try { return JSON.parse(item.raw_form_data || '{}'); } catch { return {}; } })();
-        const empresa = fd.empresa || '';
-        return `<div style="display:flex;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);background:#f0fdf4">
-          <div style="min-width:36px;text-align:center;padding-top:2px">
-            <span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;line-height:24px;text-align:center">L</span>
-          </div>
+      const rows = timeline.map(item => {
+        const ts = fmtDateBRT(item.timestamp);
+        if (item.type === 'lead') {
+          const fd = (() => { try { return JSON.parse(item.raw_form_data || '{}'); } catch { return {}; } })();
+          const empresa = fd.empresa || '';
+          return `<div style="display:flex;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);background:#f0fdf4">
+            <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#16a34a;color:#fff;font-size:10px;margin-top:2px">L</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:600;color:#15803d">Converteu como Lead</div>
+              ${empresa ? `<div style="font-size:11px;color:var(--dim)">${escapeHtml(empresa)}</div>` : ''}
+              <div style="font-size:11px;color:var(--muted);margin-top:1px">${ts}${item.utm_source ? ' · ' + escapeHtml(item.utm_source) : ''}${item.utm_medium ? ' / ' + escapeHtml(item.utm_medium) : ''}</div>
+            </div>
+          </div>`;
+        }
+        const rawUrl = item.url || '';
+        let displayPath = rawUrl;
+        try { const u = new URL(rawUrl); displayPath = u.pathname + (u.search || ''); } catch {}
+        const canal = [item.utm_source, item.utm_medium].filter(Boolean).join(' / ') || '(direto)';
+        const pageLabel = item.title || displayPath;
+        return `<div style="display:flex;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border)">
+          <span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--border);color:var(--dim);font-size:10px;margin-top:2px">P</span>
           <div style="flex:1;min-width:0">
-            <div style="font-size:12px;font-weight:600;color:#15803d">Converteu como Lead</div>
-            ${empresa ? `<div style="font-size:11px;color:var(--dim)">${escapeHtml(empresa)}</div>` : ''}
-            <div style="font-size:11px;color:var(--muted);margin-top:2px">${ts}${item.utm_source ? ' · ' + escapeHtml(item.utm_source) : ''}${item.utm_medium ? ' / ' + escapeHtml(item.utm_medium) : ''}</div>
+            <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(rawUrl)}">${escapeHtml(pageLabel)}</div>
+            <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(displayPath)}</div>
+            <div style="font-size:11px;color:var(--dim);margin-top:1px">${ts} · ${escapeHtml(canal)}</div>
           </div>
         </div>`;
-      }
-      // page_view
-      const rawUrl = item.url || '';
-      let displayUrl = rawUrl;
-      try { const u = new URL(rawUrl); displayUrl = u.pathname + (u.search || ''); } catch {}
-      const canal = [item.utm_source, item.utm_medium].filter(Boolean).join(' / ') || '(direto)';
-      const pageTitle = item.title || displayUrl;
-      return `<div style="display:flex;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border)">
-        <div style="min-width:36px;text-align:center;padding-top:2px">
-          <span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:var(--border);color:var(--dim);font-size:11px;line-height:24px;text-align:center">P</span>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(rawUrl)}">${escapeHtml(pageTitle)}</div>
-          <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(displayUrl)}</div>
-          <div style="font-size:11px;color:var(--dim);margin-top:1px">${ts} · ${escapeHtml(canal)}</div>
-        </div>
-      </div>`;
-    }).join('');
+      }).join('');
 
-    detail.innerHTML = `
-      <div style="padding:10px 12px 8px;border-bottom:1px solid var(--border);background:var(--surface)">
-        <div style="font-size:13px;font-weight:600">${escapeHtml(email)}</div>
-        <div style="font-size:11px;color:var(--muted)">${pvs.length} page view${pvs.length !== 1 ? 's' : ''} · ${leadEvents.length} lead event${leadEvents.length !== 1 ? 's' : ''}</div>
-      </div>
-      <div style="overflow-y:auto;max-height:460px">${rows}</div>`;
+      detail.innerHTML = `
+        <div style="padding:10px 12px 8px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0">
+          <div style="font-size:13px;font-weight:600">${escapeHtml(email)}</div>
+          <div style="font-size:11px;color:var(--muted)">${pvs.length} page view${pvs.length !== 1 ? 's' : ''} · ${leadEvents.length} conversão${leadEvents.length !== 1 ? 'ões' : ''}</div>
+        </div>
+        <div style="overflow-y:auto;max-height:440px">${rows}</div>`;
+    } catch (err) {
+      detail.innerHTML = `<div style="padding:32px 24px;text-align:center;color:var(--accent-red);font-size:13px">Erro: ${escapeHtml(err.message)}</div>`;
+    }
   }
 
   function fmtDateShort(ts) {
@@ -914,11 +925,11 @@
   // Journey search filter
   qs('#journey-search').addEventListener('input', e => {
     const q = e.target.value.toLowerCase();
-    const filtered = q ? journeyLeads.filter(l =>
+    _journeyFiltered = q ? journeyLeads.filter(l =>
       (l.email || '').toLowerCase().includes(q) ||
       (l.name  || '').toLowerCase().includes(q)
     ) : journeyLeads;
-    renderJourneyList(filtered);
+    renderJourneyList(_journeyFiltered);
   });
 
   // -------- Load orchestration --------
