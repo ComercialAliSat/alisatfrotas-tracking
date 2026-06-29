@@ -100,14 +100,6 @@
       text-align: center; font-size: 0.75rem; padding: 0.75rem;
       border-radius: 0.75rem;
     }
-    .img-ph-dark {
-      border: 2px dashed rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.04);
-      color: rgba(255,255,255,0.35);
-      display: flex; align-items: center; justify-content: center;
-      text-align: center; font-size: 0.75rem; padding: 0.75rem;
-      border-radius: 0.75rem;
-    }
 
     /* ── Pulse on main CTA ───────────────────────────────── */
     @keyframes pulse-glow {
@@ -138,9 +130,9 @@
     /* ── FAQ accordion ───────────────────────────────────── */
     .faq-body {
       max-height: 0; overflow: hidden;
-      transition: max-height 0.32s ease, padding 0.32s ease;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.32s ease;
     }
-    .faq-body.open { max-height: 220px; }
+    .faq-body.open { max-height: 600px; }
     .faq-chevron { transition: transform 0.28s ease; }
     .faq-item.open .faq-chevron { transform: rotate(180deg); }
 
@@ -158,15 +150,15 @@
     .inp {
       width: 100%;
       background: #fff;
-      border: 1px solid #fff;
-      color: #000;
-      border-radius: 2px;
-      padding: 0.5rem 0.65rem;
-      font-size: 0.825rem;
+      border: 1px solid #d1d5db;
+      color: #1a1a1a;
+      border-radius: 8px;
+      padding: 0.625rem 0.85rem;
+      font-size: 0.875rem;
       font-family: 'Poppins', sans-serif;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .inp::placeholder { color: rgba(0,0,0,0.5); }
+    .inp::placeholder { color: #9ca3af; }
     .inp:focus {
       outline: none;
       border-color: #1ECB87;
@@ -174,10 +166,14 @@
     }
     .inp-sel {
       background-color: #fff;
-      color: #000;
+      color: #1a1a1a;
       appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2.25rem;
     }
-    .inp-sel option { background: #fff; color: #000; }
+    .inp-sel option { background: #fff; color: #1a1a1a; }
 
     /* Light-theme inputs (final form on dark bg — keep same dark style) */
 
@@ -195,10 +191,8 @@
     .form-wrap.done .ty { display: block; }
 
     /* ── Card hovers ─────────────────────────────────────── */
-    .pain-card { transition: transform 0.25s, border-color 0.25s; }
-    .pain-card:hover { transform: translateY(-5px); border-color: rgba(30,203,135,0.45) !important; }
-    .sol-card { transition: transform 0.25s, box-shadow 0.25s; }
-    .sol-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(30,203,135,0.18); }
+    .sol-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .sol-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(3,53,102,0.12); }
 
     /* ── Evento cards ────────────────────────────────────── */
     .evento-card {
@@ -277,48 +271,17 @@
       #trust-bar .lg\:border-r { border-right: 1px solid rgba(255,255,255,0.08); }
     }
 
+    /* ── Mobile form improvements ────────────────────────── */
+    @media (max-width: 640px) {
+      .inp { padding: 0.75rem 0.85rem; font-size: 0.9375rem; }
+      .step-dot { width: 10px; height: 10px; }
+      #hero .text-2xl { font-size: 1.5rem; }
+    }
+
     /* ── Scrollbar ───────────────────────────────────────── */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #033566; }
     ::-webkit-scrollbar-thumb { background: #1ECB87; border-radius: 3px; }
-
-    /* ── Como funciona (timeline) ───────────────────────── */
-    @keyframes cfFadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-
-    .cf-panel { background:#fff; border-radius:16px; box-shadow:0 4px 28px rgba(3,53,102,0.09); overflow:hidden; }
-    .cf-step { display:none; }
-    .cf-step.active { display:grid; grid-template-columns:55% 45%; min-height:380px; animation:cfFadeIn .3s ease; }
-    .cf-step-left { padding:48px 44px 48px 52px; display:flex; flex-direction:column; justify-content:center; }
-    .cf-step-right { position:relative; overflow:hidden; }
-    .cf-step-right img { width:100%; height:100%; object-fit:cover; display:block; }
-    .cf-big-num { font-size:80px; font-weight:900; color:#1ECB87; line-height:1; font-family:'Poppins',sans-serif; letter-spacing:-.03em; margin-bottom:16px; }
-    .cf-step-title { font-size:22px; font-weight:700; color:#033566; font-family:'Poppins',sans-serif; margin-bottom:14px; line-height:1.3; }
-    .cf-step-text { font-size:14px; color:#555; line-height:1.7; font-family:'Poppins',sans-serif; }
-
-    /* timeline nav */
-    .cf-timeline { margin-top:32px; padding:0 4px; }
-    .cf-tl-track { display:flex; align-items:flex-start; }
-    .cf-dot-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; flex-shrink:0; }
-    .cf-connector { flex:1; height:2px; background:#dde2ea; margin-top:19px; transition:background .35s ease; }
-    .cf-connector.passed { background:#1ECB87; }
-    .cf-dot-circle { width:40px; height:40px; border-radius:50%; border:2px solid #dde2ea; background:#fff; display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; font-size:12px; font-weight:700; color:#aab4c0; transition:all .25s ease; }
-    .cf-dot-wrap.active .cf-dot-circle { background:#1ECB87; border-color:#1ECB87; color:#fff; box-shadow:0 0 0 5px rgba(30,203,135,0.18); }
-    .cf-dot-wrap:not(.active):hover .cf-dot-circle { border-color:#1ECB87; color:#1ECB87; }
-    .cf-dot-label { font-size:11px; font-family:'Poppins',sans-serif; color:#999; font-weight:500; text-align:center; max-width:80px; line-height:1.3; transition:color .25s; }
-    .cf-dot-wrap.active .cf-dot-label { color:#033566; font-weight:600; }
-
-    @media(max-width:768px){
-      .cf-step.active { display:flex; flex-direction:column; min-height:auto; }
-      .cf-step-left { order:2; padding:24px 20px 28px; }
-      .cf-step-right { order:1; height:200px; }
-      .cf-big-num { font-size:56px; margin-bottom:10px; }
-      .cf-step-title { font-size:18px; }
-    }
-    @media(max-width:480px){
-      .cf-dot-circle { width:32px; height:32px; font-size:10px; }
-      .cf-connector { margin-top:15px; }
-      .cf-dot-label { display:none; }
-    }
 
     /* ── Setores — accordion ────────────────────────────── */
     #setores { background: #fff; }
@@ -508,19 +471,20 @@
 
           <!-- Mobile CTA -->
           <a href="#hero-form-anchor"
-             class="lg:hidden inline-block text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all fi d4"
-             style="background:#00BE69;"
+             class="lg:hidden inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-all fi d4 btn-pulse"
+             style="background:#00BE69; font-size:15px;"
              onclick="trackCTA('Agendar diagnóstico gratuito','hero')">
-            Agendar diagnóstico gratuito →
+            Agendar diagnóstico gratuito
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
           </a>
         </div>
 
         <!-- ── Right: 2-step form ── -->
         <div id="hero-form-anchor" class="fi d2">
-          <div id="hero-form-wrap" class="form-wrap shadow-2xl" style="background:#F0F3F5; border:1px solid #a3bac6; border-radius:14px; padding:16px 18px;">
+          <div id="hero-form-wrap" class="form-wrap shadow-2xl" style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
 
             <!-- Form visual header -->
-            <div style="background:linear-gradient(135deg,#033566 0%,#034a8a 100%); margin:-16px -18px 14px; padding:12px 18px; border-radius:13px 13px 0 0; display:flex; align-items:center; gap:10px;">
+            <div style="background:linear-gradient(135deg,#033566 0%,#034a8a 100%); margin:-18px -20px 16px; padding:14px 20px; border-radius:13px 13px 0 0; display:flex; align-items:center; gap:10px;">
               <div style="background:rgba(30,203,135,0.15); border-radius:50%; width:36px; height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3V11z"/></svg>
               </div>
@@ -565,19 +529,19 @@
                   <input type="hidden" id="h-utm_campaign"><input type="hidden" id="h-utm_content">
                   <input type="hidden" id="h-utm_term"><input type="hidden" id="h-fbclid"><input type="hidden" id="h-gclid">
 
-                  <label style="display:flex;align-items:flex-start;gap:7px;cursor:pointer;font-size:11px;color:rgba(0,0,0,0.65);line-height:1.4;margin-bottom:1px;">
+                  <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12.5px;color:rgba(0,0,0,0.7);line-height:1.45;margin-bottom:2px;margin-top:2px;">
                     <input type="checkbox" id="h-lgpd" required
-                           style="margin-top:2px;width:13px;height:13px;flex-shrink:0;accent-color:#00BE69;cursor:pointer;">
+                           style="margin-top:3px;width:16px;height:16px;flex-shrink:0;accent-color:#00BE69;cursor:pointer;">
                     <span>Concordo com a
                       <a href="/politica-de-privacidade" target="_blank"
-                         style="color:#033566;text-decoration:underline;">Política de Privacidade</a>
+                         style="color:#033566;font-weight:500;text-decoration:underline;">Política de Privacidade</a>
                       e o tratamento dos meus dados conforme a LGPD.
                     </span>
                   </label>
 
                   <button type="button" onclick="heroAdvance()"
                           class="w-full text-white font-bold py-2.5 transition-all shadow-lg ab-test-hero-cta btn-pulse"
-                          style="background:#00BE69; border-radius:3px; font-family:'Poppins',sans-serif; font-size:13px;"
+                          style="background:#00BE69; border-radius:8px; font-family:'Poppins',sans-serif; font-size:14px;"
                           aria-label="Avançar para a próxima etapa">
                     Agendar diagnóstico gratuito →
                   </button>
@@ -603,9 +567,9 @@
                   </select>
                   <button type="button" onclick="heroSubmit()"
                           class="w-full text-white font-bold py-2.5 transition-all shadow-lg"
-                          style="background:#00BE69; border-radius:3px; font-family:'Poppins',sans-serif; font-size:13px;"
+                          style="background:#00BE69; border-radius:8px; font-family:'Poppins',sans-serif; font-size:14px;"
                           aria-label="Agendar diagnóstico gratuito">
-                    Agendar diagnóstico gratuito 🚀
+                    Agendar diagnóstico gratuito →
                   </button>
                 </div>
               </div>
@@ -622,10 +586,11 @@
   <!-- ═══════════════════════════════════════════════════════
        TICKER BAR
   ═══════════════════════════════════════════════════════ -->
-  <section id="ticker-bar" style="background:#1ECB87; overflow:hidden;">
-    <div style="display:flex; align-items:center; justify-content:center; min-height:54px; padding:12px 1rem;">
-      <p style="color:#fff; font-weight:700; font-size:15px; font-family:'Poppins',sans-serif; letter-spacing:0.06em; text-align:center; line-height:1.4;">
-        VIDEOTELEMETRIA &nbsp;●&nbsp; SENSOR DE FADIGA &nbsp;●&nbsp; SONOLÊNCIA &nbsp;●&nbsp; ADAS &nbsp;●&nbsp; DMS &nbsp;●&nbsp; DISTRAÇÕES
+  <section id="ticker-bar" style="background:linear-gradient(135deg,#0d4a2e 0%,#147a4a 100%); overflow:hidden;">
+    <div style="display:flex; align-items:center; justify-content:center; min-height:50px; padding:10px 1rem; gap:6px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+      <p style="color:#d4f5e4; font-weight:600; font-size:14px; font-family:'Poppins',sans-serif; text-align:center; line-height:1.4;">
+        Videotelemetria · Sensor de Fadiga · Sonolência · ADAS · DMS · Distrações
       </p>
     </div>
   </section>
@@ -891,7 +856,6 @@
   <section id="solucao" class="bg-white py-12 px-4 sm:px-6">
     <div class="max-w-6xl mx-auto">
       <div class="text-center mb-8">
-        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-2 fi">A Solução</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-3 fi d1">
           Tecnologia que Antecipa o Risco
         </h2>
@@ -910,23 +874,31 @@
       </div>
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div class="sol-card bg-blue-50 border border-blue-100 rounded-xl p-6 fi d1" role="article">
-          <div class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center text-2xl mb-4" aria-hidden="true">🧠</div>
+        <div class="sol-card bg-white border border-gray-200 rounded-xl p-6 fi d1" role="article">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background:rgba(3,53,102,0.08);" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033566" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><path d="M10 21h4"/><path d="M12 18v3"/></svg>
+          </div>
           <h3 class="text-gray-900 font-bold text-base mb-2">Detecção de Fadiga</h3>
           <p class="text-gray-600 text-sm leading-relaxed">Alerta imediato ao identificar sinais de cansaço antes que o acidente aconteça.</p>
         </div>
-        <div class="sol-card bg-blue-50 border border-blue-100 rounded-xl p-6 fi d2" role="article">
-          <div class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center text-2xl mb-4" aria-hidden="true">👁️</div>
+        <div class="sol-card bg-white border border-gray-200 rounded-xl p-6 fi d2" role="article">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background:rgba(3,53,102,0.08);" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033566" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+          </div>
           <h3 class="text-gray-900 font-bold text-base mb-2">Monitoramento de Distração</h3>
           <p class="text-gray-600 text-sm leading-relaxed">Identifica uso de celular ou desvio de atenção com precisão milimétrica.</p>
         </div>
-        <div class="sol-card bg-blue-50 border border-blue-100 rounded-xl p-6 fi d3" role="article">
-          <div class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center text-2xl mb-4" aria-hidden="true">📡</div>
+        <div class="sol-card bg-white border border-gray-200 rounded-xl p-6 fi d3" role="article">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background:rgba(3,53,102,0.08);" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033566" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
           <h3 class="text-gray-900 font-bold text-base mb-2">Alerta de Colisão</h3>
           <p class="text-gray-600 text-sm leading-relaxed">Sensores que calculam distância e velocidade relativa em tempo real.</p>
         </div>
-        <div class="sol-card bg-blue-50 border border-blue-100 rounded-xl p-6 fi d4" role="article">
-          <div class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center text-2xl mb-4" aria-hidden="true">⚡</div>
+        <div class="sol-card bg-white border border-gray-200 rounded-xl p-6 fi d4" role="article">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background:rgba(3,53,102,0.08);" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033566" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><circle cx="12" cy="10" r="1" fill="#033566"/></svg>
+          </div>
           <h3 class="text-gray-900 font-bold text-base mb-2">Latência Zero</h3>
           <p class="text-gray-600 text-sm leading-relaxed">Processamento local — alerta a tempo de evitar o impacto, sem depender de internet.</p>
         </div>
@@ -938,14 +910,13 @@
   <!-- ═══════════════════════════════════════════════════════
        PROVA SOCIAL + VÍDEO
   ═══════════════════════════════════════════════════════ -->
-  <section id="prova-social" class="py-12 px-4 sm:px-6" style="background:#E9E9E9;">
+  <section id="prova-social" class="py-12 px-4 sm:px-6" style="background:#f0f4f8;">
     <div class="max-w-6xl mx-auto">
       <div class="text-center mb-8">
-        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-2 fi">Resultados Reais</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2 fi d1">
-          Inteligência Artificial trabalhando a<br class="hidden sm:block"> seu favor 24 horas por dia!
+          Veja a IA em ação na sua frota
         </h2>
-        <p class="text-gray-500 text-sm fi d2">Confira o funcionamento real</p>
+        <p class="text-gray-500 text-sm fi d2" style="font-family:'Poppins',sans-serif;">Confira o funcionamento real da videotelemetria embarcada</p>
       </div>
 
       <!-- YouTube Facade -->
@@ -970,17 +941,17 @@
         </div>
       </div>
 
-      <!-- Client logos -->
-      <div class="mb-14 fi">
-        <p class="text-center text-gray-400 text-xs font-bold uppercase tracking-wider mb-8">
-          As empresas que utilizam têm muito mais sucesso
+      <!-- Client logos (reuse real logos) -->
+      <div class="mb-10 fi">
+        <p class="text-center text-gray-500 text-xs font-bold uppercase tracking-wider mb-6" style="font-family:'Poppins',sans-serif;">
+          Empresas que confiam na Ali Sat
         </p>
-        <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-8">
-          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-1.png</div>
-          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-2.png</div>
-          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-3.png</div>
-          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-4.png</div>
-          <div class="img-ph rounded-lg" style="width:130px;height:56px;">/assets/cliente-5.png</div>
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:16px 48px;">
+          <img src="/assets/mica.webp"           alt="Mica"          class="logo-cliente">
+          <img src="/assets/ccl.webp"            alt="CCL Concreto"  class="logo-cliente">
+          <img src="/assets/casa%20maria.webp"   alt="Casa Maria"    class="logo-cliente">
+          <img src="/assets/coesul.png"          alt="Coesul"        class="logo-cliente">
+          <img src="/assets/franciscon.webp"     alt="Franciscon"    class="logo-cliente">
         </div>
       </div>
     </div>
@@ -997,18 +968,39 @@
         <p class="text-blue-200 text-sm fi d1">Dados de clientes que implementaram a videotelemetria Ali Sat</p>
       </div>
 
-      <div class="grid grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-        <div class="text-center fi d1"><div class="stat-num text-white" data-target="80">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Redução das distrações ao volante</p></div>
-        <div class="text-center fi d2"><div class="stat-num text-white" data-target="70">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Aumento do uso do cinto</p></div>
-        <div class="text-center fi d3"><div class="stat-num text-white" data-target="65">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Menos excesso de velocidade</p></div>
-        <div class="text-center fi d1"><div class="stat-num text-white" data-target="60">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Redução no número de colisões</p></div>
-        <div class="text-center fi d2"><div class="stat-num text-white" data-target="40">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Redução de multas</p></div>
-        <div class="text-center fi d3"><div class="stat-num text-white" data-target="20">0%</div><p class="text-blue-200 text-sm mt-1.5 font-medium">Economia com diesel</p></div>
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
+        <div class="text-center fi d1" style="padding:20px 12px; background:rgba(255,255,255,0.04); border-radius:12px;">
+          <div class="stat-num" style="color:#1ECB87;" data-target="80">0%</div>
+          <p class="text-blue-200 text-sm mt-2 font-medium">Redução das distrações ao volante</p>
+        </div>
+        <div class="text-center fi d2" style="padding:20px 12px; background:rgba(255,255,255,0.04); border-radius:12px;">
+          <div class="stat-num" style="color:#1ECB87;" data-target="70">0%</div>
+          <p class="text-blue-200 text-sm mt-2 font-medium">Aumento do uso do cinto</p>
+        </div>
+        <div class="text-center fi d3" style="padding:20px 12px; background:rgba(255,255,255,0.04); border-radius:12px;">
+          <div class="stat-num" style="color:#1ECB87;" data-target="65">0%</div>
+          <p class="text-blue-200 text-sm mt-2 font-medium">Menos excesso de velocidade</p>
+        </div>
+        <div class="text-center fi d1" style="padding:20px 12px; background:rgba(255,255,255,0.04); border-radius:12px;">
+          <div class="stat-num" style="color:#1ECB87;" data-target="60">0%</div>
+          <p class="text-blue-200 text-sm mt-2 font-medium">Redução no número de colisões</p>
+        </div>
+        <div class="text-center fi d2" style="padding:20px 12px; background:rgba(255,255,255,0.04); border-radius:12px;">
+          <div class="stat-num" style="color:#1ECB87;" data-target="40">0%</div>
+          <p class="text-blue-200 text-sm mt-2 font-medium">Redução de multas</p>
+        </div>
+        <div class="text-center fi d3" style="padding:20px 12px; background:rgba(255,255,255,0.04); border-radius:12px;">
+          <div class="stat-num" style="color:#1ECB87;" data-target="20">0%</div>
+          <p class="text-blue-200 text-sm mt-2 font-medium">Economia com diesel</p>
+        </div>
       </div>
 
       <div class="text-center fi">
         <a href="#form-final"
-           class="inline-block bg-white text-blue-800 font-bold px-10 py-4 rounded-lg shadow-lg hover:bg-blue-50 transition-all text-base ab-test-stats-cta"
+           class="inline-block font-bold px-10 py-4 rounded-lg shadow-lg transition-all text-base ab-test-stats-cta"
+           style="background:#1ECB87; color:#033566; box-shadow:0 4px 20px rgba(30,203,135,0.35);"
+           onmouseover="this.style.background='#00BE69';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(30,203,135,0.45)'"
+           onmouseout="this.style.background='#1ECB87';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(30,203,135,0.35)'"
            onclick="trackCTA('Quero esses benefícios','resultados')">
           Quero esses benefícios →
         </a>
@@ -1020,16 +1012,16 @@
   <!-- ═══════════════════════════════════════════════════════
        FAQ
   ═══════════════════════════════════════════════════════ -->
-  <section id="faq" class="bg-white py-12 px-4 sm:px-6">
+  <section id="faq" class="py-14 px-4 sm:px-6" style="background:#f8fafc;">
     <div class="max-w-3xl mx-auto">
-      <div class="text-center mb-7">
-        <span class="inline-block text-blue-700 text-xs font-bold uppercase tracking-widest mb-2 fi">Dúvidas Frequentes</span>
+      <div class="text-center mb-8">
         <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 fi d1">Perguntas Frequentes</h2>
+        <p class="text-gray-500 text-sm mt-2 fi d2" style="font-family:'Poppins',sans-serif;">Tire suas dúvidas sobre a videotelemetria com IA</p>
       </div>
 
       <div class="space-y-3 fi d2" role="list">
 
-        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+        <div class="faq-item bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm" role="listitem">
           <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                   onclick="toggleFaq(this)" aria-expanded="false">
             <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">A videotelemetria serve para qualquer veículo?</span>
@@ -1038,7 +1030,7 @@
           <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">Sim! A solução pode ser aplicada em qualquer tipo de veículo, exceto motos.</p></div>
         </div>
 
-        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+        <div class="faq-item bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm" role="listitem">
           <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                   onclick="toggleFaq(this)" aria-expanded="false">
             <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Como funcionam as câmeras?</span>
@@ -1047,7 +1039,7 @@
           <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">São câmeras instaladas no veículo, que se comunicam através de dados móveis, enviando as imagens em tempo real para uma plataforma virtual.</p></div>
         </div>
 
-        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+        <div class="faq-item bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm" role="listitem">
           <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                   onclick="toggleFaq(this)" aria-expanded="false">
             <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Como é o armazenamento da câmera?</span>
@@ -1056,7 +1048,7 @@
           <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">As câmeras possuem armazenamento físico através de cartão de memória e em nuvem.</p></div>
         </div>
 
-        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+        <div class="faq-item bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm" role="listitem">
           <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                   onclick="toggleFaq(this)" aria-expanded="false">
             <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Posso solicitar as gravações?</span>
@@ -1065,7 +1057,7 @@
           <div class="faq-body px-6"><p class="text-gray-600 text-sm leading-relaxed pb-5">Sim, caso haja necessidade, você pode solicitar as gravações do dia e hora que desejar.</p></div>
         </div>
 
-        <div class="faq-item border border-gray-200 rounded-xl overflow-hidden" role="listitem">
+        <div class="faq-item bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm" role="listitem">
           <button class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                   onclick="toggleFaq(this)" aria-expanded="false">
             <span class="font-semibold text-gray-900 pr-4 text-sm sm:text-base">Quanto tempo leva para instalar?</span>
@@ -1086,8 +1078,9 @@
     <div class="max-w-4xl mx-auto">
 
       <div class="text-center mb-10">
-        <div class="inline-block bg-yellow-400 text-blue-900 font-bold text-sm px-5 py-2 rounded-full mb-6 fi">
-          🎯 Diagnóstico gratuito da sua frota + Demonstração da plataforma
+        <div class="inline-flex items-center gap-2 text-sm px-5 py-2 rounded-full mb-6 fi" style="background:rgba(30,203,135,0.15); color:#1ECB87; font-weight:600; font-family:'Poppins',sans-serif;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+          Diagnóstico gratuito da sua frota + Demonstração da plataforma
         </div>
         <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4 fi d1">
           Sua frota protegida 24 horas por dia.<br class="hidden sm:block">
@@ -1097,7 +1090,7 @@
       </div>
 
       <div class="max-w-xl mx-auto fi d2">
-        <div id="final-form-wrap" class="form-wrap bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div id="final-form-wrap" class="form-wrap rounded-2xl p-6 sm:p-8 shadow-2xl" style="background:#0a2744; border:1px solid rgba(255,255,255,0.1);">
 
           <!-- Thank-you state -->
           <div class="ty text-center py-10">
@@ -1162,11 +1155,12 @@
               <input type="hidden" id="f-utm_term"><input type="hidden" id="f-fbclid"><input type="hidden" id="f-gclid">
 
               <button id="final-btn" type="button" onclick="finalSubmit()"
-                      class="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 rounded-lg transition-all shadow-lg text-base mt-2 ab-test-final-cta"
+                      class="w-full text-white font-bold py-4 rounded-lg transition-all shadow-lg text-base mt-2 ab-test-final-cta btn-pulse"
+                      style="background:#00BE69; font-family:'Poppins',sans-serif;"
                       aria-label="Agendar diagnóstico gratuito da frota">
-                Agendar diagnóstico gratuito 🚀
+                Agendar diagnóstico gratuito →
               </button>
-              <p class="text-center text-xs text-gray-500 flex items-center justify-center gap-1.5">
+              <p class="text-center text-xs flex items-center justify-center gap-1.5" style="color:rgba(255,255,255,0.45);">
                 <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                 Seus dados estão protegidos conforme a LGPD
               </p>
@@ -1270,15 +1264,6 @@
       if (headers[n]) headers[n].setAttribute('aria-expanded', 'true');
       if (slides[n]) slides[n].classList.add('active');
     }
-  }
-
-  // ── Como funciona — timeline ─────────────────────────────────
-  let cfCurrent = 0;
-  function cfGo(n) {
-    document.querySelectorAll('.cf-step').forEach((el, i) => el.classList.toggle('active', i === n));
-    document.querySelectorAll('.cf-dot-wrap').forEach((el, i) => el.classList.toggle('active', i === n));
-    document.querySelectorAll('.cf-connector').forEach((el, i) => el.classList.toggle('passed', i < n));
-    cfCurrent = n;
   }
 
   // ── UTM fill ─────────────────────────────────────────────────
@@ -1526,12 +1511,12 @@
           if (w) w.classList.add('done');
         });
       } else {
-        if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito 🚀'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito →'; }
         alert_('Ocorreu um erro. Por favor, tente novamente.');
       }
     } catch (err) {
       console.error('Lead submit error:', err);
-      if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito 🚀'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito →'; }
       alert_('Erro de conexão. Por favor, tente novamente.');
     }
   }
@@ -1560,11 +1545,11 @@
           if (w) w.classList.add('done');
         });
       } else {
-        if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito 🚀'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito →'; }
         alert_('Ocorreu um erro. Por favor, tente novamente.');
       }
     } catch (err) {
-      if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito 🚀'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito →'; }
       alert_('Erro de conexão. Por favor, tente novamente.');
     }
   }
