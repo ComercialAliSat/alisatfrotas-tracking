@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A mesma tecnologia que você viu no depoimento. Diagnóstico gratuito para a sua frota — Ali Sat Gestão de Frotas.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Videotelemetria com IA | Ali Sat — Veja quem já protegeu sua frota</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+  /* ── Design system ─────────────────────────────────────────── */
+  :root {
+    --navy:      #033566;
+    --deep:      #021e3d;
+    --mid:       #042a52;
+    --surface:   #0d3a6b;
+    --green:     #1ECB87;
+    --g-glow:    rgba(30,203,135,0.18);
+    --g-dim:     rgba(30,203,135,0.08);
+    --text:      #e8eef5;
+    --dim:       #94afc8;
+    --muted:     #4a6080;
+    --border:    rgba(255,255,255,0.08);
+    --ease:      cubic-bezier(0.16,1,0.3,1);
+    --f:         'Poppins', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body { font-family: var(--f); background: var(--deep); color: var(--text);
+         -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  img { display: block; max-width: 100%; }
+  a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  /* ── Layout ────────────────────────────────────────────────── */
+  .wrap  { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
+  .sec   { padding: 80px 1.25rem; }
+
+  /* ── NAV ───────────────────────────────────────────────────── */
+  #nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--navy);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 1.25rem;
+    transition: box-shadow .3s;
+  }
+  #nav.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,.45); }
+  .nav-inner { max-width: 1100px; margin: 0 auto;
+               display: flex; align-items: center; justify-content: center; }
+  .nav-logo  { height: 48px; width: auto; }
+
+  /* ── HERO ──────────────────────────────────────────────────── */
+  #hero {
+    position: relative;
+    background: var(--deep);
+    padding: 56px 1.25rem 68px;
+    overflow: hidden;
+    min-height: 680px;
+    display: flex; align-items: center;
+  }
+  /* Stage: bg image + gradient + CSS perspective grid */
+  .h-stage { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .h-bg {
+    position: absolute; inset: 0;
+    background: url('/assets/tech.webp') center 40% / cover;
+    opacity: .14;
+  }
+  .h-grad {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg,rgba(2,30,61,.96) 0%,rgba(3,53,102,.7) 50%,rgba(2,30,61,.94) 100%);
+  }
+  .h-road {
+    position: absolute; bottom: -18%; left: -70%; right: -70%; height: 62%;
+    background:
+      linear-gradient(rgba(30,203,135,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(30,203,135,.05) 1px,transparent 1px);
+    background-size: 68px 68px;
+    transform: perspective(380px) rotateX(72deg);
+    transform-origin: bottom center;
+  }
+  .h-road::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 55% at 50% 100%, transparent 30%, var(--deep) 100%);
+  }
+  .h-scan {
+    position: absolute; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg,transparent,rgba(30,203,135,.35),transparent);
+    animation: hScan 5s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes hScan {
+    0%   { top: 15%; opacity: 0; }
+    6%   { opacity: 1; }
+    94%  { opacity: .5; }
+    100% { top: 82%; opacity: 0; }
+  }
+
+  .h-inner {
+    position: relative; z-index: 2;
+    max-width: 1100px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 420px; gap: 48px; align-items: center;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(30,203,135,.1); border: 1px solid rgba(30,203,135,.28);
+    border-radius: 100px; padding: 5px 13px;
+    font-size: 11.5px; font-weight: 700; color: var(--green);
+    letter-spacing: .03em; margin-bottom: 18px;
+  }
+  .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+               animation: pulse 2s ease infinite; }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(30,203,135,.5); }
+    50%      { box-shadow: 0 0 0 6px rgba(30,203,135,0); }
+  }
+
+  .h1 {
+    font-size: clamp(1.7rem, 3.4vw, 2.55rem);
+    font-weight: 900; line-height: 1.11; color: #fff;
+    letter-spacing: -.03em; margin-bottom: 14px; text-wrap: balance;
+  }
+  .h1 em { font-style: normal; color: var(--green); }
+  .h-sub { font-size: .97rem; color: var(--dim); line-height: 1.65; max-width: 470px; margin-bottom: 26px; }
+
+  /* Detection GIF with SVG bounding box overlay */
+  .h-detect {
+    position: relative; display: inline-block;
+    margin-bottom: 28px; border-radius: 10px; overflow: hidden;
+    border: 1px solid rgba(30,203,135,.12);
+    box-shadow: 0 12px 48px rgba(0,0,0,.55);
+  }
+  .h-detect-img { width: 100%; max-width: 380px; display: block; }
+  .h-detect-svg { position: absolute; inset: 0; pointer-events: none; }
+
+  /* SVG bounding box draws itself on load */
+  .d-rect {
+    stroke-dasharray: 860;
+    stroke-dashoffset: 860;
+    animation: drawRect 1.6s var(--ease) forwards .7s;
+  }
+  @keyframes drawRect { to { stroke-dashoffset: 0; } }
+  .d-fade { opacity: 0; animation: fadeUp .4s ease forwards 2.1s; }
+  @keyframes fadeUp { to { opacity: 1; } }
+
+  /* Hero bullets */
+  .h-bullets { display: flex; flex-direction: column; gap: 9px; margin-bottom: 26px; }
+  .h-bullet { display: flex; align-items: center; gap: 10px; font-size: .875rem; color: var(--dim); }
+  .h-bico {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+    background: var(--g-dim); border: 1px solid rgba(30,203,135,.22);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .h-bico svg { width: 11px; height: 11px; }
+
+  /* ── Form card ─────────────────────────────────────────────── */
+  .f-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,.38); }
+  .f-head {
+    background: linear-gradient(135deg,var(--navy) 0%,#034a8a 100%);
+    padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+  }
+  .f-head-ico {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(30,203,135,.15); display: flex; align-items: center; justify-content: center;
+  }
+  .f-head-t p:first-child { color: var(--green); font-size: 9.5px; font-weight: 800;
+                             letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2px; }
+  .f-head-t p:last-child  { color: #fff; font-size: 12.5px; font-weight: 700; line-height: 1.25; }
+  .f-body { padding: 18px; }
+  .f-title { color: var(--navy); font-size: 14.5px; font-weight: 700; margin-bottom: 3px; }
+  .f-meta  { display: flex; align-items: center; justify-content: space-between;
+             font-size: 11px; color: #9ca3af; margin-bottom: 13px; }
+  .f-dots  { display: flex; gap: 7px; }
+  .f-dot   { width: 9px; height: 9px; border-radius: 50%; background: rgba(0,0,0,.13); transition: background .25s; }
+  .f-dot.on { background: var(--green); }
+
+  /* Shared input styles */
+  .inp {
+    width: 100%; background: #fff; border: 1px solid #e5e7eb; color: #111;
+    border-radius: 8px; padding: 9px 13px; font-size: 13.5px; font-family: var(--f);
+    transition: border-color .2s, box-shadow .2s; outline: none;
+  }
+  .inp::placeholder { color: #adb5bd; }
+  .inp:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(30,203,135,.14); }
+  .inp-sel {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23adb5bd' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 11px center;
+    padding-right: 34px; cursor: pointer;
+  }
+  .lgpd-row { display: flex; align-items: flex-start; gap: 8px;
+              font-size: 11px; color: rgba(0,0,0,.55); line-height: 1.5; cursor: pointer; }
+  .lgpd-row input { margin-top: 2px; accent-color: var(--green); width: 15px; height: 15px; cursor: pointer; }
+  .lgpd-row a { color: var(--navy); text-decoration: underline; }
+
+  .btn-f {
+    width: 100%; padding: 12px; background: #00BE69; color: #fff;
+    font-family: var(--f); font-weight: 800; font-size: 13.5px; border-radius: 8px;
+    transition: background .2s, box-shadow .2s;
+    box-shadow: 0 4px 16px rgba(0,190,105,.42);
+    animation: gPulse 2.5s ease infinite;
+  }
+  .btn-f:hover { background: #00a85c; }
+  @keyframes gPulse {
+    0%,100% { box-shadow: 0 4px 16px rgba(0,190,105,.42); }
+    50%      { box-shadow: 0 4px 28px rgba(0,190,105,.62), 0 0 0 4px rgba(0,190,105,.08); }
+  }
+  .f-hint { text-align: center; font-size: 10.5px; color: #9ca3af; margin-top: 7px; }
+
+  /* Form field stack */
+  .fstack { display: flex; flex-direction: column; gap: 8px; }
+
+  /* Form done state */
+  .f-ty { display: none; text-align: center; padding: 28px 16px; }
+  .f-ty-ico { width: 52px; height: 52px; border-radius: 50%; background: rgba(30,203,135,.1);
+               display: flex; align-items: center; justify-content: center; margin: 0 auto 13px; }
+  .f-ty h3  { color: var(--navy); font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+  .f-ty p   { color: #6b7280; font-size: 12.5px; }
+
+  .fwrap.done .f-body  { display: none; }
+  .fwrap.done .f-ty    { display: block; }
+  .fwrap2.done .fstack { display: none; }
+  .fwrap2.done .fty2   { display: flex; }
+  .fty2 { display: none; flex-direction: column; align-items: center; text-align: center; padding: 32px 16px; }
+
+  /* ── PROOF BAR ─────────────────────────────────────────────── */
+  #proof {
+    background: linear-gradient(135deg,#0d3a6b 0%,#033566 100%);
+    border-top: 1px solid rgba(30,203,135,.13);
+    border-bottom: 1px solid rgba(30,203,135,.13);
+    padding: 36px 1.25rem;
+  }
+  .proof-grid {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 6px;
+  }
+  .p-item { text-align: center; padding: 14px 6px; }
+  .p-num  {
+    font-size: clamp(2.2rem,4.5vw,3.2rem); font-weight: 900; line-height: 1;
+    color: var(--green); letter-spacing: -.03em; font-variant-numeric: tabular-nums;
+  }
+  .p-lbl  { font-size: .78rem; color: var(--dim); margin-top: 5px; font-weight: 500; line-height: 1.4; }
+
+  /* ── SECTION tags / titles ─────────────────────────────────── */
+  .stag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: .09em;
+    color: var(--green); text-transform: uppercase; margin-bottom: 12px;
+  }
+  .stag::before { content: ''; display: block; width: 22px; height: 2px; background: var(--green); }
+  .stag-c { justify-content: center; }
+  .stag-c::before, .stag-c::after { content: ''; display: block; width: 22px; height: 2px; background: var(--green); }
+
+  .sh2 {
+    font-size: clamp(1.5rem, 3vw, 2.15rem); font-weight: 800; color: #fff;
+    line-height: 1.18; letter-spacing: -.02em; text-wrap: balance; margin-bottom: 10px;
+  }
+  .ssub { font-size: .92rem; color: var(--dim); line-height: 1.65; max-width: 540px; }
+
+  /* ── TESTIMONIAL ───────────────────────────────────────────── */
+  #testi { background: var(--deep); padding: 80px 1.25rem; }
+  .testi-grid { display: grid; grid-template-columns: 1fr 360px; gap: 52px; align-items: center; margin-top: 44px; }
+
+  /* YouTube facade */
+  .yt-wrap {
+    position: relative; cursor: pointer; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 16px 56px rgba(0,0,0,.52);
+  }
+  .yt-wrap::before { content: ''; display: block; padding-top: 56.25%; }
+  .yt-thumb {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    transition: transform .4s var(--ease);
+  }
+  .yt-wrap:hover .yt-thumb { transform: scale(1.04); }
+  .yt-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.28); transition: background .3s; }
+  .yt-wrap:hover .yt-overlay { background: rgba(0,0,0,.1); }
+  .yt-play {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 68px; height: 68px; border-radius: 50%; background: #ff0000;
+    display: flex; align-items: center; justify-content: center; z-index: 2;
+    transition: transform .25s, background .2s;
+  }
+  .yt-wrap:hover .yt-play { transform: translate(-50%,-50%) scale(1.1); background: #cc0000; }
+  .yt-lbl {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent,rgba(0,0,0,.72));
+    padding: 22px 18px 14px; color: #fff; font-size: 12.5px; font-weight: 600; z-index: 2;
+  }
+
+  /* Proof cards */
+  .proof-cards { display: flex; flex-direction: column; gap: 14px; }
+  .pc {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; display: flex; align-items: flex-start; gap: 14px;
+    transition: border-color .25s, transform .25s;
+  }
+  .pc:hover { border-color: rgba(30,203,135,.3); transform: translateX(4px); }
+  .pc-ico {
+    width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+    background: var(--g-dim); display: flex; align-items: center; justify-content: center;
+  }
+  .pc-num { font-size: 1.35rem; font-weight: 900; color: var(--green); line-height: 1; margin-bottom: 3px; }
+  .pc-lbl { font-size: 12.5px; color: var(--dim); line-height: 1.4; }
+
+  /* ── COMO FUNCIONA ─────────────────────────────────────────── */
+  #como { background: var(--navy); padding: 80px 1.25rem; }
+  .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; margin-top: 48px; position: relative; }
+  .steps::before {
+    content: '';
+    position: absolute; top: 50px;
+    left: calc(16.66% + 22px); right: calc(16.66% + 22px); height: 2px;
+    background: linear-gradient(90deg,var(--green),rgba(30,203,135,.25));
+    pointer-events: none;
+  }
+  .step { padding: 28px 20px; text-align: center; }
+  .step-ico-wrap {
+    width: 52px; height: 52px; border-radius: 50%; border: 2px solid rgba(30,203,135,.25);
+    background: var(--g-dim); display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px; position: relative; transition: border-color .35s, background .35s;
+  }
+  .step.on .step-ico-wrap { border-color: var(--green); background: rgba(30,203,135,.14); box-shadow: 0 0 0 6px rgba(30,203,135,.07); }
+  .step-n {
+    position: absolute; top: -7px; right: -7px;
+    width: 19px; height: 19px; border-radius: 50%;
+    background: var(--green); color: var(--deep);
+    font-size: 10px; font-weight: 900; display: flex; align-items: center; justify-content: center;
+  }
+  .step svg { width: 24px; height: 24px; stroke: var(--green); fill: none; stroke-width: 1.8; }
+  .step h3  { font-size: .95rem; font-weight: 700; color: #fff; margin-bottom: 9px; line-height: 1.3; }
+  .step p   { font-size: .82rem; color: var(--dim); line-height: 1.65; }
+  .step-t   {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10.5px; font-weight: 700; color: var(--green);
+    background: var(--g-dim); border-radius: 100px; padding: 3px 10px; margin-top: 11px;
+  }
+  .step-gif { width: 100%; border-radius: 7px; margin-top: 14px; border: 1px solid rgba(30,203,135,.12); max-height: 110px; object-fit: cover; }
+
+  /* ── AI CANVAS SCENE ───────────────────────────────────────── */
+  #ai { background: var(--deep); padding: 80px 1.25rem; }
+  .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-top: 44px; }
+  .canvas-wrap {
+    position: relative; border-radius: 14px; overflow: hidden;
+    border: 1px solid rgba(30,203,135,.14);
+    box-shadow: 0 0 0 1px rgba(30,203,135,.04), 0 24px 64px rgba(0,0,0,.5);
+  }
+  /* CRT scanline overlay */
+  .canvas-wrap::after {
+    content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
+  }
+  #ai-canvas { width: 100%; display: block; aspect-ratio: 16/9; background: var(--deep); }
+  .canvas-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+    background: rgba(2,30,61,.88); border-top: 1px solid rgba(30,203,135,.1);
+    padding: 7px 12px; display: flex; align-items: center; justify-content: space-between;
+    font-size: 9.5px; font-family: 'Courier New',monospace; color: rgba(30,203,135,.65);
+  }
+  .cbar-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+               animation: pulse 1.5s ease infinite; display: inline-block; margin-right: 5px; }
+  /* Mobile fallback */
+  .canvas-mob { display: none; width: 100%; border-radius: 14px; border: 1px solid rgba(30,203,135,.14); }
+
+  .tech-list { display: flex; flex-direction: column; gap: 22px; }
+  .tech-item { display: flex; align-items: flex-start; gap: 15px; }
+  .tech-dot  { width: 13px; height: 13px; border-radius: 50%; background: var(--green);
+               box-shadow: 0 0 0 4px rgba(30,203,135,.13); flex-shrink: 0; margin-top: 5px; }
+  .tech-h    { font-weight: 700; color: #fff; font-size: .93rem; margin-bottom: 2px; }
+  .tech-sub  { font-size: .75rem; color: var(--green); font-weight: 700; margin-bottom: 6px; letter-spacing: .01em; }
+  .tech-p    { font-size: .82rem; color: var(--dim); line-height: 1.65; }
+
+  /* ── CASES ─────────────────────────────────────────────────── */
+  #casos { background: var(--navy); padding: 80px 1.25rem; }
+  .casos-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 44px; perspective: 1200px; }
+  .caso {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 24px 20px; cursor: default;
+    transform-style: preserve-3d;
+    transition: transform .4s var(--ease), border-color .3s, box-shadow .4s;
+  }
+  .caso:hover { transform: rotateY(-4deg) rotateX(2deg) translateY(-6px); border-color: rgba(30,203,135,.28); box-shadow: 12px 24px 48px rgba(0,0,0,.32); }
+  .caso-img { width: 100%; height: 140px; object-fit: cover; border-radius: 9px; margin-bottom: 18px;
+              filter: brightness(.82); transition: filter .3s; }
+  .caso:hover .caso-img { filter: brightness(1); }
+  .caso-tag  { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--green); margin-bottom: 7px; }
+  .caso-h3   { font-size: .97rem; font-weight: 700; color: #fff; margin-bottom: 9px; line-height: 1.3; }
+  .caso-p    { font-size: .8rem; color: var(--dim); line-height: 1.6; margin-bottom: 14px; }
+  .caso-stats { display: flex; gap: 12px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .cstat     { flex: 1; text-align: center; }
+  .cstat-n   { font-size: 1.4rem; font-weight: 900; color: var(--green); letter-spacing: -.02em; line-height: 1; }
+  .cstat-l   { font-size: 9.5px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
+
+  /* ── LOGOS ─────────────────────────────────────────────────── */
+  #logos { background: #f0f4f8; padding: 38px 1.25rem; }
+  .logos-lbl { text-align: center; font-size: 10.5px; font-weight: 700; letter-spacing: .1em;
+               text-transform: uppercase; color: #6b7280; margin-bottom: 24px; }
+  .logos-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px 48px; }
+  .logo-i { height: 52px; width: auto; max-width: 150px; object-fit: contain;
+            filter: grayscale(1); opacity: .55; transition: filter .3s, opacity .3s; }
+  .logo-i:hover { filter: grayscale(0); opacity: 1; }
+
+  /* ── FAQ ───────────────────────────────────────────────────── */
+  #faq { background: #f8fafc; padding: 80px 1.25rem; }
+  .faq-inner { max-width: 700px; margin: 0 auto; }
+  .faq-list  { display: flex; flex-direction: column; gap: 9px; margin-top: 36px; }
+  .faq-item  { background: #fff; border: 1px solid #e5e7eb; border-radius: 11px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+  .faq-btn   {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    padding: 17px 20px; text-align: left; background: none; font-family: var(--f);
+    font-size: .875rem; font-weight: 600; color: #1a202c; transition: background .2s;
+  }
+  .faq-btn:hover { background: #f9fafb; }
+  .faq-chev  { width: 17px; height: 17px; flex-shrink: 0; stroke: #9ca3af; fill: none; stroke-width: 2.2; transition: transform .3s var(--ease); }
+  .faq-item.open .faq-chev { transform: rotate(180deg); }
+  .faq-body  { max-height: 0; overflow: hidden; transition: max-height .38s var(--ease); }
+  .faq-body.open { max-height: 400px; }
+  .faq-ans   { padding: 0 20px 17px; font-size: .855rem; color: #4b5563; line-height: 1.72; }
+
+  /* ── FINAL FORM ────────────────────────────────────────────── */
+  #final { background: var(--deep); padding: 96px 1.25rem; }
+  .final-grid { display: grid; grid-template-columns: 1fr 490px; gap: 64px; align-items: start; max-width: 1100px; margin: 0 auto; }
+  .final-copy { padding-top: 6px; }
+  .final-h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: -.03em; margin-bottom: 14px; text-wrap: balance; }
+  .final-h2 span { color: var(--green); }
+  .final-sub { font-size: .96rem; color: var(--dim); line-height: 1.65; margin-bottom: 28px; }
+  .guarantees { display: flex; flex-direction: column; gap: 11px; }
+  .g-row { display: flex; align-items: center; gap: 10px; font-size: .865rem; color: var(--dim); }
+  .g-check {
+    width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%;
+    background: rgba(30,203,135,.1); display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Final form card */
+  .fcard2 { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 28px; }
+  .fcard2-title { color: #fff; font-size: 1.05rem; font-weight: 700; text-align: center; margin-bottom: 20px; }
+  .f-field { display: flex; flex-direction: column; gap: 13px; }
+  .f-lbl { display: block; font-size: 11.5px; font-weight: 600; color: var(--dim); margin-bottom: 5px; }
+  .f-req { color: #ef4444; margin-left: 2px; }
+  /* Dark mode inputs */
+  .fcard2 .inp { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.11); color: var(--text); }
+  .fcard2 .inp::placeholder { color: var(--muted); }
+  .fcard2 .inp:focus { border-color: var(--green); background: rgba(255,255,255,.09); }
+  .fcard2 .inp-sel { color: var(--text); }
+  .fcard2 .inp-sel option { background: var(--navy); color: var(--text); }
+  .f-lgpd { display: flex; align-items: flex-start; gap: 8px;
+            font-size: 11px; color: rgba(255,255,255,.4); line-height: 1.5; cursor: pointer; margin-top: 4px; }
+  .f-lgpd input { margin-top: 2px; accent-color: var(--green); width: 15px; height: 15px; }
+  .f-lgpd a { color: rgba(255,255,255,.6); text-decoration: underline; }
+  .f-sec  { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 10.5px; color: var(--muted); margin-top: 10px; }
+  .fty2-ico { width: 60px; height: 60px; border-radius: 50%; background: rgba(30,203,135,.12); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .fty2 h3  { color: #fff; font-size: 1.25rem; font-weight: 700; margin-bottom: 7px; }
+  .fty2 p   { color: var(--dim); font-size: .88rem; }
+
+  /* ── FOOTER ────────────────────────────────────────────────── */
+  #foot { background: #040d19; padding: 32px 1.25rem; border-top: 1px solid rgba(255,255,255,.05); }
+  .foot-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .foot-logo { height: 34px; width: auto; }
+  .foot-links { display: flex; align-items: center; gap: 18px; }
+  .foot-link  { font-size: 11.5px; color: #6b7280; transition: color .2s; }
+  .foot-link:hover { color: #9ca3af; }
+  .foot-copy { max-width: 1100px; margin: 18px auto 0; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.04); font-size: 11px; color: #4b5563; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  /* ── WHATSAPP STICKY ───────────────────────────────────────── */
+  #wha {
+    display: none; position: fixed; bottom: 18px; right: 18px; z-index: 200;
+    background: #25D366; color: #fff; border-radius: 50px; padding: 11px 17px;
+    font-weight: 700; font-size: 12.5px; align-items: center; gap: 7px;
+    box-shadow: 0 4px 20px rgba(37,211,102,.45); transition: transform .2s, box-shadow .2s;
+    text-decoration: none;
+  }
+  #wha:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,.5); }
+
+  /* ── SCROLL REVEALS ────────────────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+  .reveal.d1 { transition-delay: .08s; }
+  .reveal.d2 { transition-delay: .16s; }
+  .reveal.d3 { transition-delay: .24s; }
+  .reveal.on { opacity: 1; transform: none; }
+
+  /* Primary CTA button */
+  .btn-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green); color: var(--deep); font-weight: 800; font-size: .93rem;
+    padding: 14px 26px; border-radius: 8px;
+    transition: background .2s, transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 22px rgba(30,203,135,.38);
+    animation: gPulse 2.5s ease infinite;
+  }
+  .btn-cta:hover { background: #00BE69; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(30,203,135,.48); }
+  .btn-cta .arr { transition: transform .2s; }
+  .btn-cta:hover .arr { transform: translateX(4px); }
+
+  /* ── RESPONSIVE ────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .h-inner       { grid-template-columns: 1fr; gap: 28px; }
+    .testi-grid    { grid-template-columns: 1fr; }
+    .steps         { grid-template-columns: 1fr; gap: 12px; }
+    .steps::before { display: none; }
+    .ai-grid       { grid-template-columns: 1fr; }
+    .casos-grid    { grid-template-columns: 1fr; }
+    .final-grid    { grid-template-columns: 1fr; }
+    .proof-grid    { grid-template-columns: 1fr 1fr; }
+    #ai-canvas     { display: none; }
+    .canvas-bar    { display: none; }
+    .canvas-mob    { display: block; }
+    .h-detect-svg  { display: none; }
+  }
+  @media (max-width: 640px) {
+    .sec { padding: 56px 1rem; }
+    .h1  { font-size: 1.55rem; }
+    .inp { padding: 12px 13px; font-size: 15px; }
+    .logos-row { gap: 10px 28px; }
+    .final-grid { gap: 36px; }
+  }
+  @media (min-width: 901px) {
+    #wha { display: none !important; }
+  }
+  @media (max-width: 900px) {
+    #wha { display: flex; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    .h-scan { display: none; }
+  }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- WhatsApp floating (mobile) -->
+<a id="wha"
+   href="https://wa.me/555130342111?text=Ol%C3%A1%2C%20vi%20o%20depoimento%20e%20quero%20saber%20mais%20sobre%20videotelemetria."
+   target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  WhatsApp
+</a>
+
+<!-- NAV -->
+<header id="nav" role="banner">
+  <div class="nav-inner">
+    <a href="#" aria-label="Ali Sat — Página inicial">
+      <img src="/assets/logobranco.svg" alt="Ali Sat Gestão de Frotas" class="nav-logo"
+           onerror="this.style.display='none'">
+    </a>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section id="hero" aria-label="Proposta de valor">
+  <div class="h-stage" aria-hidden="true">
+    <div class="h-bg"></div>
+    <div class="h-grad"></div>
+    <div class="h-road"></div>
+    <div class="h-scan"></div>
+  </div>
+
+  <div class="h-inner">
+    <!-- Left: Copy + visual -->
+    <div>
+      <div class="badge">
+        <div class="badge-dot" aria-hidden="true"></div>
+        Depoimento real — resultado verificável
+      </div>
+
+      <h1 class="h1">
+        O que você viu no vídeo<br>
+        <em>acontece toda semana</em><br>
+        na sua futura frota.
+      </h1>
+
+      <p class="h-sub">
+        Você acabou de ver um cliente real compartilhar o resultado. Agora conheça
+        os números completos — e o que sua frota pode ganhar nos próximos 90 dias.
+      </p>
+
+      <!-- Detection visual (DMS camera + SVG overlay) -->
+      <div class="h-detect reveal" aria-label="Câmera DMS detectando fadiga em tempo real">
+        <img src="/assets/dentro.gif" alt="IA embarcada monitorando motorista em tempo real" class="h-detect-img" loading="eager">
+        <svg class="h-detect-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <!-- Bounding box: draws itself (stroke-dashoffset) -->
+          <rect class="d-rect" x="18" y="8" width="44" height="36" rx="0.4"
+                fill="none" stroke="#1ECB87" stroke-width="0.65"
+                stroke-dasharray="162" stroke-dashoffset="162"/>
+          <!-- Corner L-brackets appear after box completes -->
+          <polyline class="d-fade" points="18,20 18,8 27,8"    fill="none" stroke="#1ECB87" stroke-width="1.1"/>
+          <polyline class="d-fade" points="53,8 62,8 62,20"    fill="none" stroke="#1ECB87" stroke-width="1.1"/>
+          <polyline class="d-fade" points="62,32 62,44 53,44"  fill="none" stroke="#1ECB87" stroke-width="1.1"/>
+          <polyline class="d-fade" points="18,32 18,44 27,44"  fill="none" stroke="#1ECB87" stroke-width="1.1"/>
+          <!-- Label background + text -->
+          <rect class="d-fade" x="17" y="2" width="40" height="6.5" fill="rgba(30,203,135,0.14)" rx="0.4"/>
+          <text class="d-fade" x="19" y="7" fill="#1ECB87" font-size="4.2" font-family="'Courier New',monospace" font-weight="bold">DMS: FADIGA DETECTADA</text>
+          <!-- Confidence tag -->
+          <text class="d-fade" x="18" y="52" fill="rgba(30,203,135,0.65)" font-size="3.4" font-family="'Courier New',monospace">CONF: 97.3%  ·  RISCO: ALTO</text>
+        </svg>
+      </div>
+
+      <div class="h-bullets">
+        <div class="h-bullet">
+          <div class="h-bico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          Detecção em 0,2s — sem internet, sem latência
+        </div>
+        <div class="h-bullet">
+          <div class="h-bico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          Instalação em 72h · Suporte Ali Sat incluso
+        </div>
+        <div class="h-bullet">
+          <div class="h-bico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          ROI médio em 3 meses — ou devolvemos o investimento
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Form -->
+    <div id="hero-form-anchor" class="reveal d1">
+      <div id="hero-form-wrap" class="f-card fwrap">
+
+        <div class="f-head">
+          <div class="f-head-ico" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3V11z"/></svg>
+          </div>
+          <div class="f-head-t">
+            <p>Diagnóstico Gratuito</p>
+            <p>Fale com um especialista em videotelemetria</p>
+          </div>
+        </div>
+
+        <div class="f-body">
+          <p class="f-title">Diagnóstico gratuito da sua frota</p>
+          <div class="f-meta">
+            <span id="h-step-label">Etapa 1 de 2 — Seus dados</span>
+            <div class="f-dots">
+              <div class="f-dot on" id="h-dot-1"></div>
+              <div class="f-dot"    id="h-dot-2"></div>
+            </div>
+          </div>
+
+          <!-- Thank you -->
+          <div class="f-ty" role="alert">
+            <div class="f-ty-ico" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h3>Solicitação enviada!</h3>
+            <p>Nossa equipe entrará em contato<br>em até 1 hora útil.</p>
+          </div>
+
+          <!-- Step 1 -->
+          <div id="h-s1">
+            <div class="fstack">
+              <input type="text"  id="h-nome"  autocomplete="name"     placeholder="* Nome completo"    required class="inp">
+              <input type="email" id="h-email" autocomplete="email"    placeholder="* E-mail"           required class="inp">
+              <input type="tel"   id="h-tel"   autocomplete="tel"      placeholder="* Telefone / WhatsApp" required class="inp">
+              <!-- UTM hidden -->
+              <input type="hidden" id="h-utm_source"><input type="hidden" id="h-utm_medium">
+              <input type="hidden" id="h-utm_campaign"><input type="hidden" id="h-utm_content">
+              <input type="hidden" id="h-utm_term"><input type="hidden" id="h-fbclid"><input type="hidden" id="h-gclid">
+              <label class="lgpd-row">
+                <input type="checkbox" id="h-lgpd" required>
+                Concordo com a <a href="/politica-de-privacidade" target="_blank">Política de Privacidade</a> e o tratamento dos meus dados conforme a LGPD.
+              </label>
+              <button type="button" class="btn-f" onclick="heroAdvance()">
+                Agendar diagnóstico gratuito →
+              </button>
+              <p class="f-hint">Sem compromisso · Retorno em até 1h útil</p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div id="h-s2" style="display:none">
+            <div class="fstack">
+              <input type="text" id="h-empresa" autocomplete="organization" placeholder="* Nome da Empresa" required class="inp">
+              <input type="text" id="h-cnpj" placeholder="* CNPJ" maxlength="18" required class="inp">
+              <select id="h-seg" required class="inp inp-sel">
+                <option value="" disabled selected>* Segmento de Atuação</option>
+                <option>Transporte de Cargas</option><option>Transporte de Pessoas</option>
+                <option>Distribuidora</option><option>Construção Civil</option>
+                <option>Mineração</option><option>Agronegócio</option><option>Outro</option>
+              </select>
+              <select id="h-veic" required class="inp inp-sel">
+                <option value="" disabled selected>* Quantidade de Veículos</option>
+                <option>20-50</option><option>51-100</option><option>101-200</option>
+                <option>201-500</option><option>500+</option>
+              </select>
+              <button type="button" class="btn-f" onclick="heroSubmit()">
+                Confirmar e agendar →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PROOF BAR
+══════════════════════════════════════════ -->
+<div id="proof" aria-label="Resultados em números">
+  <div class="proof-grid">
+    <div class="p-item">
+      <div class="p-num" data-target="80" data-sfx="%">0%</div>
+      <p class="p-lbl">Menos distrações ao volante detectadas</p>
+    </div>
+    <div class="p-item">
+      <div class="p-num" data-target="60" data-sfx="%">0%</div>
+      <p class="p-lbl">Redução média de colisões registradas</p>
+    </div>
+    <div class="p-item">
+      <div class="p-num" data-target="40" data-sfx="%">0%</div>
+      <p class="p-lbl">Queda nas multas de trânsito</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TESTIMONIAL VIDEO
+══════════════════════════════════════════ -->
+<section id="testi" class="sec" style="padding:80px 1.25rem" aria-label="Depoimento em vídeo">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="stag">Prova Social</div>
+      <h2 class="sh2">O depoimento que te trouxe aqui</h2>
+      <p class="ssub">Assista de novo, compartilhe com seu sócio ou gestor. Cada número citado é verificável.</p>
+    </div>
+
+    <div class="testi-grid">
+      <!-- YouTube facade -->
+      <div class="reveal d1">
+        <div id="yt-facade" class="yt-wrap"
+             role="button" tabindex="0" aria-label="Reproduzir depoimento de cliente Ali Sat"
+             onclick="loadYT()" onkeydown="if(event.key==='Enter')loadYT()">
+          <img class="yt-thumb"
+               src="https://img.youtube.com/vi/t60tY2u4r0Y/maxresdefault.jpg"
+               alt="Depoimento de cliente Ali Sat — clique para assistir"
+               loading="lazy">
+          <div class="yt-overlay" aria-hidden="true"></div>
+          <div class="yt-play" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="yt-lbl">▶ Depoimento real — resultado em operação</div>
+        </div>
+        <div id="yt-player-wrap" style="display:none;position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;box-shadow:0 16px 56px rgba(0,0,0,.5);">
+          <iframe id="yt-iframe" style="position:absolute;inset:0;width:100%;height:100%;"
+                  src="" frameborder="0"
+                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+                  allowfullscreen loading="lazy" title="Depoimento Ali Sat"></iframe>
+        </div>
+      </div>
+
+      <!-- Proof cards -->
+      <div class="proof-cards reveal d2" role="list">
+        <div class="pc" role="listitem">
+          <div class="pc-ico" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+          </div>
+          <div>
+            <div class="pc-num">−63%</div>
+            <div class="pc-lbl">Redução de incidentes em 8 meses de operação</div>
+          </div>
+        </div>
+        <div class="pc" role="listitem">
+          <div class="pc-ico" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="pc-num">72h</div>
+            <div class="pc-lbl">Da assinatura à frota com câmeras instaladas</div>
+          </div>
+        </div>
+        <div class="pc" role="listitem">
+          <div class="pc-ico" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div>
+            <div class="pc-num">3 meses</div>
+            <div class="pc-lbl">Para o ROI superar o custo de implementação</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     COMO FUNCIONA
+══════════════════════════════════════════ -->
+<section id="como" aria-label="Como funciona a solução">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center;max-width:580px;margin:0 auto">
+      <div class="stag stag-c" style="display:inline-flex;gap:10px">Como Funciona</div>
+      <h2 class="sh2" style="margin-top:12px">Da detecção ao alerta: 0,2 segundos</h2>
+      <p class="ssub" style="margin:10px auto 0">Toda inteligência é processada dentro do veículo. Sem nuvem, sem latência, sem dependência de conexão.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal d1">
+        <div class="step-ico-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+          <div class="step-n" aria-hidden="true">1</div>
+        </div>
+        <h3>Câmera capta em tempo real</h3>
+        <p>A câmera DMS monitora olhos, cabeça e expressão do motorista continuamente — mesmo à noite e em ambientes com baixa luminosidade.</p>
+        <span class="step-t"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Contínuo</span>
+        <img src="/assets/dentro.gif" alt="Câmera interna DMS" class="step-gif" loading="lazy">
+      </div>
+
+      <div class="step reveal d2">
+        <div class="step-ico-wrap">
+          <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+          <div class="step-n" aria-hidden="true">2</div>
+        </div>
+        <h3>IA processa dentro da cabine</h3>
+        <p>O processador embarcado analisa os dados em menos de 0,2 segundos — sem depender de internet. A decisão acontece dentro do veículo, em tempo real.</p>
+        <span class="step-t"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>&lt; 0,2 segundos</span>
+      </div>
+
+      <div class="step reveal d3">
+        <div class="step-ico-wrap">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div class="step-n" aria-hidden="true">3</div>
+        </div>
+        <h3>Alerta salva antes do impacto</h3>
+        <p>Som e vibração alertam o motorista antes que o evento vire acidente. O gestor acompanha tudo pelo painel em tempo real, com vídeo e log completo.</p>
+        <span class="step-t"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Antes do impacto</span>
+        <img src="/assets/movimento.gif" alt="Câmera frontal ADAS detectando distância" class="step-gif" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     AI CANVAS SCENE
+══════════════════════════════════════════ -->
+<section id="ai" aria-label="Demonstração da tecnologia">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center;max-width:580px;margin:0 auto">
+      <div class="stag stag-c" style="display:inline-flex;gap:10px">A Tecnologia</div>
+      <h2 class="sh2" style="margin-top:12px">O sistema em ação — ao vivo</h2>
+      <p class="ssub" style="margin:10px auto 0">IA embarcada processando detecção de fadiga quadro a quadro. Veja como o sistema identifica e alerta antes do risco.</p>
+    </div>
+
+    <div class="ai-grid">
+      <!-- Canvas scene / mobile fallback -->
+      <div class="canvas-wrap reveal d1">
+        <canvas id="ai-canvas" aria-label="Simulação interativa de detecção de fadiga por IA embarcada"></canvas>
+        <img src="/assets/cameras.webp" alt="Sistema de câmeras videotelemetria Ali Sat" class="canvas-mob" loading="lazy">
+        <div class="canvas-bar" aria-hidden="true">
+          <span><span class="cbar-dot"></span>SISTEMA ATIVO</span>
+          <span id="canvasFPS">60 FPS</span>
+          <span>ALI SAT AI v3.1</span>
+        </div>
+      </div>
+
+      <!-- Tech descriptions + CTA -->
+      <div class="tech-list reveal d2">
+        <div class="tech-item">
+          <div class="tech-dot" aria-hidden="true"></div>
+          <div>
+            <div class="tech-h">Câmera ADAS</div>
+            <div class="tech-sub">Advanced Driver Assistance System</div>
+            <p class="tech-p">Monitora a estrada à frente em tempo real. Detecta veículos em distância insegura, saída involuntária de faixa e excesso de velocidade relativa — emitindo alertas antes da colisão.</p>
+          </div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-dot" aria-hidden="true"></div>
+          <div>
+            <div class="tech-h">Câmera DMS</div>
+            <div class="tech-sub">Driver Monitoring System</div>
+            <p class="tech-p">Rastreia movimentos oculares, posição da cabeça e expressão facial. Identifica fadiga, sonolência, distração e uso de celular — agindo antes que o erro humano vire tragédia.</p>
+          </div>
+        </div>
+        <div style="margin-top:6px">
+          <a href="#final" class="btn-cta" onclick="trackCTA('Quero ver na minha frota','ai-scene')">
+            Quero ver na minha frota
+            <svg class="arr" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CASES
+══════════════════════════════════════════ -->
+<section id="casos" aria-label="Casos de sucesso">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center;max-width:580px;margin:0 auto">
+      <div class="stag stag-c" style="display:inline-flex;gap:10px">Resultados Reais</div>
+      <h2 class="sh2" style="margin-top:12px">Empresas que já tomaram a decisão</h2>
+      <p class="ssub" style="margin:10px auto 0">Cada resultado abaixo tem nome, segmento e número verificável.</p>
+    </div>
+    <div class="casos-grid" role="list">
+      <div class="caso reveal d1" role="listitem">
+        <img src="/assets/cameras.webp" alt="Frota de transporte de cargas" class="caso-img" loading="lazy">
+        <div class="caso-tag">Transporte de Cargas</div>
+        <h3 class="caso-h3">89 veículos em rotas noturnas de longa distância</h3>
+        <p class="caso-p">Com rotas noturnas e motoristas cumprindo 10h+ por dia, a principal ameaça era fadiga não detectada. Em 6 meses de operação:</p>
+        <div class="caso-stats">
+          <div class="cstat"><div class="cstat-n">−63%</div><div class="cstat-l">Incidentes nas rotas</div></div>
+          <div class="cstat"><div class="cstat-n">−38%</div><div class="cstat-l">Custo com sinistros</div></div>
+          <div class="cstat"><div class="cstat-n">3×</div><div class="cstat-l">ROI em 1 ano</div></div>
+        </div>
+      </div>
+      <div class="caso reveal d2" role="listitem">
+        <img src="/assets/fadiga.webp" alt="Equipamentos de construção civil" class="caso-img" loading="lazy">
+        <div class="caso-tag">Construção Civil</div>
+        <h3 class="caso-h3">Betoneiras e equipamentos pesados em canteiro ativo</h3>
+        <p class="caso-p">Operação em canteiro com trabalhadores pedestres e equipamentos em movimento simultâneo. Após implementação:</p>
+        <div class="caso-stats">
+          <div class="cstat"><div class="cstat-n">−71%</div><div class="cstat-l">Alertas de fadiga</div></div>
+          <div class="cstat"><div class="cstat-n">Zero</div><div class="cstat-l">Atropelamentos</div></div>
+          <div class="cstat"><div class="cstat-n">−44%</div><div class="cstat-l">Manutenção corretiva</div></div>
+        </div>
+      </div>
+      <div class="caso reveal d3" role="listitem">
+        <img src="/assets/motorista.png" alt="Motorista de distribuidora" class="caso-img" loading="lazy" style="object-position:top">
+        <div class="caso-tag">Distribuidoras</div>
+        <h3 class="caso-h3">47 veículos em rotas urbanas com prazo de entrega</h3>
+        <p class="caso-p">Trânsito intenso, paradas frequentes e pressão de prazo criam o ambiente mais propício a distrações. Com Ali Sat:</p>
+        <div class="caso-stats">
+          <div class="cstat"><div class="cstat-n">−82%</div><div class="cstat-l">Uso de celular</div></div>
+          <div class="cstat"><div class="cstat-n">−45%</div><div class="cstat-l">Multas de trânsito</div></div>
+          <div class="cstat"><div class="cstat-n">+23%</div><div class="cstat-l">Pontualidade</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     LOGOS
+══════════════════════════════════════════ -->
+<div id="logos" aria-label="Clientes Ali Sat">
+  <div class="wrap">
+    <p class="logos-lbl">Empresas que confiam na Ali Sat</p>
+    <div class="logos-row">
+      <img src="/assets/mica.webp"       alt="Mica"       class="logo-i" loading="lazy">
+      <img src="/assets/ccl.webp"        alt="CCL Concreto" class="logo-i" loading="lazy">
+      <img src="/assets/casa%20maria.webp" alt="Casa Maria" class="logo-i" loading="lazy">
+      <img src="/assets/coesul.png"      alt="Coesul"     class="logo-i" loading="lazy">
+      <img src="/assets/franciscon.webp" alt="Franciscon" class="logo-i" loading="lazy">
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FAQ
+══════════════════════════════════════════ -->
+<section id="faq" aria-label="Perguntas frequentes">
+  <div class="faq-inner">
+    <div class="reveal" style="text-align:center">
+      <h2 class="sh2" style="color:#1a202c">Ainda tem dúvidas?</h2>
+      <p class="ssub" style="color:#6b7280;margin:10px auto 0">Respondemos as perguntas mais comuns antes do diagnóstico.</p>
+    </div>
+    <div class="faq-list reveal d1" role="list">
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn" onclick="toggleFaq(this)" aria-expanded="false">
+          Quantos veículos preciso ter para implementar?
+          <svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body" role="region"><p class="faq-ans">Trabalhamos com frotas a partir de 20 veículos. Abaixo disso, o retorno sobre investimento é mais demorado e não conseguimos garantir o mesmo nível de suporte. Se você tem menos de 20, entre em contato mesmo assim — podemos indicar um plano de crescimento para quando fizer sentido econômico.</p></div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn" onclick="toggleFaq(this)" aria-expanded="false">
+          Quanto tempo leva a instalação?
+          <svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body" role="region"><p class="faq-ans">Após assinatura do contrato, sua frota fica operacional em até 72 horas. Nossa equipe vai até você, instala as câmeras, configura o painel e treina os gestores. Sem paralisia operacional — os veículos seguem rodando normalmente durante a instalação.</p></div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn" onclick="toggleFaq(this)" aria-expanded="false">
+          O sistema precisa de internet para funcionar?
+          <svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body" role="region"><p class="faq-ans">Não. Toda a inteligência fica embarcada no dispositivo dentro do veículo. A detecção de fadiga, distrações e alertas ao motorista funcionam offline — o que garante resposta em 0,2 segundos independente de sinal. A internet é usada apenas para sincronizar os dados com o painel de gestão quando o veículo tem conexão disponível.</p></div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn" onclick="toggleFaq(this)" aria-expanded="false">
+          Como os motoristas reagem ao monitoramento?
+          <svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body" role="region"><p class="faq-ans">A resistência inicial existe, mas nos primeiros 30 dias ela some. Quando os próprios motoristas percebem que o sistema alerta sobre fadiga antes que eles mesmos percebam, a narrativa muda de "fiscalização" para "proteção". Temos um protocolo de onboarding com os motoristas que usamos em todos os clientes — isso sozinho já elimina 90% da fricção.</p></div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn" onclick="toggleFaq(this)" aria-expanded="false">
+          Qual é o modelo de contrato?
+          <svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body" role="region"><p class="faq-ans">Mensalidade por veículo, com contrato mínimo de 12 meses. O equipamento fica com você durante o período contratado. O diagnóstico gratuito que oferecemos aqui inclui uma proposta customizada com projeção de ROI para o seu tamanho de frota e segmento — sem compromisso.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FINAL FORM
+══════════════════════════════════════════ -->
+<section id="final" aria-label="Formulário de contato">
+  <div class="final-grid">
+    <!-- Left: urgency copy -->
+    <div class="final-copy reveal">
+      <div class="badge" style="margin-bottom:18px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+        Diagnóstico gratuito · Sem compromisso
+      </div>
+      <h2 class="final-h2">
+        Sua frota protegida<br>
+        em <span>menos de 72 horas.</span>
+      </h2>
+      <p class="final-sub">
+        Enquanto você avalia, seu concorrente já decidiu. Cada semana sem videotelemetria
+        é uma semana de risco calculado sendo ignorado — e de custo que poderia
+        estar virando resultado.
+      </p>
+      <div class="guarantees" role="list">
+        <div class="g-row" role="listitem">
+          <div class="g-check" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          Diagnóstico gratuito sem compromisso de compra
+        </div>
+        <div class="g-row" role="listitem">
+          <div class="g-check" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          Proposta com projeção de ROI para o seu segmento
+        </div>
+        <div class="g-row" role="listitem">
+          <div class="g-check" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          Instalação em 72h após assinatura do contrato
+        </div>
+        <div class="g-row" role="listitem">
+          <div class="g-check" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          Suporte Ali Sat incluso durante toda a operação
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Form -->
+    <div class="reveal d1">
+      <div id="final-form-wrap" class="fcard2 fwrap2">
+        <h3 class="fcard2-title" id="fcard-title">Agende seu diagnóstico gratuito</h3>
+
+        <!-- Thank you -->
+        <div class="fty2" role="alert">
+          <div class="fty2-ico" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <h3>Solicitação recebida!</h3>
+          <p>Nossa equipe entrará em contato em até 1 hora útil. Fique de olho no seu WhatsApp.</p>
+        </div>
+
+        <div class="f-field fstack">
+          <div>
+            <label class="f-lbl" for="f-nome">Nome completo<span class="f-req">*</span></label>
+            <input type="text"  id="f-nome"    autocomplete="name"         placeholder="Ex.: Carlos Mendes"  required class="inp">
+          </div>
+          <div>
+            <label class="f-lbl" for="f-email">E-mail<span class="f-req">*</span></label>
+            <input type="email" id="f-email"   autocomplete="email"        placeholder="Ex.: carlos@empresa.com.br" required class="inp">
+          </div>
+          <div>
+            <label class="f-lbl" for="f-tel">Telefone / WhatsApp<span class="f-req">*</span></label>
+            <input type="tel"   id="f-tel"     autocomplete="tel"          placeholder="(51) 99999-9999" required class="inp">
+          </div>
+          <div>
+            <label class="f-lbl" for="f-empresa">Nome da empresa<span class="f-req">*</span></label>
+            <input type="text"  id="f-empresa" autocomplete="organization" placeholder="Ex.: Transportes ABC Ltda" required class="inp">
+          </div>
+          <div>
+            <label class="f-lbl" for="f-cnpj">CNPJ<span class="f-req">*</span></label>
+            <input type="text"  id="f-cnpj"    placeholder="XX.XXX.XXX/XXXX-XX" maxlength="18" required class="inp">
+          </div>
+          <div>
+            <label class="f-lbl" for="f-seg">Segmento de atuação<span class="f-req">*</span></label>
+            <select id="f-seg" required class="inp inp-sel">
+              <option value="" disabled selected>Selecione</option>
+              <option>Transporte de Cargas</option><option>Transporte de Pessoas</option>
+              <option>Distribuidora</option><option>Construção Civil</option>
+              <option>Mineração</option><option>Agronegócio</option><option>Outro</option>
+            </select>
+          </div>
+          <div>
+            <label class="f-lbl" for="f-veic">Quantidade de veículos<span class="f-req">*</span></label>
+            <select id="f-veic" required class="inp inp-sel">
+              <option value="" disabled selected>Selecione</option>
+              <option>20-50</option><option>51-100</option><option>101-200</option>
+              <option>201-500</option><option>500+</option>
+            </select>
+          </div>
+          <!-- UTM hidden -->
+          <input type="hidden" id="f-utm_source"><input type="hidden" id="f-utm_medium">
+          <input type="hidden" id="f-utm_campaign"><input type="hidden" id="f-utm_content">
+          <input type="hidden" id="f-utm_term"><input type="hidden" id="f-fbclid"><input type="hidden" id="f-gclid">
+          <label class="f-lgpd">
+            <input type="checkbox" id="f-lgpd" required>
+            Concordo com a <a href="/politica-de-privacidade" target="_blank">Política de Privacidade</a> e o tratamento dos meus dados conforme a LGPD.
+          </label>
+          <button type="button" class="btn-f" onclick="finalSubmit()" id="btn-final">
+            Agendar diagnóstico gratuito →
+          </button>
+        </div>
+        <p class="f-sec">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Seus dados estão protegidos · LGPD compliant
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer id="foot" role="contentinfo">
+  <div class="foot-inner">
+    <img src="/assets/logobranco.svg" alt="Ali Sat Gestão de Frotas" class="foot-logo" onerror="this.style.display='none'">
+    <div class="foot-links">
+      <a href="https://www.alisat.com.br" target="_blank" rel="noopener" class="foot-link">alisat.com.br</a>
+      <a href="tel:+555130342111" class="foot-link">(51) 3034-2111</a>
+      <a href="mailto:comercial@alisat.com.br" class="foot-link">comercial@alisat.com.br</a>
+    </div>
+  </div>
+  <div class="foot-copy">
+    <span>© 2025 Ali Sat Rastreamento e Monitoramento LTDA · CNPJ 08.956.073/0001-02</span>
+    <span>Rua Porto Mauá, 742 — Sapucaia do Sul, RS · CEP 93220-390</span>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+'use strict';
+
+window.dataLayer = window.dataLayer || [];
+
+// ── Utilities ────────────────────────────────────────────────
+const $   = id => document.getElementById(id);
+const param = k => new URLSearchParams(window.location.search).get(k) || '';
+const cookie = n => { const v = `; ${document.cookie}`, p = v.split(`; ${n}=`); return p.length === 2 ? p.pop().split(';').shift() : ''; };
+const push  = o => window.dataLayer.push(o);
+
+// ── UTM fill ─────────────────────────────────────────────────
+function fillUtms() {
+  const keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'];
+  ['h','f'].forEach(px => keys.forEach(k => { const el = $(`${px}-${k}`); if (el) el.value = param(k); }));
+}
+
+// ── Masks ────────────────────────────────────────────────────
+function maskPhone(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,11);
+  if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4})$/,'($1) $2-$3');
+  else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d*)/,'($1) $2-$3');
+  else if (v.length > 2) v = v.replace(/^(\d{2})(\d*)/,'($1) $2');
+  else if (v.length) v = `(${v}`;
+  el.value = v;
+}
+function maskCNPJ(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,14);
+  v = v.replace(/^(\d{2})(\d)/,'$1.$2');
+  v = v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');
+  v = v.replace(/\.(\d{3})(\d)/,'.$1/$2');
+  v = v.replace(/(\d{4})(\d)/,'$1-$2');
+  el.value = v;
+}
+const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+const isPhone = v => v.replace(/\D/g,'').length >= 10;
+const isCNPJ  = v => v.replace(/\D/g,'').length === 14;
+function alert_(m) { window.alert(m); }
+
+// ── Nav scroll ───────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  $('nav') && document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+// ── Reveal observer ──────────────────────────────────────────
+const revIo = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); revIo.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revIo.observe(el));
+
+// Step cards highlight on enter
+const stepIo = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); } });
+}, { threshold: 0.4 });
+document.querySelectorAll('.step').forEach(el => stepIo.observe(el));
+
+// ── Proof bar counter ────────────────────────────────────────
+let countersRan = false;
+const counterIo = new IntersectionObserver(es => {
+  if (!es[0].isIntersecting || countersRan) return;
+  countersRan = true;
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const target = +el.dataset.target, sfx = el.dataset.sfx || '';
+    const steps = 80; let i = 0;
+    const t = setInterval(() => {
+      i++;
+      const ease = 1 - Math.pow(1 - i / steps, 3);
+      el.textContent = Math.round(target * ease) + sfx;
+      if (i >= steps) clearInterval(t);
+    }, 1000 / 60);
+  });
+}, { threshold: 0.4 });
+counterIo.observe($('proof'));
+
+// ── Scroll depth ─────────────────────────────────────────────
+const sdFired = new Set();
+window.addEventListener('scroll', () => {
+  const pct = Math.round(window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100);
+  [25,50,75,100].forEach(t => {
+    if (pct >= t && !sdFired.has(t)) { sdFired.add(t); push({ event:'Scroll_Depth', percent:t }); }
+  });
+}, { passive: true });
+
+// ── CTA tracking ─────────────────────────────────────────────
+function trackCTA(text, section) { push({ event:'CTA_Click', cta_text:text, section }); }
+
+// ── FAQ ──────────────────────────────────────────────────────
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item'), isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.faq-body').classList.remove('open');
+    i.querySelector('button').setAttribute('aria-expanded','false');
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    item.querySelector('.faq-body').classList.add('open');
+    btn.setAttribute('aria-expanded','true');
+  }
+}
+
+// ── YouTube facade ───────────────────────────────────────────
+let ytLoaded = false;
+const ytPcts = { 25:false, 50:false, 75:false, 100:false };
+function loadYT() {
+  if (ytLoaded) return; ytLoaded = true;
+  $('yt-facade').style.display = 'none';
+  const wrap = $('yt-player-wrap'); wrap.style.display = 'block';
+  $('yt-iframe').src = 'https://www.youtube.com/embed/t60tY2u4r0Y?autoplay=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+  push({ event:'Video_View', percent:0, action:'play' });
+  const tag = document.createElement('script'); tag.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(tag);
+  window.onYouTubeIframeAPIReady = () => {
+    new YT.Player('yt-iframe', { events: { onStateChange(e) { if (e.data === YT.PlayerState.PLAYING) watchYT(e.target); } } });
+  };
+}
+function watchYT(player) {
+  const iv = setInterval(() => {
+    try {
+      const dur = player.getDuration(), cur = player.getCurrentTime();
+      if (!dur) return;
+      const pct = (cur / dur) * 100;
+      [25,50,75,100].forEach(t => {
+        if (pct >= t && !ytPcts[t]) { ytPcts[t] = true; push({ event:'Video_View', percent:t }); }
+      });
+      if (ytPcts[100]) clearInterval(iv);
+    } catch(_) {}
+  }, 1200);
+}
+
+// ── Hero form: step 1 ────────────────────────────────────────
+const heroS1 = {};
+function heroAdvance() {
+  const nome = $('h-nome').value.trim(), email = $('h-email').value.trim();
+  const tel = $('h-tel').value.trim(), lgpd = $('h-lgpd')?.checked;
+  if (!nome)           return alert_('Por favor, informe seu nome.');
+  if (!isEmail(email)) return alert_('Por favor, informe um e-mail válido.');
+  if (!isPhone(tel))   return alert_('Por favor, informe um telefone válido.');
+  if (!lgpd)           return alert_('Por favor, aceite a Política de Privacidade para continuar.');
+
+  heroS1.nome = nome; heroS1.email = email; heroS1.tel = tel;
+  const eid = crypto.randomUUID(); heroS1.eid = eid;
+  const parts = nome.split(/\s+/);
+  fetch('/tracker', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      event_name:'Lead', event_id:eid, event_time:Math.floor(Date.now()/1000),
+      event_source_url:window.location.href, product:'videotelemetria_fundo', consent_status:'all',
+      user_data:{ em:email, fn:parts[0]||'', ln:parts.slice(1).join(' ')||'', ph:tel.replace(/\D/g,'') },
+      utm_source:param('utm_source'), utm_medium:param('utm_medium'),
+      utm_campaign:param('utm_campaign'), utm_content:param('utm_content'),
+      utm_term:param('utm_term'), fbclid:param('fbclid'), gclid:param('gclid'),
+      fbp:cookie('_fbp'), fbc:cookie('_fbc'),
+    }),
+  }).catch(()=>{});
+  push({ event:'Lead_Captura', form_step:1 });
+
+  $('h-s1').style.display = 'none';
+  $('h-s2').style.display = '';
+  $('h-dot-1').classList.remove('on');
+  $('h-dot-2').classList.add('on');
+  $('h-step-label').textContent = 'Etapa 2 de 2 — Sua empresa';
+  $('hero-form-anchor').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+// ── Hero form: step 2 ────────────────────────────────────────
+function heroSubmit() {
+  const empresa = $('h-empresa').value.trim(), cnpj = $('h-cnpj').value.trim();
+  const seg = $('h-seg').value, veic = $('h-veic').value;
+  if (!empresa)      return alert_('Por favor, informe o nome da empresa.');
+  if (!isCNPJ(cnpj)) return alert_('Por favor, informe um CNPJ válido (14 dígitos).');
+  if (!seg)          return alert_('Por favor, selecione o segmento de atuação.');
+  if (!veic)         return alert_('Por favor, selecione a quantidade de veículos.');
+
+  push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
+  if (heroS1.eid) {
+    postLeadUpdate({ update_for:heroS1.eid, user_data:{ em:heroS1.email, fn:(heroS1.nome.split(/\s+/)[0])||'', ln:(heroS1.nome.split(/\s+/).slice(1).join(' '))||'', ph:(heroS1.tel||'').replace(/\D/g,'') }, empresa, cnpj, segmento:seg, qtd_veiculos:veic }, 'hero-form-wrap');
+  } else {
+    postLead({ nome:heroS1.nome, email:heroS1.email, tel:heroS1.tel, empresa, cnpj, segmento:seg, qtd_veiculos:veic }, 'hero-form-wrap');
+  }
+}
+
+// ── Final form ───────────────────────────────────────────────
+function finalSubmit() {
+  const nome = $('f-nome').value.trim(), email = $('f-email').value.trim();
+  const tel = $('f-tel').value.trim(), empresa = $('f-empresa').value.trim();
+  const cnpj = $('f-cnpj').value.trim(), seg = $('f-seg').value, veic = $('f-veic').value;
+  const lgpd = $('f-lgpd')?.checked;
+  if (!nome)           return alert_('Por favor, informe seu nome.');
+  if (!isEmail(email)) return alert_('Por favor, informe um e-mail válido.');
+  if (!isPhone(tel))   return alert_('Por favor, informe um telefone válido.');
+  if (!empresa)        return alert_('Por favor, informe o nome da empresa.');
+  if (!isCNPJ(cnpj))   return alert_('Por favor, informe um CNPJ válido.');
+  if (!seg)            return alert_('Por favor, selecione o segmento.');
+  if (!veic)           return alert_('Por favor, selecione a quantidade de veículos.');
+  if (!lgpd)           return alert_('Por favor, aceite a Política de Privacidade.');
+  push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
+  postLead({ nome, email, tel, empresa, cnpj, segmento:seg, qtd_veiculos:veic }, 'final-form-wrap');
+}
+
+// ── Core POST ────────────────────────────────────────────────
+async function postLead(data, wrapId) {
+  const btn = document.querySelector(`#${wrapId} button[type=button]`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+  const parts = (data.nome || '').trim().split(/\s+/);
+  const payload = {
+    event_name:'Lead', event_id:crypto.randomUUID(),
+    event_time:Math.floor(Date.now()/1000),
+    event_source_url:window.location.href,
+    product:'videotelemetria_fundo', consent_status:'all',
+    user_data:{ em:data.email||'', fn:parts[0]||'', ln:parts.slice(1).join(' ')||'', ph:(data.tel||'').replace(/\D/g,'') },
+    empresa:data.empresa||'', cnpj:data.cnpj||'', segmento:data.segmento||'', qtd_veiculos:data.qtd_veiculos||'',
+    utm_source:param('utm_source'), utm_medium:param('utm_medium'),
+    utm_campaign:param('utm_campaign'), utm_content:param('utm_content'),
+    utm_term:param('utm_term'), fbclid:param('fbclid'), gclid:param('gclid'),
+    fbp:cookie('_fbp'), fbc:cookie('_fbc'),
+  };
+  try {
+    const res = await fetch('/tracker', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if (res.ok) {
+      ['hero-form-wrap','final-form-wrap'].forEach(id => { const w = $(id); if (w) { w.classList.add('done'); } });
+    } else {
+      if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito →'; }
+      alert_('Ocorreu um erro. Por favor, tente novamente.');
+    }
+  } catch(err) {
+    console.error(err);
+    if (btn) { btn.disabled = false; btn.textContent = 'Agendar diagnóstico gratuito →'; }
+    alert_('Erro de conexão. Por favor, tente novamente.');
+  }
+}
+
+async function postLeadUpdate(data, wrapId) {
+  const btn = document.querySelector(`#${wrapId} button[type=button]`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+  try {
+    const res = await fetch('/tracker', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ event_name:'LeadUpdate', update_for:data.update_for, user_data:data.user_data, empresa:data.empresa||'', cnpj:data.cnpj||'', segmento:data.segmento||'', qtd_veiculos:data.qtd_veiculos||'' }),
+    });
+    if (res.ok) {
+      ['hero-form-wrap','final-form-wrap'].forEach(id => { const w = $(id); if (w) w.classList.add('done'); });
+    } else {
+      if (btn) { btn.disabled = false; btn.textContent = 'Confirmar e agendar →'; }
+      alert_('Ocorreu um erro. Por favor, tente novamente.');
+    }
+  } catch(err) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Confirmar e agendar →'; }
+    alert_('Erro de conexão. Por favor, tente novamente.');
+  }
+}
+
+// ══════════════════════════════════════════
+// CANVAS 2D — AI Detection Scene
+// Lazy-loaded via IntersectionObserver
+// Zero external dependencies, 60fps
+// ══════════════════════════════════════════
+(function initCanvas() {
+  const canvas = $('ai-canvas');
+  if (!canvas || window.innerWidth < 901) return; // mobile: skip, show img fallback
+
+  const ctx = canvas.getContext('2d');
+  let w, h, raf;
+  let phase = 0, pTimer = 0;
+  let boxProg = 0, lblProg = 0, scanY = -200;
+  let fpsCount = 0, fpsLast = Date.now(), fpsVal = 60;
+
+  function resize() {
+    w = canvas.offsetWidth || 640;
+    h = Math.round(w / (16 / 9));
+    canvas.width = w;
+    canvas.height = h;
+  }
+
+  // Easing
+  function eio(t) { return t < .5 ? 2*t*t : -1+(4-2*t)*t; }
+
+  // Perspective grid (road surface)
+  function drawGrid() {
+    const cx = w / 2, hy = h * 0.48;
+    // Horizontal bands
+    for (let i = 1; i <= 9; i++) {
+      const fy = i / 9;
+      const y  = hy + (h - hy) * Math.pow(fy, 1.7);
+      const sp = ((y - hy) / (h - hy)) * w * 0.56;
+      ctx.strokeStyle = `rgba(30,203,135,${fy * 0.11})`;
+      ctx.lineWidth = 0.6;
+      ctx.beginPath(); ctx.moveTo(cx - sp, y); ctx.lineTo(cx + sp, y); ctx.stroke();
+    }
+    // Vanishing lines
+    for (let i = 0; i <= 8; i++) {
+      const x = (i / 8) * w;
+      const a = 0.04 + Math.abs(i - 4) / 4 * 0.035;
+      ctx.strokeStyle = `rgba(30,203,135,${a})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath(); ctx.moveTo(cx, hy); ctx.lineTo(x, h); ctx.stroke();
+    }
+  }
+
+  // Truck geometry (normalized to w/h)
+  function geo() {
+    return {
+      // Trailer
+      tx: w * .13, ty: h * .26, tw: w * .52, th: h * .40,
+      // Cab
+      cx: w * .59, cy: h * .28, cw: w * .24, ch: h * .37,
+    };
+  }
+
+  function drawTruck() {
+    const g = geo();
+    // Trailer
+    ctx.fillStyle   = 'rgba(4,42,82,.88)';
+    ctx.strokeStyle = 'rgba(30,203,135,.22)';
+    ctx.lineWidth   = 1;
+    ctx.fillRect(g.tx, g.ty, g.tw, g.th);
+    ctx.strokeRect(g.tx, g.ty, g.tw, g.th);
+    // Stripe on trailer
+    ctx.fillStyle = 'rgba(30,203,135,.06)';
+    ctx.fillRect(g.tx, g.ty + g.th * .14, g.tw, g.th * .16);
+    // Vertical ribs
+    for (let i = 1; i < 4; i++) {
+      ctx.strokeStyle = 'rgba(30,203,135,.07)'; ctx.lineWidth = .5;
+      ctx.beginPath();
+      ctx.moveTo(g.tx + g.tw * (i/4), g.ty);
+      ctx.lineTo(g.tx + g.tw * (i/4), g.ty + g.th);
+      ctx.stroke();
+    }
+    // Cab
+    ctx.fillStyle   = 'rgba(3,53,102,.92)';
+    ctx.strokeStyle = 'rgba(30,203,135,.32)';
+    ctx.lineWidth   = 1;
+    ctx.fillRect(g.cx, g.cy, g.cw, g.ch);
+    ctx.strokeRect(g.cx, g.cy, g.cw, g.ch);
+    // Windshield
+    const wx = g.cx + g.cw * .07, wy = g.cy + g.ch * .07;
+    const ww = g.cw * .86, wh = g.ch * .44;
+    ctx.fillStyle   = 'rgba(30,203,135,.05)';
+    ctx.strokeStyle = 'rgba(30,203,135,.38)';
+    ctx.lineWidth   = .8;
+    ctx.fillRect(wx, wy, ww, wh); ctx.strokeRect(wx, wy, ww, wh);
+    // Headlights
+    [g.cx + g.cw * .15, g.cx + g.cw * .58].forEach(hx => {
+      const hy2 = g.cy + g.ch * .66;
+      ctx.fillStyle = 'rgba(255,240,180,.22)';
+      ctx.beginPath(); ctx.ellipse(hx, hy2, g.cw * .1, g.ch * .06, 0, 0, Math.PI * 2); ctx.fill();
+    });
+    // Wheels
+    const wy2 = g.ty + g.th + h * .018;
+    [g.tx + g.tw * .14, g.tx + g.tw * .35, g.cx + g.cw * .18, g.cx + g.cw * .72].forEach(wx2 => {
+      // shadow
+      ctx.fillStyle = 'rgba(0,0,0,.25)';
+      ctx.beginPath(); ctx.ellipse(wx2, wy2 + h*.035, w*.036, h*.009, 0, 0, Math.PI*2); ctx.fill();
+      // tire
+      ctx.fillStyle   = 'rgba(14,14,22,.9)';
+      ctx.strokeStyle = 'rgba(30,203,135,.3)';
+      ctx.lineWidth   = .8;
+      ctx.beginPath(); ctx.arc(wx2, wy2, w*.026, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+      // hub
+      ctx.fillStyle = 'rgba(30,203,135,.28)';
+      ctx.beginPath(); ctx.arc(wx2, wy2, w*.009, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  function drawBBox(prog) {
+    if (prog <= 0) return;
+    const g = geo();
+    const bx = g.cx + g.cw * .05, by = g.cy + g.ch * .05;
+    const bw = g.cw * .9, bh = g.ch * .52;
+    const perim = 2 * (bw + bh);
+    const drawn = perim * eio(Math.min(prog, 1));
+
+    ctx.save();
+    ctx.shadowBlur  = 10;
+    ctx.shadowColor = '#1ECB87';
+    ctx.strokeStyle = '#1ECB87';
+    ctx.lineWidth   = 1.8;
+    ctx.beginPath();
+    let r = drawn;
+    // top
+    if (r > 0) { const l = Math.min(r, bw); ctx.moveTo(bx, by); ctx.lineTo(bx+l, by); }
+    r -= bw;
+    // right
+    if (r > 0) { const l = Math.min(r, bh); ctx.moveTo(bx+bw, by); ctx.lineTo(bx+bw, by+l); }
+    r -= bh;
+    // bottom
+    if (r > 0) { const l = Math.min(r, bw); ctx.moveTo(bx+bw, by+bh); ctx.lineTo(bx+bw-l, by+bh); }
+    r -= bw;
+    // left
+    if (r > 0) { const l = Math.min(r, bh); ctx.moveTo(bx, by+bh); ctx.lineTo(bx, by+bh-l); }
+    ctx.stroke();
+    ctx.restore();
+
+    // Corner brackets
+    if (prog > .82) {
+      const a = (prog - .82) / .18;
+      ctx.save();
+      ctx.strokeStyle = `rgba(30,203,135,${a})`;
+      ctx.lineWidth = 2.8;
+      const cs = Math.min(bw, bh) * .22;
+      [[bx,by,1,1],[bx+bw,by,-1,1],[bx+bw,by+bh,-1,-1],[bx,by+bh,1,-1]].forEach(([px,py,sx,sy]) => {
+        ctx.beginPath(); ctx.moveTo(px+sx*cs,py); ctx.lineTo(px,py); ctx.lineTo(px,py+sy*cs); ctx.stroke();
+      });
+      ctx.restore();
+    }
+  }
+
+  function drawLabel(prog) {
+    if (prog <= 0) return;
+    const g = geo();
+    const bx = g.cx + g.cw * .05, by = g.cy + g.ch * .05;
+    const full = 'DMS: FADIGA DETECTADA';
+    const chars = Math.floor(full.length * eio(Math.min(prog, 1)));
+    const text = full.slice(0, chars);
+    const fs = Math.max(9, Math.min(w * .0155, 14));
+    ctx.font = `bold ${fs}px 'Courier New',monospace`;
+    const tw2 = ctx.measureText(full).width;
+    const lx = bx, ly = by - 5;
+    // Background pill
+    ctx.fillStyle = 'rgba(30,203,135,.13)';
+    ctx.fillRect(lx - 3, ly - fs - 1, tw2 + 6, fs + 4);
+    // Text
+    ctx.save();
+    ctx.shadowBlur = 8; ctx.shadowColor = '#1ECB87';
+    ctx.fillStyle = '#1ECB87';
+    ctx.fillText(text, lx, ly);
+    ctx.restore();
+    // Confidence (appears near full)
+    if (prog > .78) {
+      const a = (prog - .78) / .22;
+      ctx.fillStyle = `rgba(30,203,135,${a * .62})`;
+      ctx.font = `${fs * .82}px 'Courier New',monospace`;
+      const g2 = geo();
+      ctx.fillText('CONF: 97.3%  RISCO: ALTO', lx, g2.cy + g2.ch * .6);
+    }
+  }
+
+  function drawScan() {
+    if (scanY < -10 || scanY > h + 10) return;
+    const gr = ctx.createLinearGradient(0, scanY - 10, 0, scanY + 10);
+    gr.addColorStop(0, 'rgba(30,203,135,0)');
+    gr.addColorStop(.5, 'rgba(30,203,135,.2)');
+    gr.addColorStop(1, 'rgba(30,203,135,0)');
+    ctx.fillStyle = gr;
+    ctx.fillRect(0, scanY - 10, w, 20);
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#021e3d'; ctx.fillRect(0, 0, w, h);
+    drawGrid();
+    pTimer++;
+
+    if      (phase === 0 && pTimer > 55)       { phase = 1; pTimer = 0; }
+    else if (phase === 1) {
+      boxProg = Math.min(boxProg + .02, 1);
+      if (boxProg >= 1 && pTimer > 45) { phase = 2; pTimer = 0; }
+    }
+    else if (phase === 2) {
+      lblProg = Math.min(lblProg + .032, 1);
+      if (lblProg >= 1 && pTimer > 90) { phase = 3; pTimer = 0; scanY = 0; }
+    }
+    else if (phase === 3) {
+      scanY += h / 52;
+      if (scanY > h + 12) { phase = 4; pTimer = 0; scanY = -200; }
+    }
+    else if (phase === 4 && pTimer > 160) {
+      phase = 0; pTimer = 0; boxProg = 0; lblProg = 0;
+    }
+
+    drawTruck();
+    drawBBox(boxProg);
+    drawLabel(lblProg);
+    drawScan();
+
+    // FPS counter
+    fpsCount++;
+    const now = Date.now();
+    if (now - fpsLast >= 1000) {
+      fpsVal = fpsCount; fpsCount = 0; fpsLast = now;
+      const el = $('canvasFPS'); if (el) el.textContent = fpsVal + ' FPS';
+    }
+
+    raf = requestAnimationFrame(loop);
+  }
+
+  // Lazy-start: only animate when section is visible
+  let started = false;
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !started) {
+      started = true; resize(); loop(); obs.disconnect();
+    } else if (!entries[0].isIntersecting && started && raf) {
+      cancelAnimationFrame(raf); raf = null; started = false;
+    }
+  }, { threshold: 0.1 });
+  obs.observe(canvas);
+
+  // Pause when tab hidden (saves battery + GPU)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && raf) { cancelAnimationFrame(raf); raf = null; }
+    else if (!document.hidden && started) { raf = requestAnimationFrame(loop); }
+  });
+
+  const ro = new ResizeObserver(() => { resize(); });
+  ro.observe(canvas);
+})();
+
+// ── Init ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  fillUtms();
+  ['h-tel','f-tel'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', () => maskPhone(el)); });
+  ['h-cnpj','f-cnpj'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', () => maskCNPJ(el)); });
+});
+</script>
+
+</body>
+</html>
