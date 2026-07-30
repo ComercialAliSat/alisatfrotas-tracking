@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Alifleet — o gestor de frotas inteligente que analisa seus dados e te diz o que fazer. Rastreamento, videotelemetria, telemetria CAN e manutenção em uma única tela.">
+  <meta name="robots" content="index, follow">
+  <title>Alifleet | Gestão Inteligente de Frotas — Ali Sat</title>
+
+  <meta property="og:title" content="Alifleet | Gestão Inteligente de Frotas — Ali Sat">
+  <meta property="og:description" content="Pare de interpretar dados. Comece a tomar decisões. Alifleet analisa sua frota e te diz o que fazer.">
+  <meta property="og:type" content="website">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Alifleet",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "description": "Plataforma de gestão inteligente de frotas com IA. Integra rastreamento, videotelemetria, telemetria CAN, combustível e manutenção em uma única tela.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Ali Sat Rastreamento e Monitoramento LTDA",
+      "url": "https://www.alisat.com.br",
+      "telephone": "+55-51-3034-2111"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+  /* ── DESIGN SYSTEM ─────────────────────────────────────────── */
+  :root {
+    --navy:    #033566;
+    --deep:    #021e3d;
+    --mid:     #042a52;
+    --surface: #0d3a6b;
+    --green:   #1ECB87;
+    --g-glow:  rgba(30,203,135,.18);
+    --g-dim:   rgba(30,203,135,.08);
+    --text:    #e8eef5;
+    --dim:     #94afc8;
+    --muted:   #4a6080;
+    --border:  rgba(255,255,255,.08);
+    --ease:    cubic-bezier(0.16,1,0.3,1);
+    --f:       'Poppins', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--f); background: var(--deep); color: var(--text);
+         -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  img  { display: block; max-width: 100%; }
+  a    { text-decoration: none; color: inherit; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
+
+  /* ── NAV ───────────────────────────────────────────────────── */
+  #nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--navy); border-bottom: 1px solid var(--border);
+    padding: 12px 1.25rem; transition: box-shadow .3s;
+  }
+  #nav.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,.4); }
+  .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .nav-brand { display: flex; align-items: center; gap: 14px; }
+  .nav-alisat { height: 44px; width: auto; }
+  .nav-sep { width: 1px; height: 32px; background: rgba(255,255,255,.18); }
+  /* Alifleet wordmark */
+  .af-word { display: flex; align-items: center; gap: 6px; }
+  .af-lines { display: flex; flex-direction: column; gap: 3px; }
+  .af-lines span { display: block; height: 2.5px; background: var(--green); border-radius: 1px; }
+  .af-lines span:nth-child(1) { width: 18px; }
+  .af-lines span:nth-child(2) { width: 13px; }
+  .af-lines span:nth-child(3) { width: 8px; }
+  .af-text { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: -.01em; }
+  .af-text sub { font-size: 10px; color: var(--green); font-weight: 700; vertical-align: baseline; }
+
+  .nav-cta {
+    background: var(--green); color: var(--deep);
+    font-weight: 700; font-size: 13px;
+    padding: 9px 20px; border-radius: 8px;
+    transition: background .2s, transform .2s;
+    white-space: nowrap;
+  }
+  .nav-cta:hover { background: #00BE69; transform: translateY(-1px); }
+
+  /* ── HERO ──────────────────────────────────────────────────── */
+  #hero {
+    position: relative; background: var(--deep);
+    padding: 56px 1.25rem 64px; overflow: hidden;
+  }
+  /* Subtle bg texture */
+  #hero::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 70% 60% at 50% 20%, rgba(3,53,102,.6) 0%, transparent 70%);
+  }
+  /* Subtle grid lines bg */
+  #hero::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      linear-gradient(rgba(30,203,135,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,203,135,.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-inner { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--g-dim); border: 1px solid rgba(30,203,135,.25);
+    border-radius: 100px; padding: 5px 14px;
+    font-size: 11px; font-weight: 700; color: var(--green);
+    letter-spacing: .05em; text-transform: uppercase; margin-bottom: 28px;
+  }
+  .hero-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s ease infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(30,203,135,.45); } 50% { box-shadow: 0 0 0 6px rgba(30,203,135,0); } }
+
+  /* 3-column hero layout */
+  .hero-cols { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 24px; align-items: center; margin-bottom: 40px; }
+
+  /* Left callout box */
+  .hero-callout {
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px; padding: 24px 22px; position: relative;
+    backdrop-filter: blur(8px);
+  }
+  .callout-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--green); color: var(--deep);
+    font-weight: 900; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .callout-text { font-size: 1.05rem; font-weight: 600; color: #fff; line-height: 1.45; }
+  .callout-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .callout-tag {
+    background: var(--g-dim); border: 1px solid rgba(30,203,135,.2);
+    border-radius: 100px; padding: 3px 10px;
+    font-size: 10px; font-weight: 600; color: var(--green); letter-spacing: .05em;
+  }
+  /* Arrow connector */
+  .hero-arrow { display: flex; justify-content: center; align-items: center; }
+  .arrow-flow {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .arrow-line { width: 2px; height: 40px; background: linear-gradient(var(--green), rgba(30,203,135,.2)); border-radius: 1px; }
+  .arrow-head { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid rgba(30,203,135,.4); }
+
+  /* Hero screen / laptop mockup */
+  .hero-screen-wrap { position: relative; display: flex; justify-content: center; }
+  .laptop {
+    position: relative; width: 100%;
+    max-width: 420px; margin: 0 auto;
+  }
+  .laptop-lid {
+    background: #0a1929; border: 2px solid rgba(30,203,135,.2);
+    border-radius: 12px 12px 0 0; padding: 12px;
+    box-shadow: 0 0 0 1px rgba(30,203,135,.06), 0 24px 56px rgba(0,0,0,.6);
+    position: relative; overflow: hidden;
+  }
+  .laptop-lid::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(30,203,135,.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .laptop-cam {
+    width: 6px; height: 6px; border-radius: 50%; background: #1a2a3a;
+    margin: 0 auto 8px;
+  }
+  /* Mini dashboard animation inside laptop */
+  .laptop-dash {
+    background: #060f1d; border-radius: 6px; padding: 10px;
+    font-size: 8px; color: rgba(255,255,255,.5);
+  }
+  .ldash-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .ldash-logo { color: var(--green); font-weight: 800; font-size: 9px; letter-spacing: -.01em; }
+  .ldash-dots { display: flex; gap: 3px; }
+  .ldash-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.12); }
+  .ldash-kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; margin-bottom: 8px; }
+  .lkpi { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); border-radius: 4px; padding: 5px 6px; }
+  .lkpi-val { color: var(--green); font-weight: 700; font-size: 11px; line-height: 1; margin-bottom: 2px; }
+  .lkpi-lbl { color: rgba(255,255,255,.35); font-size: 7px; }
+  /* Animated chart bars */
+  .ldash-chart { display: flex; align-items: flex-end; gap: 3px; height: 40px; margin-bottom: 6px; }
+  .lbar {
+    flex: 1; border-radius: 2px 2px 0 0;
+    background: rgba(30,203,135,.35);
+    animation: barGrow 3s ease infinite;
+  }
+  @keyframes barGrow {
+    0%,100% { opacity: .4; transform: scaleY(1); }
+    50%      { opacity: .9; transform: scaleY(1.05); }
+  }
+  .lbar:nth-child(1) { height: 55%; animation-delay: 0s; }
+  .lbar:nth-child(2) { height: 80%; animation-delay: .15s; }
+  .lbar:nth-child(3) { height: 65%; animation-delay: .3s; }
+  .lbar:nth-child(4) { height: 90%; background: rgba(30,203,135,.6); animation-delay: .45s; }
+  .lbar:nth-child(5) { height: 70%; animation-delay: .6s; }
+  .lbar:nth-child(6) { height: 85%; animation-delay: .75s; }
+  .lbar:nth-child(7) { height: 60%; animation-delay: .9s; }
+  .ldash-status { display: flex; gap: 5px; }
+  .lstatus {
+    flex: 1; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+    border-radius: 4px; padding: 4px 6px; display: flex; align-items: center; gap: 4px;
+  }
+  .lstatus-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse 2s ease infinite; }
+  .lstatus-txt { font-size: 7px; color: rgba(255,255,255,.4); }
+  .laptop-base-wrap { display: flex; justify-content: center; }
+  .laptop-base {
+    width: 80%; height: 8px; background: linear-gradient(#0a1929, #06101e);
+    border: 2px solid rgba(30,203,135,.12); border-top: none; border-radius: 0 0 6px 6px;
+  }
+  .laptop-foot {
+    width: 50%; height: 4px; background: rgba(3,53,102,.8);
+    border-radius: 0 0 4px 4px; margin: 0 auto;
+  }
+  /* Right callout */
+  .hero-callout-right { text-align: right; }
+  .hero-callout-right .callout-num { margin-left: auto; }
+  .hero-callout-right .callout-tags { justify-content: flex-end; }
+
+  /* Hero main headline */
+  .hero-headline {
+    text-align: center; max-width: 780px; margin: 0 auto;
+  }
+  .hero-h1 {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; color: #fff;
+    line-height: 1.12; letter-spacing: -.03em; text-wrap: balance;
+    margin-bottom: 16px;
+  }
+  .hero-h1 em { font-style: normal; color: var(--green); }
+  .hero-sub {
+    font-size: 1rem; color: var(--dim); line-height: 1.65; margin-bottom: 28px;
+  }
+  .hero-cta-row { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green); color: var(--deep);
+    font-weight: 800; font-size: .93rem;
+    padding: 14px 28px; border-radius: 8px;
+    transition: background .2s, transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 22px rgba(30,203,135,.38);
+    animation: gPulse 2.5s ease infinite;
+  }
+  .btn-primary:hover { background: #00BE69; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(30,203,135,.48); }
+  @keyframes gPulse { 0%,100% { box-shadow: 0 4px 22px rgba(30,203,135,.38); } 50% { box-shadow: 0 4px 32px rgba(30,203,135,.58), 0 0 0 4px rgba(30,203,135,.08); } }
+  .btn-primary .arr { transition: transform .2s; }
+  .btn-primary:hover .arr { transform: translateX(4px); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--dim); font-size: .88rem; font-weight: 500;
+    transition: color .2s;
+  }
+  .btn-ghost:hover { color: #fff; }
+
+  /* ── HUB SECTION ───────────────────────────────────────────── */
+  #hub { background: var(--navy); padding: 80px 1.25rem; overflow: hidden; }
+  .hub-header { text-align: center; margin-bottom: 52px; }
+  .stag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: .09em;
+    color: var(--green); text-transform: uppercase; margin-bottom: 10px;
+  }
+  .stag::before, .stag::after { content: ''; display: block; width: 22px; height: 2px; background: var(--green); }
+  .sh2 {
+    font-size: clamp(1.45rem, 3vw, 2.1rem); font-weight: 800; color: #fff;
+    line-height: 1.18; letter-spacing: -.02em; text-wrap: balance; margin-bottom: 10px;
+  }
+  .ssub { font-size: .92rem; color: var(--dim); line-height: 1.65; max-width: 520px; margin: 0 auto; }
+
+  /* Hub circular layout */
+  .hub-outer {
+    max-width: 520px; margin: 0 auto; position: relative;
+    height: 520px;
+  }
+  /* SVG overlay for lines + particles */
+  .hub-svg {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; overflow: visible;
+  }
+  /* Center node */
+  .hub-center {
+    position: absolute;
+    width: 90px; height: 90px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  .hub-center-ring {
+    position: absolute; inset: -8px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(30,203,135,.25);
+    animation: ringPulse 3s ease infinite;
+  }
+  .hub-center-ring2 {
+    position: absolute; inset: -18px;
+    border-radius: 50%;
+    border: 1px solid rgba(30,203,135,.1);
+    animation: ringPulse 3s ease infinite .8s;
+  }
+  @keyframes ringPulse {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.06); opacity: .6; }
+  }
+  .hub-center-inner {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: linear-gradient(135deg, #042a52 0%, #033566 100%);
+    border: 2px solid rgba(30,203,135,.35);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 6px rgba(30,203,135,.06), 0 8px 24px rgba(0,0,0,.4);
+  }
+  .hub-af { display: flex; align-items: center; gap: 3px; }
+  .hub-af-lines { display: flex; flex-direction: column; gap: 2px; }
+  .hub-af-lines span { display: block; height: 2px; background: var(--green); border-radius: 1px; }
+  .hub-af-lines span:nth-child(1) { width: 12px; }
+  .hub-af-lines span:nth-child(2) { width: 9px; }
+  .hub-af-lines span:nth-child(3) { width: 6px; }
+  .hub-af-text { font-size: 14px; font-weight: 900; color: #fff; }
+  .hub-center-lbl { font-size: 8px; font-weight: 700; color: var(--green); letter-spacing: .08em; text-transform: uppercase; margin-top: 3px; }
+
+  /* Outer icon nodes — 6 positions (hex) */
+  .hub-node {
+    position: absolute;
+    width: 80px; height: 80px;
+    z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .hub-node-ico {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--surface); border: 1.5px solid rgba(30,203,135,.2);
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .3s, background .3s, box-shadow .3s;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  }
+  .hub-node:hover .hub-node-ico {
+    border-color: var(--green);
+    background: rgba(13,58,107,.9);
+    box-shadow: 0 0 0 4px rgba(30,203,135,.1), 0 4px 20px rgba(0,0,0,.35);
+  }
+  .hub-node svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 1.8; }
+  .hub-node-lbl {
+    font-size: 9px; font-weight: 700; color: var(--dim); letter-spacing: .05em;
+    text-transform: uppercase; margin-top: 6px; text-align: center; line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  /* Hex positions: radius=190px from center(260,260) in 520px container
+     angles: -90(top), -30(top-right), 30(bottom-right), 90(bottom), 150(bottom-left), 210(top-left) */
+  /* Center of each node icon (56×56 div, centered on the hub-node 80×80): */
+  /* hub-node positioned so its center aligns with the circle point */
+  .hub-node[data-i="0"] { top: calc(12.5% - 40px); left: calc(50% - 40px); }   /* top */
+  .hub-node[data-i="1"] { top: calc(31.2% - 40px); left: calc(81.5% - 40px); } /* top-right */
+  .hub-node[data-i="2"] { top: calc(68.8% - 40px); left: calc(81.5% - 40px); } /* bottom-right */
+  .hub-node[data-i="3"] { top: calc(87.5% - 40px); left: calc(50% - 40px); }   /* bottom */
+  .hub-node[data-i="4"] { top: calc(68.8% - 40px); left: calc(18.5% - 40px); } /* bottom-left */
+  .hub-node[data-i="5"] { top: calc(31.2% - 40px); left: calc(18.5% - 40px); } /* top-left */
+
+  /* Mobile hub: grid layout */
+  .hub-grid-mobile { display: none; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .hg-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 8px;
+             background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .hg-ico { width: 48px; height: 48px; border-radius: 50%; background: var(--g-dim); border: 1.5px solid rgba(30,203,135,.2); display: flex; align-items: center; justify-content: center; }
+  .hg-ico svg { width: 20px; height: 20px; stroke: var(--green); fill: none; stroke-width: 1.8; }
+  .hg-lbl { font-size: 9.5px; font-weight: 700; color: var(--dim); letter-spacing: .06em; text-transform: uppercase; text-align: center; line-height: 1.3; }
+
+  /* ── DELIVERABLES ──────────────────────────────────────────── */
+  #delivers { background: var(--deep); padding: 80px 1.25rem; }
+  .delivers-header { text-align: center; max-width: 640px; margin: 0 auto 48px; }
+  .delivers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .d-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px 26px; position: relative; overflow: hidden;
+  }
+  .d-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--green), rgba(30,203,135,.3));
+    border-radius: 18px 18px 0 0;
+  }
+  .d-card-num {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--green); color: var(--deep);
+    font-weight: 900; font-size: 17px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(30,203,135,.3);
+  }
+  .d-card-title { font-size: .93rem; font-weight: 700; color: var(--dim); margin-bottom: 16px; line-height: 1.4; text-transform: uppercase; letter-spacing: .04em; font-size: .78rem; }
+  .d-list { display: flex; flex-direction: column; gap: 10px; }
+  .d-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: .875rem; color: var(--text); font-weight: 500; line-height: 1.35;
+  }
+  .d-item-dot {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+    background: var(--g-dim); border: 1px solid rgba(30,203,135,.22);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .d-item-dot svg { width: 10px; height: 10px; }
+
+  /* ── COPILOT / STATS ───────────────────────────────────────── */
+  #copilot { background: var(--navy); padding: 80px 1.25rem; }
+  .copilot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .copilot-visual { position: relative; }
+  /* Camera device mockup */
+  .cam-device {
+    position: relative; border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(30,203,135,.15);
+    box-shadow: 0 24px 64px rgba(0,0,0,.5);
+  }
+  .cam-device img { width: 100%; display: block; object-fit: cover; max-height: 320px; filter: brightness(.9); }
+  .cam-device-placeholder {
+    width: 100%; height: 280px;
+    background: linear-gradient(135deg, #0a1929 0%, var(--mid) 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .cam-device-placeholder::before {
+    content: ''; position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(30,203,135,.03) 10px, rgba(30,203,135,.03) 11px);
+  }
+  .cam-icon-big { text-align: center; position: relative; z-index: 2; }
+  .cam-icon-big svg { width: 64px; height: 64px; stroke: rgba(30,203,135,.5); fill: none; stroke-width: 1.2; margin: 0 auto 12px; }
+  .cam-icon-lbl { font-size: 12px; font-weight: 600; color: rgba(30,203,135,.6); letter-spacing: .08em; text-transform: uppercase; }
+  /* Camera feed mini tags */
+  .cam-tags { position: absolute; bottom: 12px; left: 12px; right: 12px; display: flex; gap: 8px; }
+  .cam-tag {
+    background: rgba(2,30,61,.85); border: 1px solid rgba(30,203,135,.2);
+    border-radius: 6px; padding: 5px 10px;
+    font-size: 9px; font-family: 'Courier New',monospace; font-weight: 700; color: var(--green);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .cam-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse 1.5s ease infinite; }
+
+  /* Stats on right */
+  .copilot-stats {}
+  .copilot-label { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--green); margin-bottom: 28px; }
+  .copilot-callout {
+    background: rgba(255,255,255,.04); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 20px; margin-bottom: 18px;
+  }
+  .copilot-callout-ico { margin-bottom: 10px; }
+  .copilot-callout-ico svg { width: 28px; height: 28px; stroke: var(--green); fill: none; stroke-width: 1.6; }
+  .copilot-callout-ttl { font-size: .84rem; color: var(--dim); font-weight: 500; margin-bottom: 6px; }
+  .copilot-callout-h { font-size: 1.05rem; color: #fff; font-weight: 700; line-height: 1.3; }
+  /* Big stat numbers */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 24px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid rgba(30,203,135,.15);
+    border-radius: 14px; padding: 20px 18px;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before { content: ''; position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: var(--g-dim); border-radius: 0 14px 0 100%; }
+  .stat-num {
+    font-size: clamp(2rem,4vw,2.8rem); font-weight: 900; color: var(--green);
+    line-height: 1; letter-spacing: -.04em; margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-lbl { font-size: .78rem; color: var(--dim); line-height: 1.45; font-weight: 500; }
+
+  /* ── DASHBOARD ─────────────────────────────────────────────── */
+  #dashboard { background: var(--deep); padding: 80px 1.25rem; }
+  .dashboard-header { text-align: center; margin-bottom: 44px; }
+  .dashboard-frame {
+    position: relative; max-width: 960px; margin: 0 auto;
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(30,203,135,.15);
+    box-shadow: 0 0 0 1px rgba(30,203,135,.04), 0 32px 80px rgba(0,0,0,.6);
+  }
+  /* Browser chrome */
+  .dash-chrome {
+    background: #0a1929; padding: 10px 14px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .chrome-dots { display: flex; gap: 5px; }
+  .chrome-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .chrome-dot:nth-child(1) { background: #ff5f57; }
+  .chrome-dot:nth-child(2) { background: #ffbd2e; }
+  .chrome-dot:nth-child(3) { background: #28c840; }
+  .chrome-url {
+    flex: 1; background: rgba(255,255,255,.05); border-radius: 6px;
+    padding: 4px 12px; font-size: 10px; color: rgba(255,255,255,.3);
+    font-family: 'Courier New',monospace;
+  }
+  /* Dashboard body — CSS representation when no screenshot available */
+  .dash-body {
+    background: #060f1d; padding: 16px;
+    min-height: 360px; display: flex; gap: 12px;
+  }
+  /* Sidebar */
+  .dash-sidebar {
+    width: 44px; background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.05); border-radius: 8px; padding: 12px 0;
+    display: flex; flex-direction: column; align-items: center; gap: 16px; flex-shrink: 0;
+  }
+  .dash-sb-ico { width: 24px; height: 24px; border-radius: 6px; background: rgba(255,255,255,.06); }
+  .dash-sb-ico.active { background: rgba(30,203,135,.2); }
+  /* Main content */
+  .dash-main { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .dash-kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+  .dk { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 10px 12px; }
+  .dk-v { color: var(--green); font-weight: 700; font-size: 18px; line-height: 1; margin-bottom: 3px; }
+  .dk-l { font-size: 9px; color: rgba(255,255,255,.3); font-family: 'Courier New',monospace; }
+  .dash-content-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px; flex: 1; }
+  .dash-chart-panel {
+    background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.05);
+    border-radius: 8px; padding: 12px; display: flex; flex-direction: column;
+  }
+  .dcp-label { font-size: 9px; color: rgba(255,255,255,.3); margin-bottom: 10px; font-family: 'Courier New',monospace; }
+  .dash-chart-area { display: flex; align-items: flex-end; gap: 4px; flex: 1; }
+  .db { flex: 1; background: rgba(30,203,135,.25); border-radius: 3px 3px 0 0; animation: barGrow 3s ease infinite; }
+  .db:nth-child(1)  { height: 40%; } .db:nth-child(2)  { height: 60%; animation-delay:.1s; }
+  .db:nth-child(3)  { height: 55%; animation-delay:.2s; } .db:nth-child(4)  { height: 80%; background: rgba(30,203,135,.5); animation-delay:.3s; }
+  .db:nth-child(5)  { height: 65%; animation-delay:.4s; } .db:nth-child(6)  { height: 75%; animation-delay:.5s; }
+  .db:nth-child(7)  { height: 90%; background: rgba(30,203,135,.45); animation-delay:.6s; } .db:nth-child(8)  { height: 70%; animation-delay:.7s; }
+  .db:nth-child(9)  { height: 85%; animation-delay:.8s; } .db:nth-child(10) { height: 78%; animation-delay:.9s; }
+  .db:nth-child(11) { height: 88%; animation-delay:1s; } .db:nth-child(12) { height: 72%; animation-delay:1.1s; }
+  .dash-list-panel {
+    background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.05);
+    border-radius: 8px; padding: 12px;
+  }
+  .dlp-label { font-size: 9px; color: rgba(255,255,255,.3); margin-bottom: 8px; font-family: 'Courier New',monospace; }
+  .dlp-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+  .dlp-row:last-child { border-bottom: none; }
+  .dlp-name { font-size: 8.5px; color: rgba(255,255,255,.4); }
+  .dlp-val { font-size: 8.5px; color: var(--green); font-weight: 600; font-family: 'Courier New',monospace; }
+  /* Or real screenshot */
+  .dash-screenshot { width: 100%; display: block; }
+
+  /* Dashboard placeholder note */
+  .dash-img-placeholder {
+    background: #060f1d; min-height: 360px;
+    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px;
+    font-size: 12px; color: var(--muted); font-style: italic;
+  }
+
+  /* ── FEATURES STRIP ────────────────────────────────────────── */
+  #features { background: var(--navy); padding: 56px 1.25rem; }
+  .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .feat {
+    background: rgba(255,255,255,.04); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 20px;
+    display: flex; align-items: flex-start; gap: 14px;
+    transition: border-color .25s, transform .3s;
+  }
+  .feat:hover { border-color: rgba(30,203,135,.3); transform: translateY(-3px); }
+  .feat-ico {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: var(--g-dim); border: 1.5px solid rgba(30,203,135,.25);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .feat-ico svg { width: 18px; height: 18px; stroke: var(--green); fill: none; stroke-width: 2; }
+  .feat-text { font-size: .88rem; color: var(--text); font-weight: 600; line-height: 1.4; }
+
+  /* ── FAQ ───────────────────────────────────────────────────── */
+  #faq { background: #f8fafc; padding: 80px 1.25rem; }
+  .faq-inner { max-width: 720px; margin: 0 auto; }
+  .faq-h { text-align: center; margin-bottom: 36px; }
+  .faq-h h2 { font-size: clamp(1.5rem,2.5vw,2rem); font-weight: 800; color: #1a202c; }
+  .faq-list { display: flex; flex-direction: column; gap: 8px; }
+  .faq-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+  .faq-btn {
+    width: 100%; display: flex; align-items: center; gap: 14px;
+    padding: 18px 20px; text-align: left; background: none;
+    font-family: var(--f); font-size: .875rem; font-weight: 600; color: #1a202c;
+    transition: background .2s;
+  }
+  .faq-btn:hover { background: #f9fafb; }
+  .faq-n {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+    background: #f3f4f6; color: #6b7280;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .25s, color .25s;
+  }
+  .faq-item.open .faq-n { background: rgba(30,203,135,.15); color: #15a169; }
+  .faq-q { flex: 1; }
+  .faq-chev { width: 17px; height: 17px; flex-shrink: 0; stroke: #9ca3af; fill: none; stroke-width: 2.2; transition: transform .3s var(--ease); margin-left: auto; }
+  .faq-item.open .faq-chev { transform: rotate(180deg); }
+  .faq-body { max-height: 0; overflow: hidden; transition: max-height .38s var(--ease); }
+  .faq-body.open { max-height: 280px; }
+  .faq-ans { padding: 0 20px 18px 58px; font-size: .855rem; color: #4b5563; line-height: 1.72; }
+
+  /* ── LOGOS ─────────────────────────────────────────────────── */
+  #logos { background: #f0f4f8; padding: 38px 1.25rem; }
+  .logos-lbl { text-align: center; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6b7280; margin-bottom: 24px; }
+  .logos-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px 48px; }
+  .logo-i { height: 52px; width: auto; max-width: 150px; object-fit: contain; filter: grayscale(1); opacity: .55; transition: filter .3s, opacity .3s; }
+  .logo-i:hover { filter: grayscale(0); opacity: 1; }
+
+  /* ── FINAL CTA + FORM ──────────────────────────────────────── */
+  #cta { background: var(--deep); padding: 96px 1.25rem; }
+  .cta-grid { display: grid; grid-template-columns: 1fr 460px; gap: 64px; align-items: start; max-width: 1100px; margin: 0 auto; }
+  .cta-copy {}
+  .cta-pretitle { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--green); margin-bottom: 16px; }
+  .cta-h2 { font-size: clamp(1.8rem,3.2vw,2.6rem); font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: -.03em; text-wrap: balance; margin-bottom: 16px; }
+  .cta-h2 span { color: var(--green); }
+  .cta-sub { font-size: .97rem; color: var(--dim); line-height: 1.65; margin-bottom: 32px; }
+  .cta-points { display: flex; flex-direction: column; gap: 12px; }
+  .cta-pt { display: flex; align-items: center; gap: 10px; font-size: .875rem; color: var(--dim); }
+  .cta-pt-ico { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; background: var(--g-dim); display: flex; align-items: center; justify-content: center; }
+  .cta-pt-ico svg { width: 11px; height: 11px; }
+
+  /* Form card */
+  .form-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.09); border-radius: 20px; padding: 30px; }
+  .form-title { color: #fff; font-size: 1.05rem; font-weight: 700; text-align: center; margin-bottom: 22px; }
+  .f-stack { display: flex; flex-direction: column; gap: 12px; }
+  .f-lbl { display: block; font-size: 11.5px; font-weight: 600; color: var(--dim); margin-bottom: 5px; }
+  .f-req { color: #ef4444; margin-left: 2px; }
+  .inp {
+    width: 100%; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.11); color: var(--text);
+    border-radius: 8px; padding: 11px 14px; font-size: 14px; font-family: var(--f);
+    transition: border-color .2s, box-shadow .2s; outline: none;
+  }
+  .inp::placeholder { color: var(--muted); }
+  .inp:focus { border-color: var(--green); background: rgba(255,255,255,.09); box-shadow: 0 0 0 3px rgba(30,203,135,.14); }
+  .inp-sel { appearance: none; cursor: pointer; color: var(--text);
+             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a6080' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+             background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+  .inp-sel option { background: var(--navy); color: var(--text); }
+  .lgpd-row { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: rgba(255,255,255,.4); line-height: 1.5; cursor: pointer; margin-top: 4px; }
+  .lgpd-row input { margin-top: 2px; accent-color: var(--green); width: 14px; height: 14px; }
+  .lgpd-row a { color: rgba(255,255,255,.6); text-decoration: underline; }
+  .btn-send {
+    width: 100%; padding: 14px; background: var(--green); color: var(--deep);
+    font-family: var(--f); font-weight: 800; font-size: 14.5px; border-radius: 8px;
+    transition: background .2s; box-shadow: 0 4px 22px rgba(30,203,135,.4);
+    animation: gPulse 2.5s ease infinite;
+  }
+  .btn-send:hover { background: #00BE69; }
+  .form-hint { text-align: center; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
+  /* Form done */
+  .form-ty { display: none; text-align: center; padding: 32px 16px; }
+  .form-ty-ico { width: 60px; height: 60px; border-radius: 50%; background: rgba(30,203,135,.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .form-ty h3 { color: #fff; font-size: 1.2rem; font-weight: 700; margin-bottom: 7px; }
+  .form-ty p { color: var(--dim); font-size: .88rem; }
+  .form-wrap.done .f-stack { display: none; }
+  .form-wrap.done .form-title { display: none; }
+  .form-wrap.done .form-ty { display: block; }
+
+  /* ── FOOTER ────────────────────────────────────────────────── */
+  #foot { background: #040d19; padding: 30px 1.25rem; border-top: 1px solid rgba(255,255,255,.05); }
+  .foot-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .foot-logo { height: 32px; width: auto; }
+  .foot-links { display: flex; align-items: center; gap: 16px; }
+  .foot-link { font-size: 11.5px; color: #6b7280; transition: color .2s; }
+  .foot-link:hover { color: #9ca3af; }
+  .foot-socials { display: flex; gap: 12px; }
+  .foot-soc { color: #4b5563; transition: color .2s; }
+  .foot-soc:hover { color: #9ca3af; }
+  .foot-copy { max-width: 1100px; margin: 16px auto 0; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.04); font-size: 11px; color: #4b5563; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  /* ── SCROLL REVEALS ────────────────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+  .reveal.d1 { transition-delay: .08s; }
+  .reveal.d2 { transition-delay: .16s; }
+  .reveal.d3 { transition-delay: .24s; }
+  .reveal.on { opacity: 1; transform: none; }
+
+  /* ── WHATSAPP STICKY ───────────────────────────────────────── */
+  #wha { display: none; position: fixed; bottom: 18px; right: 18px; z-index: 200; background: #25D366; color: #fff; border-radius: 50px; padding: 11px 17px; font-weight: 700; font-size: 12.5px; align-items: center; gap: 7px; box-shadow: 0 4px 20px rgba(37,211,102,.45); text-decoration: none; transition: transform .2s; }
+  #wha:hover { transform: translateY(-2px); }
+
+  /* ── RESPONSIVE ────────────────────────────────────────────── */
+  @media (max-width: 960px) {
+    .hero-cols       { grid-template-columns: 1fr; gap: 20px; }
+    .hero-callout-right { text-align: left; }
+    .hero-callout-right .callout-num { margin-left: 0; }
+    .hero-callout-right .callout-tags { justify-content: flex-start; }
+    .hero-arrow      { display: none; }
+    .laptop          { max-width: 340px; }
+    .hub-outer       { display: none; }
+    .hub-grid-mobile { display: grid; }
+    .delivers-grid   { grid-template-columns: 1fr; }
+    .copilot-grid    { grid-template-columns: 1fr; }
+    .features-grid   { grid-template-columns: 1fr 1fr; }
+    .cta-grid        { grid-template-columns: 1fr; }
+    .dash-body       { flex-direction: column; }
+    .dash-kpi-row    { grid-template-columns: repeat(2,1fr); }
+    .dash-content-row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .stat-grid     { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .logos-row     { gap: 10px 28px; }
+    .hub-grid-mobile { grid-template-columns: repeat(2,1fr); }
+    #wha { display: flex; }
+  }
+  @media (max-width: 900px) {
+    #wha { display: flex; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- WhatsApp sticky (mobile) -->
+<a id="wha" href="https://wa.me/555130342111?text=Ol%C3%A1%2C%20quero%20conhecer%20o%20Alifleet." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  WhatsApp
+</a>
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<header id="nav" role="banner">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <a href="https://www.alisat.com.br" target="_blank" rel="noopener" aria-label="Ali Sat">
+        <img src="/assets/logobranco.svg" alt="Ali Sat" class="nav-alisat" onerror="this.style.display='none'">
+      </a>
+      <div class="nav-sep" aria-hidden="true"></div>
+      <div class="af-word" aria-label="Alifleet">
+        <div class="af-lines" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="af-text">Alifleet</div>
+      </div>
+    </div>
+    <a href="#cta" class="nav-cta" onclick="trackCTA('Nav CTA','nav')">Quero uma demo</a>
+  </div>
+</header>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section id="hero" aria-label="Apresentação do Alifleet">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot" aria-hidden="true"></div>
+      Gestão inteligente de frotas
+    </div>
+
+    <!-- 3-col visual: callout → laptop → callout -->
+    <div class="hero-cols">
+      <!-- Left callout: DATA SOURCES -->
+      <div class="hero-callout reveal">
+        <div class="callout-num" aria-hidden="true">1</div>
+        <p class="callout-text">Câmeras e rastreadores geram dados o dia inteiro.</p>
+        <div class="callout-tags" aria-label="Fontes de dados integradas">
+          <span class="callout-tag">Rastreador</span>
+          <span class="callout-tag">CAN</span>
+          <span class="callout-tag">Telemetria</span>
+          <span class="callout-tag">Combustível</span>
+          <span class="callout-tag">Videotelemetria</span>
+          <span class="callout-tag">Manutenção</span>
+        </div>
+      </div>
+
+      <!-- Center: animated laptop screen -->
+      <div class="hero-screen-wrap reveal d1">
+        <div class="laptop">
+          <div class="laptop-lid">
+            <div class="laptop-cam" aria-hidden="true"></div>
+            <div class="laptop-dash" aria-label="Alifleet dashboard">
+              <div class="ldash-header">
+                <span class="ldash-logo">≡AF Alifleet</span>
+                <div class="ldash-dots" aria-hidden="true">
+                  <div class="ldash-dot"></div>
+                  <div class="ldash-dot active" style="background:var(--green)"></div>
+                  <div class="ldash-dot"></div>
+                </div>
+              </div>
+              <div class="ldash-kpis" aria-label="KPIs em destaque">
+                <div class="lkpi"><div class="lkpi-val">89</div><div class="lkpi-lbl">Veículos</div></div>
+                <div class="lkpi"><div class="lkpi-val" style="color:#60a5fa">3</div><div class="lkpi-lbl">Alertas</div></div>
+                <div class="lkpi"><div class="lkpi-val">↑12%</div><div class="lkpi-lbl">Eficiência</div></div>
+              </div>
+              <div class="ldash-chart" aria-hidden="true">
+                <div class="lbar"></div><div class="lbar"></div><div class="lbar"></div>
+                <div class="lbar"></div><div class="lbar"></div><div class="lbar"></div>
+                <div class="lbar"></div>
+              </div>
+              <div class="ldash-status" aria-hidden="true">
+                <div class="lstatus"><div class="lstatus-dot"></div><div class="lstatus-txt">Frota ativa</div></div>
+                <div class="lstatus"><div class="lstatus-dot" style="background:#60a5fa;box-shadow:none"></div><div class="lstatus-txt">Sync OK</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="laptop-base-wrap" aria-hidden="true">
+            <div class="laptop-base"></div>
+          </div>
+          <div class="laptop-foot" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- Right callout: ALIFLEET OUTPUT -->
+      <div class="hero-callout hero-callout-right reveal d2">
+        <div class="callout-num" aria-hidden="true">2</div>
+        <p class="callout-text">O Alifleet analisa eles pra você.</p>
+        <div class="callout-tags" aria-label="O que o Alifleet entrega">
+          <span class="callout-tag">Decisões</span>
+          <span class="callout-tag">Alertas</span>
+          <span class="callout-tag">Rankings</span>
+          <span class="callout-tag">Relatórios</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main headline -->
+    <div class="hero-headline reveal d3">
+      <h1 class="hero-h1">
+        Sua frota já fala.<br>
+        O Alifleet é quem <em>escuta, entende</em><br>
+        e te diz o que fazer.
+      </h1>
+      <p class="hero-sub">
+        Câmeras e rastreadores geram dados o dia inteiro. Falta só uma plataforma que transforme isso em decisão certa, no tempo certo.
+      </p>
+      <div class="hero-cta-row">
+        <a href="#cta" class="btn-primary" onclick="trackCTA('Hero CTA','hero')">
+          Quero uma demo gratuita
+          <svg class="arr" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#dashboard" class="btn-ghost" onclick="trackCTA('Ver plataforma','hero')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Ver a plataforma
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ HUB ══════════════════ -->
+<section id="hub" aria-label="Fontes de dados integradas">
+  <div class="hub-header reveal">
+    <div class="stag" style="display:inline-flex">Integração Total</div>
+    <h2 class="sh2">Tudo que gera dado na sua frota,<br>o Alifleet conecta e analisa</h2>
+    <p class="ssub">Uma única plataforma que une rastreador, CAN, videotelemetria, combustível e manutenção.</p>
+  </div>
+
+  <!-- Desktop: circular hub with SVG animation -->
+  <div class="hub-outer reveal d1" role="img" aria-label="Diagrama das fontes de dados convergindo para o Alifleet">
+    <!-- Center -->
+    <div class="hub-center">
+      <div class="hub-center-ring" aria-hidden="true"></div>
+      <div class="hub-center-ring2" aria-hidden="true"></div>
+      <div class="hub-center-inner">
+        <div class="hub-af" aria-hidden="true">
+          <div class="hub-af-lines"><span></span><span></span><span></span></div>
+          <div class="hub-af-text">AF</div>
+        </div>
+        <div class="hub-center-lbl">Alifleet</div>
+      </div>
+    </div>
+
+    <!-- 6 outer nodes -->
+    <div class="hub-node" data-i="0" aria-label="Rastreador">
+      <div class="hub-node-ico">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+      </div>
+      <div class="hub-node-lbl">Rastreador</div>
+    </div>
+    <div class="hub-node" data-i="1" aria-label="Videotelemetria">
+      <div class="hub-node-ico">
+        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3V11z"/></svg>
+      </div>
+      <div class="hub-node-lbl">Videotelemetria</div>
+    </div>
+    <div class="hub-node" data-i="2" aria-label="Manutenção">
+      <div class="hub-node-ico">
+        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="hub-node-lbl">Manutenção</div>
+    </div>
+    <div class="hub-node" data-i="3" aria-label="Combustível">
+      <div class="hub-node-ico">
+        <svg viewBox="0 0 24 24"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/></svg>
+      </div>
+      <div class="hub-node-lbl">Combustível</div>
+    </div>
+    <div class="hub-node" data-i="4" aria-label="Telemetria CAN">
+      <div class="hub-node-ico">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 10h.01M12 10h.01M17 10h.01"/></svg>
+      </div>
+      <div class="hub-node-lbl">Telemetria CAN</div>
+    </div>
+    <div class="hub-node" data-i="5" aria-label="CAN Bus">
+      <div class="hub-node-ico">
+        <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="8" rx="1"/><path d="M8 8V6M16 8V6M8 16v2M16 16v2M4 12h2M18 12h2"/></svg>
+      </div>
+      <div class="hub-node-lbl">CAN Bus</div>
+    </div>
+
+    <!-- SVG: lines + animated data particles -->
+    <!-- Center = (260,260) in 520×520 viewBox, radius=190 -->
+    <!-- Node centers: 0=(260,65) 1=(424,155) 2=(424,365) 3=(260,455) 4=(96,365) 5=(96,155) -->
+    <svg class="hub-svg" viewBox="0 0 520 520" aria-hidden="true">
+      <!-- Static lines (low opacity) -->
+      <line x1="260" y1="65"  x2="260" y2="260" stroke="rgba(30,203,135,.18)" stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="424" y1="155" x2="260" y2="260" stroke="rgba(30,203,135,.18)" stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="424" y1="365" x2="260" y2="260" stroke="rgba(30,203,135,.18)" stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="260" y1="455" x2="260" y2="260" stroke="rgba(30,203,135,.18)" stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="96"  y1="365" x2="260" y2="260" stroke="rgba(30,203,135,.18)" stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="96"  y1="155" x2="260" y2="260" stroke="rgba(30,203,135,.18)" stroke-width="1" stroke-dasharray="4 4"/>
+
+      <!-- Animated paths (data flow) -->
+      <path id="hp0" d="M 260 65  L 260 260" fill="none"/>
+      <path id="hp1" d="M 424 155 L 260 260" fill="none"/>
+      <path id="hp2" d="M 424 365 L 260 260" fill="none"/>
+      <path id="hp3" d="M 260 455 L 260 260" fill="none"/>
+      <path id="hp4" d="M 96  365 L 260 260" fill="none"/>
+      <path id="hp5" d="M 96  155 L 260 260" fill="none"/>
+
+      <!-- Data particles (travel from node to center) -->
+      <circle r="4" fill="#1ECB87" filter="url(#glow)">
+        <animateMotion dur="2.1s" begin="0s"    repeatCount="indefinite" calcMode="linear"><mpath href="#hp0"/></animateMotion>
+      </circle>
+      <circle r="4" fill="#1ECB87" filter="url(#glow)">
+        <animateMotion dur="2.1s" begin="0.35s" repeatCount="indefinite" calcMode="linear"><mpath href="#hp1"/></animateMotion>
+      </circle>
+      <circle r="4" fill="#1ECB87" filter="url(#glow)">
+        <animateMotion dur="2.1s" begin="0.7s"  repeatCount="indefinite" calcMode="linear"><mpath href="#hp2"/></animateMotion>
+      </circle>
+      <circle r="4" fill="#1ECB87" filter="url(#glow)">
+        <animateMotion dur="2.1s" begin="1.05s" repeatCount="indefinite" calcMode="linear"><mpath href="#hp3"/></animateMotion>
+      </circle>
+      <circle r="4" fill="#1ECB87" filter="url(#glow)">
+        <animateMotion dur="2.1s" begin="1.4s"  repeatCount="indefinite" calcMode="linear"><mpath href="#hp4"/></animateMotion>
+      </circle>
+      <circle r="4" fill="#1ECB87" filter="url(#glow)">
+        <animateMotion dur="2.1s" begin="1.75s" repeatCount="indefinite" calcMode="linear"><mpath href="#hp5"/></animateMotion>
+      </circle>
+
+      <!-- Glow filter for particles -->
+      <defs>
+        <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- Mobile: grid -->
+  <div class="hub-grid-mobile" style="max-width:480px;margin:0 auto" role="list" aria-label="Fontes de dados integradas">
+    <div class="hg-item" role="listitem"><div class="hg-ico"><svg viewBox="0 0 24 24" width="20" height="20" stroke="#1ECB87" fill="none" stroke-width="1.8"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div><div class="hg-lbl">Rastreador</div></div>
+    <div class="hg-item" role="listitem"><div class="hg-ico"><svg viewBox="0 0 24 24" width="20" height="20" stroke="#1ECB87" fill="none" stroke-width="1.8"><rect x="2" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3V11z"/></svg></div><div class="hg-lbl">Videotelemetria</div></div>
+    <div class="hg-item" role="listitem"><div class="hg-ico"><svg viewBox="0 0 24 24" width="20" height="20" stroke="#1ECB87" fill="none" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div><div class="hg-lbl">Manutenção</div></div>
+    <div class="hg-item" role="listitem"><div class="hg-ico"><svg viewBox="0 0 24 24" width="20" height="20" stroke="#1ECB87" fill="none" stroke-width="1.8"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/></svg></div><div class="hg-lbl">Combustível</div></div>
+    <div class="hg-item" role="listitem"><div class="hg-ico"><svg viewBox="0 0 24 24" width="20" height="20" stroke="#1ECB87" fill="none" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div class="hg-lbl">Telemetria CAN</div></div>
+    <div class="hg-item" role="listitem"><div class="hg-ico"><svg viewBox="0 0 24 24" width="20" height="20" stroke="#1ECB87" fill="none" stroke-width="1.8"><rect x="4" y="8" width="16" height="8" rx="1"/><path d="M8 8V6M16 8V6M8 16v2M16 16v2M4 12h2M18 12h2"/></svg></div><div class="hg-lbl">CAN Bus</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════ DELIVERABLES ══════════════════ -->
+<section id="delivers" aria-label="O que o Alifleet entrega">
+  <div class="wrap">
+    <div class="delivers-header reveal">
+      <div class="stag" style="display:inline-flex">Inteligência de Gestão</div>
+      <h2 class="sh2">Um gestor de frotas inteligente,<br>que nunca dorme e nunca atrasa uma decisão</h2>
+    </div>
+    <div class="delivers-grid">
+      <div class="d-card reveal d1">
+        <div class="d-card-num" aria-hidden="true">1</div>
+        <div class="d-card-title">Do veículo, o Alifleet entrega:</div>
+        <div class="d-list" role="list">
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Estado geral do veículo</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Consumo de combustível</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Pneus</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Rotas e percursos</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Histórico completo</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Abastecimentos</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Manutenção preventiva</div>
+        </div>
+      </div>
+      <div class="d-card reveal d2">
+        <div class="d-card-num" aria-hidden="true">2</div>
+        <div class="d-card-title">Do motorista, o Alifleet entrega:</div>
+        <div class="d-list" role="list">
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Forma de condução</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Eventos de risco</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Alertas críticos</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Comportamento</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Horas de trabalho</div>
+          <div class="d-item" role="listitem"><div class="d-item-dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Ranking de motoristas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ COPILOT / STATS ══════════════════ -->
+<section id="copilot" aria-label="Câmera e estatísticas de resultado">
+  <div class="wrap">
+    <div class="copilot-grid">
+      <!-- Left: camera visual -->
+      <div class="copilot-visual reveal">
+        <div class="cam-device">
+          <!-- Replace with <img src="/assets/alifleet-camera.webp"> when available -->
+          <div class="cam-device-placeholder" aria-label="Câmera de videotelemetria Ali Sat">
+            <div class="cam-icon-big">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3V11z"/></svg>
+              <div class="cam-icon-lbl">A câmera é o copiloto<br>do seu motorista</div>
+            </div>
+          </div>
+          <div class="cam-tags" aria-hidden="true">
+            <div class="cam-tag"><div class="cam-tag-dot"></div>AO VIVO</div>
+            <div class="cam-tag">IA ATIVA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: stats -->
+      <div class="copilot-stats reveal d1">
+        <div class="copilot-label">O Alifleet é o seu copiloto de gestão</div>
+
+        <div class="copilot-callout">
+          <div class="copilot-callout-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3V11z"/></svg>
+          </div>
+          <div class="copilot-callout-ttl">Para o motorista</div>
+          <div class="copilot-callout-h">A câmera é o copiloto do seu motorista</div>
+        </div>
+
+        <div class="copilot-callout">
+          <div class="copilot-callout-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <div class="copilot-callout-ttl">Para o gestor</div>
+          <div class="copilot-callout-h">O Alifleet é o seu copiloto de gestão</div>
+        </div>
+
+        <div class="stat-grid" role="list">
+          <div class="stat-card" role="listitem">
+            <div class="stat-num" data-target="50" data-sfx="%" aria-label="50%">0%</div>
+            <div class="stat-lbl">menos tempo gasto analisando relatórios</div>
+          </div>
+          <div class="stat-card" role="listitem">
+            <div class="stat-num" data-target="100" data-sfx="%" aria-label="100%">0%</div>
+            <div class="stat-lbl">a mais de controle dos seus veículos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ DASHBOARD ══════════════════ -->
+<section id="dashboard" aria-label="Plataforma Alifleet">
+  <div class="wrap">
+    <div class="dashboard-header reveal">
+      <div class="stag" style="display:inline-flex">A Plataforma</div>
+      <h2 class="sh2">Tudo em uma única tela</h2>
+      <p class="ssub">Rastreamento, videotelemetria, telemetria CAN, combustível e manutenção — centralizados no Alifleet.</p>
+    </div>
+    <div class="dashboard-frame reveal d1">
+      <div class="dash-chrome">
+        <div class="chrome-dots" aria-hidden="true">
+          <div class="chrome-dot"></div><div class="chrome-dot"></div><div class="chrome-dot"></div>
+        </div>
+        <div class="chrome-url">app.alifleet.com.br/painel</div>
+      </div>
+      <!-- CSS dashboard → replace with <img src="/assets/alifleet-dashboard.webp" class="dash-screenshot"> when available -->
+      <div class="dash-body" role="img" aria-label="Painel Alifleet com KPIs, gráficos de consumo e lista de veículos">
+        <div class="dash-sidebar" aria-hidden="true">
+          <div class="dash-sb-ico active"></div>
+          <div class="dash-sb-ico"></div>
+          <div class="dash-sb-ico"></div>
+          <div class="dash-sb-ico"></div>
+          <div class="dash-sb-ico"></div>
+        </div>
+        <div class="dash-main" aria-hidden="true">
+          <div class="dash-kpi-row">
+            <div class="dk"><div class="dk-v">89</div><div class="dk-l">VEÍCULOS</div></div>
+            <div class="dk"><div class="dk-v" style="color:#60a5fa">3</div><div class="dk-l">ALERTAS</div></div>
+            <div class="dk"><div class="dk-v">R$4.2k</div><div class="dk-l">COMBUSTÍVEL</div></div>
+            <div class="dk"><div class="dk-v">11.31</div><div class="dk-l">KM/L MÉDIO</div></div>
+          </div>
+          <div class="dash-content-row">
+            <div class="dash-chart-panel">
+              <div class="dcp-label">CONSUMO DIÁRIO — ÚLTIMOS 12 DIAS</div>
+              <div class="dash-chart-area">
+                <div class="db"></div><div class="db"></div><div class="db"></div>
+                <div class="db"></div><div class="db"></div><div class="db"></div>
+                <div class="db"></div><div class="db"></div><div class="db"></div>
+                <div class="db"></div><div class="db"></div><div class="db"></div>
+              </div>
+            </div>
+            <div class="dash-list-panel">
+              <div class="dlp-label">RANKING — MOTORISTAS</div>
+              <div class="dlp-row"><span class="dlp-name">Carlos M.</span><span class="dlp-val">98pts</span></div>
+              <div class="dlp-row"><span class="dlp-name">João P.</span><span class="dlp-val">94pts</span></div>
+              <div class="dlp-row"><span class="dlp-name">Ana S.</span><span class="dlp-val">91pts</span></div>
+              <div class="dlp-row"><span class="dlp-name">Luiz F.</span><span class="dlp-val">87pts</span></div>
+              <div class="dlp-row"><span class="dlp-name">Pedro R.</span><span class="dlp-val">83pts</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FEATURES STRIP ══════════════════ -->
+<section id="features" aria-label="O que você controla com o Alifleet">
+  <div class="wrap">
+    <div class="features-grid" role="list">
+      <div class="feat reveal d1" role="listitem">
+        <div class="feat-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6l9-4 9 4M3 18l9 4 9-4"/></svg>
+        </div>
+        <div class="feat-text">Controle o combustível e abastecimentos</div>
+      </div>
+      <div class="feat reveal d2" role="listitem">
+        <div class="feat-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <div class="feat-text">Mantenha as manutenções da sua frota em dia</div>
+      </div>
+      <div class="feat reveal d3" role="listitem">
+        <div class="feat-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div class="feat-text">Realize a gestão completa da frota</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FAQ ══════════════════ -->
+<section id="faq" aria-label="Perguntas frequentes">
+  <div class="faq-inner">
+    <div class="faq-h reveal">
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq-list reveal d1" role="list">
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn" onclick="toggleFaq(this)" aria-expanded="false">
+          <div class="faq-n">1</div>
+          <div class="faq-q">"Não tenho um gestor de frotas."</div>
+          <svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body" role="region">
+          <p class="faq-ans">O Alifleet foi pensado justamente para o dono de transportadora que precisa decidir sobre a frota sem ter um especialista full-time para isso. Falta só alguém, ou algo, para transformar isso em decisão certa — e esse algo é o Alifleet.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn" onclick="toggleFaq(this)" aria-expanded="false">
+          <div class="faq-n">2</div>
+          <div class="faq-q">"Não tenho tempo de ficar olhando plataforma."</div>
+          <svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body" role="region">
+          <p class="faq-ans">Você não vai precisar. O painel já te mostra o que exige atenção agora — você não caça informação, ela chega organizada. O Alifleet avisa quando algo precisa de decisão, não quando tudo está normal.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn" onclick="toggleFaq(this)" aria-expanded="false">
+          <div class="faq-n">3</div>
+          <div class="faq-q">"Não entendo esses relatórios."</div>
+          <svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body" role="region">
+          <p class="faq-ans">Não vai precisar entender relatório nenhum. O Alifleet interpreta o dado por você e apresenta a conclusão, não a planilha. Você vê o que precisa fazer — não o que aconteceu.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn" onclick="toggleFaq(this)" aria-expanded="false">
+          <div class="faq-n">4</div>
+          <div class="faq-q">"A economia não está boa, não é hora de investir."</div>
+          <svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body" role="region">
+          <p class="faq-ans">É exatamente na hora em que sobra menos margem que decisão atrasada custa mais caro — pneu, combustível e manutenção não esperam o mercado melhorar. Quem controla melhor sobrevive mais. Quem não controla paga a diferença sem perceber.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ LOGOS ══════════════════ -->
+<div id="logos" aria-label="Clientes que utilizam o Alifleet">
+  <div class="wrap">
+    <p class="logos-lbl">Empresas que já pararam de interpretar dados</p>
+    <div class="logos-row">
+      <img src="/assets/mica.webp"          alt="Mica"         class="logo-i" loading="lazy">
+      <img src="/assets/ccl.webp"           alt="CCL Concreto" class="logo-i" loading="lazy">
+      <img src="/assets/casa%20maria.webp"  alt="Casa Maria"   class="logo-i" loading="lazy">
+      <img src="/assets/coesul.png"         alt="Coesul"       class="logo-i" loading="lazy">
+      <img src="/assets/franciscon.webp"    alt="Franciscon"   class="logo-i" loading="lazy">
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ CTA + FORM ══════════════════ -->
+<section id="cta" aria-label="Solicitar demonstração">
+  <div class="cta-grid">
+    <div class="cta-copy reveal">
+      <div class="cta-pretitle">Pare de interpretar dados</div>
+      <h2 class="cta-h2">
+        Comece a<br>
+        <span>tomar decisões.</span>
+      </h2>
+      <p class="cta-sub">
+        Sua frota já está gerando a informação que você precisa. Falta só alguém, ou algo, para transformar isso em decisão certa, no tempo certo.
+      </p>
+      <div class="cta-points" role="list">
+        <div class="cta-pt" role="listitem">
+          <div class="cta-pt-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          Demo gratuita sem compromisso
+        </div>
+        <div class="cta-pt" role="listitem">
+          <div class="cta-pt-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          Especialista responde em até 1h útil
+        </div>
+        <div class="cta-pt" role="listitem">
+          <div class="cta-pt-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          Proposta personalizada para o seu tamanho de frota
+        </div>
+        <div class="cta-pt" role="listitem">
+          <div class="cta-pt-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          Implantação e suporte Ali Sat incluso
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal d1">
+      <div id="main-form" class="form-card form-wrap">
+        <h3 class="form-title">Solicite uma demo gratuita</h3>
+
+        <!-- Thank you -->
+        <div class="form-ty" role="alert">
+          <div class="form-ty-ico" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1ECB87" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <h3>Solicitação recebida!</h3>
+          <p>Nossa equipe entrará em contato em até 1 hora útil.</p>
+        </div>
+
+        <div class="f-stack">
+          <div>
+            <label class="f-lbl" for="nome">Nome completo<span class="f-req">*</span></label>
+            <input type="text"  id="nome"    autocomplete="name"         placeholder="Ex.: Carlos Mendes"        required class="inp">
+          </div>
+          <div>
+            <label class="f-lbl" for="email">E-mail<span class="f-req">*</span></label>
+            <input type="email" id="email"   autocomplete="email"        placeholder="Ex.: carlos@empresa.com.br" required class="inp">
+          </div>
+          <div>
+            <label class="f-lbl" for="fone">Telefone / WhatsApp<span class="f-req">*</span></label>
+            <input type="tel"   id="fone"    autocomplete="tel"          placeholder="(51) 99999-9999"          required class="inp">
+          </div>
+          <div>
+            <label class="f-lbl" for="cnpj">CNPJ<span class="f-req">*</span></label>
+            <input type="text"  id="cnpj"    placeholder="XX.XXX.XXX/XXXX-XX" maxlength="18"                   required class="inp">
+          </div>
+          <div>
+            <label class="f-lbl" for="veic">N° de veículos<span class="f-req">*</span></label>
+            <select id="veic" required class="inp inp-sel">
+              <option value="" disabled selected>Selecione</option>
+              <option>1-10</option><option>11-30</option><option>31-100</option>
+              <option>101-300</option><option>300+</option>
+            </select>
+          </div>
+          <!-- UTM hidden inputs -->
+          <input type="hidden" id="utm_source"><input type="hidden" id="utm_medium">
+          <input type="hidden" id="utm_campaign"><input type="hidden" id="utm_content">
+          <input type="hidden" id="utm_term"><input type="hidden" id="fbclid"><input type="hidden" id="gclid">
+          <label class="lgpd-row">
+            <input type="checkbox" id="lgpd" required>
+            Concordo com a <a href="/politica-de-privacidade" target="_blank">Política de Privacidade</a> e o tratamento dos meus dados conforme a LGPD.
+          </label>
+          <button type="button" class="btn-send" onclick="submitForm()">
+            Quero uma demo gratuita →
+          </button>
+          <p class="form-hint">Sem compromisso · Ali Sat responde em até 1h útil</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer id="foot" role="contentinfo">
+  <div class="foot-inner">
+    <img src="/assets/logobranco.svg" alt="Ali Sat Gestão de Frotas" class="foot-logo" onerror="this.style.display='none'">
+    <div class="foot-links">
+      <a href="https://www.alisat.com.br" target="_blank" rel="noopener" class="foot-link">alisat.com.br</a>
+      <a href="tel:+555130342111" class="foot-link">(51) 3034-2111</a>
+      <a href="mailto:comercial@alisat.com.br" class="foot-link">comercial@alisat.com.br</a>
+    </div>
+    <div class="foot-socials" aria-label="Redes sociais">
+      <a href="https://www.instagram.com/alisatbrasil" target="_blank" rel="noopener" class="foot-soc" aria-label="Instagram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/company/alisatgestaodefrotas" target="_blank" rel="noopener" class="foot-soc" aria-label="LinkedIn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="foot-copy">
+    <span>© 2026 Ali Sat Rastreamento e Monitoramento LTDA · CNPJ 29.989.683/0001-33</span>
+    <span>Rua Porto Mauá, 742 — Sapucaia do Sul, RS</span>
+  </div>
+</footer>
+
+<!-- ══════════════════ JS ══════════════════ -->
+<script>
+'use strict';
+window.dataLayer = window.dataLayer || [];
+
+const $ = id => document.getElementById(id);
+const param  = k => new URLSearchParams(window.location.search).get(k) || '';
+const cookie = n => { const v=`; ${document.cookie}`,p=v.split(`; ${n}=`); return p.length===2?p.pop().split(';').shift():''; };
+const push   = o => window.dataLayer.push(o);
+
+// UTM fill
+function fillUtms() {
+  ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'].forEach(k => {
+    const el = $(k); if (el) el.value = param(k);
+  });
+}
+
+// Masks
+function maskPhone(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,11);
+  if (v.length>10) v=v.replace(/^(\d{2})(\d{5})(\d{4})$/,'($1) $2-$3');
+  else if (v.length>6) v=v.replace(/^(\d{2})(\d{4})(\d*)/,'($1) $2-$3');
+  else if (v.length>2) v=v.replace(/^(\d{2})(\d*)/,'($1) $2');
+  else if (v.length) v=`(${v}`;
+  el.value=v;
+}
+function maskCNPJ(el) {
+  let v=el.value.replace(/\D/g,'').slice(0,14);
+  v=v.replace(/^(\d{2})(\d)/,'$1.$2');
+  v=v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');
+  v=v.replace(/\.(\d{3})(\d)/,'.$1/$2');
+  v=v.replace(/(\d{4})(\d)/,'$1-$2');
+  el.value=v;
+}
+const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+const isPhone = v => v.replace(/\D/g,'').length >= 10;
+const isCNPJ  = v => v.replace(/\D/g,'').length === 14;
+
+// Nav scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+// Reveal observer
+const revIo = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); revIo.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revIo.observe(el));
+
+// Counter animation (stats section)
+let countersRan = false;
+const ctrIo = new IntersectionObserver(es => {
+  if (!es[0].isIntersecting || countersRan) return;
+  countersRan = true;
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const target = +el.dataset.target, sfx = el.dataset.sfx || '';
+    let i = 0; const steps = 75;
+    const t = setInterval(() => {
+      i++;
+      const ease = 1 - Math.pow(1 - i/steps, 3);
+      el.textContent = Math.round(target * ease) + sfx;
+      if (i >= steps) clearInterval(t);
+    }, 1000/60);
+  });
+}, { threshold: 0.4 });
+const statSec = document.getElementById('copilot');
+if (statSec) ctrIo.observe(statSec);
+
+// Scroll depth
+const sdFired = new Set();
+window.addEventListener('scroll', () => {
+  const pct = Math.round(window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100);
+  [25,50,75,100].forEach(t => {
+    if (pct >= t && !sdFired.has(t)) { sdFired.add(t); push({ event:'Scroll_Depth', percent:t }); }
+  });
+}, { passive: true });
+
+// CTA tracking
+function trackCTA(text, section) { push({ event:'CTA_Click', cta_text:text, section }); }
+
+// FAQ accordion
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item'), isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.faq-body').classList.remove('open');
+    i.querySelector('button').setAttribute('aria-expanded','false');
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    item.querySelector('.faq-body').classList.add('open');
+    btn.setAttribute('aria-expanded','true');
+  }
+}
+
+// Form submit
+async function submitForm() {
+  const nome  = $('nome').value.trim();
+  const email = $('email').value.trim();
+  const fone  = $('fone').value.trim();
+  const cnpj  = $('cnpj').value.trim();
+  const veic  = $('veic').value;
+  const lgpd  = $('lgpd')?.checked;
+
+  if (!nome)           return alert('Por favor, informe seu nome.');
+  if (!isEmail(email)) return alert('Por favor, informe um e-mail válido.');
+  if (!isPhone(fone))  return alert('Por favor, informe um telefone válido.');
+  if (!isCNPJ(cnpj))   return alert('Por favor, informe um CNPJ válido.');
+  if (!veic)           return alert('Por favor, selecione a quantidade de veículos.');
+  if (!lgpd)           return alert('Por favor, aceite a Política de Privacidade.');
+
+  push({ event:'Lead_Qualificado', product:'alifleet', qtd_veiculos:veic });
+
+  const btn = document.querySelector('#main-form button[type=button]');
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+
+  const parts = nome.split(/\s+/);
+  const payload = {
+    event_name: 'Lead', event_id: crypto.randomUUID(),
+    event_time: Math.floor(Date.now()/1000),
+    event_source_url: window.location.href,
+    product: 'alifleet', consent_status: 'all',
+    user_data: { em:email, fn:parts[0]||'', ln:parts.slice(1).join(' ')||'', ph:fone.replace(/\D/g,'') },
+    cnpj, qtd_veiculos: veic,
+    utm_source:   param('utm_source'),  utm_medium:   param('utm_medium'),
+    utm_campaign: param('utm_campaign'),utm_content:  param('utm_content'),
+    utm_term:     param('utm_term'),    fbclid:       param('fbclid'),
+    gclid:        param('gclid'),       fbp:          cookie('_fbp'),
+    fbc:          cookie('_fbc'),
+  };
+
+  try {
+    const res = await fetch('/tracker', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if (res.ok) {
+      $('main-form').classList.add('done');
+    } else {
+      if (btn) { btn.disabled=false; btn.textContent='Quero uma demo gratuita →'; }
+      alert('Ocorreu um erro. Por favor, tente novamente.');
+    }
+  } catch(e) {
+    if (btn) { btn.disabled=false; btn.textContent='Quero uma demo gratuita →'; }
+    alert('Erro de conexão. Por favor, tente novamente.');
+  }
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  fillUtms();
+  const foEl = $('fone'); if (foEl) foEl.addEventListener('input', () => maskPhone(foEl));
+  const cnEl = $('cnpj'); if (cnEl) cnEl.addEventListener('input', () => maskCNPJ(cnEl));
+});
+</script>
+</body>
+</html>
