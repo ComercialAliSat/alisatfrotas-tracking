@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98.36 98.36" width="200px" height="200">
+
+
+    <circle class="pulse" cx="49.18" cy="49.18" r="40" />
+    <circle class="pulse" cx="49.18" cy="49.18" r="50" />
+    <circle class="dot" cx="49.18" cy="49.18" r="15" />
+    <linearGradient id="gradient" gradientUnits="objectBoundingBox" gradientTransform="rotate(0)">
+        <stop offset="0%" stop-color="#1e88e5" />
+        <stop offset="100%" stop-color="#1e88e5" />
+    </linearGradient>
+    <style>
+        .dot {
+            fill: url(#gradient);
+        }
+
+        .pulse {
+            fill: url(#gradient);
+        }
+
+        .triangle {
+            fill: #fff;
+            transform-origin: 50% 50%;
+            transform: scale(80%)
+        }
+
+        .pulse {
+            transform-origin: 50% 50%;
+            animation: pulse 3s infinite;
+            -webkit-animation: pulse 3s infinite;
+            -moz-animation: pulse 3s infinite;
+            -o-animation: pulse 3s infinite
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0);
+                opacity: 2
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0
+            }
+        }
+
+        @-webkit-keyframes pulse {
+            0% {
+                transform: scale(0);
+                opacity: 2
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0
+            }
+        }
+
+        @-moz-keyframes pulse {
+            0% {
+                transform: scale(0);
+                opacity: 2
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0
+            }
+        }
+
+        @-o-keyframes pulse {
+            0% {
+                transform: scale(0);
+                opacity: 2
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0
+            }
+        }
+    </style>
+</svg>
