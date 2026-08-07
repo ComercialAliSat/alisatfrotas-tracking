@@ -2,22 +2,58 @@
 (function(){
   function param(k){ return new URLSearchParams(window.location.search).get(k) || ''; }
   function cookie(n){ var v = '; ' + document.cookie, p = v.split('; ' + n + '='); return p.length === 2 ? p.pop().split(';').shift() : ''; }
+  var isEmail = function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); };
+
+  function setError(el, has){
+    var wrap = el && el.closest('.gpc_campos');
+    if (wrap) wrap.classList.toggle('gpc_campos-error', !!has);
+  }
+
+  function validate(form){
+    var nome    = form.querySelector('[name="nome"]');
+    var tel     = form.querySelector('[name="telefone"]');
+    var email   = form.querySelector('[name="e-mail"]');
+    var empresa = form.querySelector('[name="nome-da-empresa"]');
+    var seg     = form.querySelector('[name="segmento-de-atuao"]');
+    var cnpj    = form.querySelector('[name="cnpj"]');
+    var lgpd    = form.querySelector('[name="polticas-de-privacidade"]');
+    if (!nome || !tel || !email || !empresa || !seg || !cnpj || !lgpd) return null;
+
+    var vNome = nome.value.trim().length > 1;           setError(nome, !vNome);
+    var vTel  = tel.value.replace(/\D/g,'').length >= 10; setError(tel, !vTel);
+    var vMail = isEmail(email.value.trim());             setError(email, !vMail);
+    var vEmp  = empresa.value.trim().length > 1;         setError(empresa, !vEmp);
+    var vSeg  = seg.selectedIndex > 0;                   setError(seg, !vSeg);
+    var vCnpj = cnpj.value.replace(/\D/g,'').length === 14; setError(cnpj, !vCnpj);
+    var vLgpd = lgpd.checked;                             setError(lgpd, !vLgpd);
+
+    if (!(vNome && vTel && vMail && vEmp && vSeg && vCnpj && vLgpd)) return null;
+
+    return {
+      nome: nome.value.trim(), tel: tel.value.trim(), email: email.value.trim(),
+      empresa: empresa.value.trim(), seg: seg.value, cnpj: cnpj.value.trim(),
+    };
+  }
 
   document.addEventListener('click', function(ev){
     var btn = ev.target.closest('form .gpc_botao');
     if (!btn) return;
+    // Bloqueia o handler nativo do GreatPages (posta para um backend que não
+    // existe mais para este domínio) — só o nosso fluxo processa o envio.
+    ev.preventDefault();
+    ev.stopPropagation();
 
-    var nome    = (document.querySelector('[name="nome"]') || {}).value || '';
-    var tel     = (document.querySelector('[name="telefone"]') || {}).value || '';
-    var email   = (document.querySelector('[name="e-mail"]') || {}).value || '';
-    var empresa = (document.querySelector('[name="nome-da-empresa"]') || {}).value || '';
-    var cnpj    = (document.querySelector('[name="cnpj"]') || {}).value || '';
-    var seg     = (document.querySelector('[name="segmento-de-atuao"]') || {}).value || '';
-    var lgpd    = (document.querySelector('[name="polticas-de-privacidade"]') || {}).checked;
+    var form = btn.closest('form');
+    var data = validate(form);
+    if (!data) return;
 
-    if (!nome || !tel || !email || !lgpd) return;
+    var span = btn.querySelector('span');
+    var original = span ? span.textContent : '';
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.6';
+    if (span) span.textContent = 'Enviando...';
 
-    var parts = nome.trim().split(/\s+/);
+    var parts = data.nome.split(/\s+/);
     fetch('/tracker', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -29,20 +65,30 @@
         product: 'videotelemetria',
         consent_status: 'all',
         user_data: {
-          em: email,
+          em: data.email,
           fn: parts[0] || '',
           ln: parts.slice(1).join(' ') || '',
-          ph: tel.replace(/\D/g, ''),
+          ph: data.tel.replace(/\D/g, ''),
         },
-        empresa: empresa,
-        cnpj: cnpj,
-        segmento: seg,
+        empresa: data.empresa,
+        cnpj: data.cnpj,
+        segmento: data.seg,
         utm_source: param('utm_source'), utm_medium: param('utm_medium'),
         utm_campaign: param('utm_campaign'), utm_content: param('utm_content'),
         utm_term: param('utm_term'), fbclid: param('fbclid'), gclid: param('gclid'),
         fbp: cookie('_fbp'), fbc: cookie('_fbc'),
       }),
-    }).catch(function(){});
+    }).then(function(res){
+      if (!res.ok) throw new Error('bad status');
+      form.innerHTML = '<div style="padding:32px 8px;text-align:center;font-family:Poppins,Arial,sans-serif;">' +
+        '<h3 style="margin:0 0 8px;font-size:20px;color:#033566;">Obrigado! Recebemos suas informações.</h3>' +
+        '<p style="margin:0;color:#4a4a58;">Nossa equipe vai entrar em contato em breve.</p></div>';
+    }).catch(function(){
+      btn.style.pointerEvents = '';
+      btn.style.opacity = '';
+      if (span) span.textContent = original;
+      alert('Ocorreu um erro ao enviar. Por favor, tente novamente.');
+    });
   }, true);
 })();
 </script></body></html>
