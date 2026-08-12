@@ -218,13 +218,21 @@ export async function onRequestPost(context) {
     }
 
     // --- Parse Pipedrive result (fire-and-forget — not persisted to event_log) ---
+    // TEMP DEBUG SCAFFOLD — remove pipedriveDebug + the X-Debug-Pipedrive echo
+    // below once the missing-deal issue is diagnosed.
+    let pipedriveDebug = null;
     if (results[4]?.status === 'rejected') {
+      pipedriveDebug = { error: results[4].reason?.message || 'unknown' };
       console.error('Pipedrive deal creation error:', results[4].reason?.message || 'unknown');
-    } else if (results[4]?.status === 'fulfilled' && results[4].value?.response && !results[4].value?.skipped) {
-      const pdStatus = results[4].value.response.status;
-      if (pdStatus >= 400) {
-        const pdBody = await results[4].value.response.text().catch(() => '');
-        console.error('Pipedrive deal creation non-2xx:', pdStatus, pdBody);
+    } else if (results[4]?.status === 'fulfilled') {
+      const v = results[4].value;
+      if (v?.skipped) {
+        pipedriveDebug = { skipped: v.skipped };
+      } else if (v?.response) {
+        const pdStatus = v.response.status;
+        const pdBody = await v.response.text().catch(() => '');
+        pipedriveDebug = { status: pdStatus, body: pdBody, payload: v.payload };
+        if (pdStatus >= 400) console.error('Pipedrive deal creation non-2xx:', pdStatus, pdBody);
       }
     }
 
@@ -348,7 +356,10 @@ export async function onRequestPost(context) {
       })()
     );
 
-    return new Response(JSON.stringify({ ok: true }), {
+    const debugResponse = request.headers.get('X-Debug-Pipedrive') === '1'
+      ? { ok: true, pipedrive: pipedriveDebug }
+      : { ok: true };
+    return new Response(JSON.stringify(debugResponse), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
