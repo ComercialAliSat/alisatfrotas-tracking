@@ -1,4 +1,5 @@
 import { sendToLinkedIn } from './outputs/linkedin.js';
+import { sendToPipedrive } from './outputs/pipedrive.js';
 
 let googleAdsTokenCache = { token: null, expiresAt: 0 };
 
@@ -139,6 +140,21 @@ export async function onRequestPost(context) {
         eventTime: body.event_time,
         env,
       }),
+      sendToPipedrive({
+        eventName: body.event_name,
+        email: userData.em || '',
+        name: [userData.fn, userData.ln].filter(Boolean).join(' ').trim(),
+        phone: userData.ph || '',
+        empresa: body.empresa || '',
+        cnpj: body.cnpj || '',
+        segmento: body.segmento || '',
+        product: body.product || '',
+        sourceUrl: body.event_source_url || '',
+        utmSource: body.utm_source || '', utmMedium: body.utm_medium || '',
+        utmCampaign: body.utm_campaign || '', utmContent: body.utm_content || '',
+        utmTerm: body.utm_term || '',
+        env,
+      }),
     ]);
 
     // --- Parse Meta result ---
@@ -187,6 +203,17 @@ export async function onRequestPost(context) {
     } else if (results[3]?.status === 'fulfilled' && results[3].value?.response && !results[3].value?.skipped) {
       const gadsStatus = results[3].value.response.status;
       if (gadsStatus >= 400) console.error('Google Ads lead CAPI non-2xx:', gadsStatus);
+    }
+
+    // --- Parse Pipedrive result (fire-and-forget — not persisted to event_log) ---
+    if (results[4]?.status === 'rejected') {
+      console.error('Pipedrive deal creation error:', results[4].reason?.message || 'unknown');
+    } else if (results[4]?.status === 'fulfilled' && results[4].value?.response && !results[4].value?.skipped) {
+      const pdStatus = results[4].value.response.status;
+      if (pdStatus >= 400) {
+        const pdBody = await results[4].value.response.text().catch(() => '');
+        console.error('Pipedrive deal creation non-2xx:', pdStatus, pdBody);
+      }
     }
 
     // ── Two-step form: step 2 atualiza o lead criado no step 1 ───────────────
