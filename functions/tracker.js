@@ -121,6 +121,15 @@ export async function onRequestPost(context) {
     // --- Bot detection ---
     const { isBot, botReason } = detectBot(userAgent);
 
+    // Geo da Cloudflare (disponível em runtime, vazio em dev local) — movido
+    // pra antes do fan-out porque o Pipedrive (Cidade/Estado) também usa.
+    const country = (request.cf?.country || '').slice(0, 2).toUpperCase();
+    const city    = request.cf?.city    || '';
+    const region  = request.cf?.region  || '';
+
+    // Consent — usa corpo do request ou cookie LGPD do middleware
+    const consentStatus = body.consent_status || cookies['alisat_lgpd'] || 'unknown';
+
     // --- Fan out to ad platforms (skipped for bot UAs) ---
     // Bots still get logged to event_log so the dashboard's bot-filter
     // tracking-health metric stays accurate; only the outbound CAPI /
@@ -148,6 +157,9 @@ export async function onRequestPost(context) {
         empresa: body.empresa || '',
         cnpj: body.cnpj || '',
         segmento: body.segmento || '',
+        cidade: city,
+        estado: region,
+        lgpdConsent: consentStatus !== 'unknown',
         product: body.product || '',
         sourceUrl: body.event_source_url || '',
         utmSource: body.utm_source || '', utmMedium: body.utm_medium || '',
@@ -249,11 +261,6 @@ export async function onRequestPost(context) {
       });
     }
 
-    // Geo da Cloudflare (disponível em runtime, vazio em dev local)
-    const country = (request.cf?.country || '').slice(0, 2).toUpperCase();
-    const city    = request.cf?.city    || '';
-    const region  = request.cf?.region  || '';
-
     // Snapshot de UTMs no momento do evento — imune a mutações futuras da sessão.
     // Usa sessionData como fonte primária (capturado pelo middleware via URL)
     // e o body como fallback (LPs enviam UTMs via param() como redundância).
@@ -264,9 +271,6 @@ export async function onRequestPost(context) {
     const snapshotUtmCampaign = 'utm_campaign' in body ? (body.utm_campaign || '') : (sessionData.utm_campaign || '');
     const snapshotUtmContent  = 'utm_content'  in body ? (body.utm_content  || '') : (sessionData.utm_content  || '');
     const snapshotUtmTerm     = 'utm_term'     in body ? (body.utm_term     || '') : (sessionData.utm_term     || '');
-
-    // Consent — usa corpo do request ou cookie LGPD do middleware
-    const consentStatus = body.consent_status || cookies['alisat_lgpd'] || 'unknown';
 
     const rawEmail    = userData.em || '';
     const rawName     = [userData.fn, userData.ln].filter(Boolean).join(' ').trim();
