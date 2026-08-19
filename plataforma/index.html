@@ -589,6 +589,15 @@ function nav(sec) {
 
 // ══ PÁGINAS ══════════════════════════════════════════════════════════════
 
+// Lista curada — "Minhas páginas" mostra só estas, independente de qualquer
+// outra URL que receba tráfego (ex: variantes de teste como
+// videotelemetria_fundo/_topo não devem aparecer aqui).
+const PINNED_PAGES = [
+  { slug: 'construcao',      name: 'Construção Civil', url: '/lps/construcao' },
+  { slug: 'videotelemetria', name: 'Videotelemetria',  url: '/lps/videotelemetria' },
+  { slug: 'alifleet',        name: 'Alifleet',          url: '/lp/alifleet' },
+];
+
 async function loadPaginas() {
   g('pg-grid').innerHTML = skeletonRows(4);
 
@@ -602,26 +611,40 @@ async function loadPaginas() {
   const fd = fr.ok ? await fr.json() : { funnels: [] };
   const pd = pr.ok ? await pr.json() : { pages: [] };
 
-  const regSlugs = new Set((fd.funnels || []).map(f => f.slug));
+  const funnelBySlug = {};
+  (fd.funnels || []).forEach(f => { funnelBySlug[f.slug] = f; });
 
-  // Só mostra páginas detectadas sob /lps/ que ainda não estão no D1
-  // Qualquer nova LP criada em /lps/ aparece automaticamente
-  const sessionPages = (pd.pages || []).filter(p => {
+  function slugOf(u) {
     try {
-      const parts = new URL(p.url).pathname.split('/').filter(Boolean);
-      const slug  = parts[parts.length - 1] || '';
-      return parts[0] === 'lps' && !regSlugs.has(slug);
-    } catch { return false; }
-  }).map(p => ({
-    type: 'detected', url: p.url,
-    visits: p.visits, leads: p.leads,
-    conversion_rate: p.conversion_rate,
-  }));
+      const parts = new URL(u, location.origin).pathname.split('/').filter(Boolean);
+      return parts[parts.length - 1] || '';
+    } catch { return ''; }
+  }
 
-  allPages = [
-    ...(fd.funnels || []).map(f => ({ ...f, type: 'funnel' })),
-    ...sessionPages,
-  ];
+  // Tráfego real agregado por slug — soma visitas/leads de todas as variantes
+  // de query string (UTMs diferentes) da mesma página.
+  const statsBySlug = {};
+  (pd.pages || []).forEach(p => {
+    const slug = slugOf(p.url);
+    if (!statsBySlug[slug]) statsBySlug[slug] = { visits: 0, leads: 0 };
+    statsBySlug[slug].visits += p.visits || 0;
+    statsBySlug[slug].leads  += p.leads  || 0;
+  });
+
+  allPages = PINNED_PAGES.map(pp => {
+    const funnel = funnelBySlug[pp.slug];
+    const stats  = statsBySlug[pp.slug] || { visits: 0, leads: 0 };
+    const visits = stats.visits;
+    const leads  = stats.leads;
+    return {
+      type: 'funnel',
+      name: pp.name,
+      url: pp.url,
+      status: funnel ? funnel.status : 'published',
+      visits, leads,
+      conversion_rate: visits > 0 ? parseFloat(((leads / visits) * 100).toFixed(1)) : 0,
+    };
+  });
 
   const n = allPages.length;
   g('kpi-np').textContent = n ? '(' + n + ')' : '';
