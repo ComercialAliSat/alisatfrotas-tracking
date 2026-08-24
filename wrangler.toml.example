@@ -62,4 +62,12 @@ database_id = "__REPLACE_ME_DB_ID__"
 #   PIPEDRIVE_WEBHOOK_SLUG             UUID slug gating /webhook/pipedrive/<slug>
 #   PIPEDRIVE_API_TOKEN                Personal API token for Persons email lookup
 #   PIPEDRIVE_GOOGLE_ADS_CONVERSION_ACTION_ID  Google Ads conversion action for won deals
+#
+# Brevo (email marketing):
+#   BREVO_API_KEY                      API v3 key (Settings → SMTP & API → API Keys).
+#                                       Every Lead event creates/updates the Brevo
+#                                       contact and stamps sessions.external_id as
+#                                       the EXTERNAL_ID custom attribute — create
+#                                       that attribute (Text type) in Brevo's
+#                                       Contact Attributes settings first.
 # ---------------------------------------------------------------------------

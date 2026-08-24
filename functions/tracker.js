@@ -1,5 +1,6 @@
 import { sendToLinkedIn } from './outputs/linkedin.js';
 import { sendToPipedrive } from './outputs/pipedrive.js';
+import { sendToBrevo } from './outputs/brevo.js';
 
 let googleAdsTokenCache = { token: null, expiresAt: 0 };
 
@@ -167,6 +168,12 @@ export async function onRequestPost(context) {
         utmTerm: body.utm_term || '',
         env,
       }),
+      sendToBrevo({
+        eventName: body.event_name,
+        email: userData.em || '',
+        externalId,
+        env,
+      }),
     ]);
 
     // --- Parse Meta result ---
@@ -225,6 +232,17 @@ export async function onRequestPost(context) {
       if (pdStatus >= 400) {
         const pdBody = await results[4].value.response.text().catch(() => '');
         console.error('Pipedrive deal creation non-2xx:', pdStatus, pdBody);
+      }
+    }
+
+    // --- Parse Brevo result (fire-and-forget — not persisted to event_log) ---
+    if (results[5]?.status === 'rejected') {
+      console.error('Brevo contact sync error:', results[5].reason?.message || 'unknown');
+    } else if (results[5]?.status === 'fulfilled' && results[5].value?.response && !results[5].value?.skipped) {
+      const brevoStatus = results[5].value.response.status;
+      if (brevoStatus >= 400) {
+        const brevoBody = await results[5].value.response.text().catch(() => '');
+        console.error('Brevo contact sync non-2xx:', brevoStatus, brevoBody);
       }
     }
 

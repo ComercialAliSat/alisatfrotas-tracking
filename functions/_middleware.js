@@ -34,6 +34,13 @@ export async function onRequest(context) {
   const utmContent = url.searchParams.get('utm_content') || '';
   const utmTerm = url.searchParams.get('utm_term') || '';
 
+  // Brevo email-click identity recovery — see "Hop 7" in docs/data-flow.md.
+  // Brevo templates append ?leadid={{ contact.EXTERNAL_ID }} to every link
+  // (stamped by functions/outputs/brevo.js on the Lead event). When a lead
+  // clicks that link on a device/app with no _krob_eid cookie, this param
+  // lets us recover their identity instead of treating them as a new lead.
+  const leadId = url.searchParams.get('leadid') || '';
+
   // --- Read existing cookies ---
   const cookies = parseCookies(request.headers.get('Cookie') || '');
   let sessionId = cookies['_krob_sid'] || '';
@@ -45,6 +52,20 @@ export async function onRequest(context) {
   // --- Generate identifiers if missing ---
   const isNewSession = !sessionId;
   if (!sessionId) sessionId = crypto.randomUUID();
+
+  // Before minting a fresh external_id, try to recover one via ?leadid=
+  // (only relevant when there's no _krob_eid cookie at all — a returning
+  // visitor on the same device already carries their real external_id).
+  if (!externalId && leadId && env.DB) {
+    try {
+      const recovered = await env.DB.prepare(
+        'SELECT external_id FROM sessions WHERE external_id = ? LIMIT 1'
+      ).bind(leadId).first();
+      if (recovered?.external_id) externalId = recovered.external_id;
+    } catch (e) {
+      console.error('Middleware leadid recovery error:', e.message);
+    }
+  }
   if (!externalId) externalId = crypto.randomUUID();
 
   // --- Compute sub_domain_index per Meta SDK spec ---

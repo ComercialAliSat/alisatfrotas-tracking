@@ -107,8 +107,17 @@ handler.
    leading-zero for phone, lowercase+strip punctuation for names.
 4. SHA-256 hash each normalized value.
 5. Bot-check the User-Agent.
-6. Fire Meta CAPI + GA4 MP in parallel (`Promise.allSettled`).
+6. Fire Meta CAPI + GA4 MP + LinkedIn CAPI + Google Ads + Pipedrive + Brevo
+   in parallel (`Promise.allSettled`).
 7. Insert into `event_log` (skipping PageView).
+
+Brevo sync (`functions/outputs/brevo.js`, fired only for `event_name: "Lead"`):
+`POST /v3/contacts` with `updateEnabled: true` creates-or-updates the contact
+by email and stamps `sessions.external_id` (resolved the same way as `fbp`/
+`fbc` above) as the `EXTERNAL_ID` custom attribute. This is what lets Brevo
+email templates grampear `{{ contact.EXTERNAL_ID }}` into every link — see
+Hop 7 for the read side of that loop. Fire-and-forget: result is logged to
+the console on non-2xx, never persisted to `event_log`.
 
 **Example `event_log` row after hop 2**:
 ```
@@ -330,6 +339,63 @@ what got persisted at Hop 5.
 If the dashboard row looks wrong but the D1 row is right, the bug is in
 the dashboard `api/*.js` query. If the D1 row itself is wrong, the bug is
 upstream — walk back through the hops until you find the bad row.
+
+## Hop 7 — Email click → `leadid` → identity recovery
+
+**Trigger**: a lead clicks a link inside a Brevo email campaign and lands on
+any HTML page, on a device/browser/app with no `_krob_eid` cookie (e.g. the
+email was opened in a different browser, a webview, or a second device from
+the one that originally submitted the lead form).
+
+**Inputs Claude can see in D1 beforehand**:
+```sql
+SELECT session_id, external_id FROM sessions WHERE external_id = '<leadid value>';
+```
+
+**What happens** (see `functions/_middleware.js`):
+
+1. Read the raw `leadid` query param the same way `utm_source` is read
+   (`url.searchParams.get('leadid')`) — this value is the recipient's
+   `EXTERNAL_ID` Brevo attribute, grampeado into the email link by the
+   recipient's Brevo template as `?leadid={{ contact.EXTERNAL_ID }}`.
+2. `_krob_sid` is generated fresh as usual (`isNewSession` path) — this hop
+   does NOT try to recover the old session_id, only the external_id.
+3. Only if `_krob_eid` cookie is **missing** and `leadid` is present:
+   `SELECT external_id FROM sessions WHERE external_id = ?` bound to
+   `leadid`. This is a blocking read (not `waitUntil`) because the result
+   has to land in the `_krob_eid` cookie written on this response.
+4. If a row is found, the new session inherits that `external_id` instead of
+   a freshly minted UUID. If no row is found (bad/stale/tampered `leadid`,
+   or `env.DB` unavailable), fall back to `crypto.randomUUID()` exactly like
+   today — this hop degrades to "new lead" silently, never to an error.
+5. From here on, hop 1's normal UPSERT into `sessions` runs with the
+   recovered `external_id`, so every subsequent event/page_view on this new
+   `session_id` still rolls up to the same lead identity.
+
+**Example**: lead submits a form on mobile Safari (`external_id:
+4c2d8a91-…`), Brevo sends a nurture email, they click it from Gmail's
+in-app browser on desktop three days later (no cookies at all).
+`?leadid=4c2d8a91-…` on the landing URL recovers `external_id` so the new
+`sessions` row (new `session_id`, same `external_id`) is treated as the same
+lead in the Jornada / lead-score tabs.
+
+**Failure modes**:
+
+- **`leadid` present but `sessions` row still gets a fresh `external_id`** →
+  either `env.DB` was unavailable, the `leadid` value doesn't match any
+  `sessions.external_id` (Brevo attribute never got stamped — check hop 2's
+  Brevo sync fired and `EXTERNAL_ID` exists as a Brevo contact attribute), or
+  the recipient's email template isn't appending `?leadid=...` to links.
+- **Two different `session_id`s share the same `external_id`, but the
+  dashboard still shows them as separate leads** → the query/join is
+  grouping by `session_id` instead of `external_id`; that's a reporting bug,
+  not a data bug — the row-level data is correct.
+- **`leadid` param present on a visitor who already has a `_krob_eid`
+  cookie** → deliberately ignored. Recovery only fires when there's no
+  existing external_id to protect, so a returning visitor's own identity is
+  never overwritten by a stray `leadid` in a forwarded/shared link.
+
+---
 
 ## Quick queries for triage
 
