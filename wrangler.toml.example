@@ -70,4 +70,10 @@ database_id = "__REPLACE_ME_DB_ID__"
 #                                       the EXTERNAL_ID custom attribute — create
 #                                       that attribute (Text type) in Brevo's
 #                                       Contact Attributes settings first.
+#   BREVO_WEBHOOK_SLUG                 UUID slug gating /webhook/brevo/<slug>.
+#                                       Configure this URL in Brevo → Automation/
+#                                       Campaigns → Settings → Webhooks, subscribed
+#                                       to at least: opened, click, unsubscribed,
+#                                       hardBounce, softBounce. Turns email
+#                                       engagement into lead_score points.
 # ---------------------------------------------------------------------------

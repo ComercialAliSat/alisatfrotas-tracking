@@ -114,6 +114,7 @@ Hop-by-hop debugging bible: `docs/data-flow.md`
 | `webhook/_core.js` | Platform-agnostic brain: lookup `trk` → enrich → fan out to Meta/GA4/Google Ads/LinkedIn/Encharge/ManyChat → persist `purchase_log` + `purchase_items`. |
 | `webhook/_utils.js` | `timingSafeEqual` + `guardSlug` helpers shared by adapters. |
 | `webhook/pipedrive/[slug].js` | Pipedrive adapter. Gates on `PIPEDRIVE_WEBHOOK_SLUG`. On deal-won, fetches contact email via Pipedrive Persons API, recovers session from D1 by email, fans out to Meta CAPI + Google Ads. |
+| `webhook/brevo/[slug].js` | Brevo adapter. Gates on `BREVO_WEBHOOK_SLUG`. Turns opened/click/unsubscribed/hard_bounce/soft_bounce events into `lead_score` points, keyed by `external_id` (falls back to email → `event_log` → `sessions` lookup, same pattern as the Pipedrive adapter). |
 | `api/revenue.js` | Dashboard: gross revenue, sales, AOV, daily time series from `purchase_log`. |
 | `api/products.js` | Dashboard: per-product breakdown + time series from `purchase_items`. |
 | `api/utm-breakdown.js` | Dashboard: tabbed UTM drill-down from `purchase_log` with cascading filters. |

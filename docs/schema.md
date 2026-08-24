@@ -206,6 +206,38 @@ by the dashboard's "last synced at" indicator.
 
 **Index**: `idx_sync_log_platform_run_at` on `(platform, run_at DESC)`.
 
+## `lead_score`
+
+One row per `external_id` (not per session — a lead spans many sessions/
+devices over time; `external_id` is the identity that survives across them,
+recovered via the `leadid` loop in `functions/_middleware.js` when a lead
+opens/clicks an email on a device with no existing cookie — see "Hop 7" in
+`docs/data-flow.md`). Written by `functions/webhook/brevo/[slug].js` on
+`opened` / `click` / `unsubscribed` / `hard_bounce` / `soft_bounce` events
+from the Brevo webhook.
+
+| Column | Type | Purpose |
+|---|---|---|
+| `external_id` | TEXT PK | Matches `sessions.external_id` / the Brevo `EXTERNAL_ID` contact attribute |
+| `score` | INTEGER | Clamped at 0 minimum — see `POINTS_BY_EVENT` in the webhook adapter for point values |
+| `funnel_stage` | TEXT | `''` \| `'topo'` \| `'meio'` \| `'fundo'` — populated starting in the content-weighting phase; empty until then |
+| `last_event_type` | TEXT | Most recent scored event: `opened` / `click` / `unsubscribed` / `hard_bounce` / `soft_bounce` |
+| `last_event_at` | INTEGER | Unix seconds of `last_event_type` |
+| `hot_alert_sent_at` | INTEGER | Nullable — set when a reincidência alert fires, to avoid re-alerting on the same lead (later phase) |
+| `created_at` | INTEGER | Unix seconds, first scored event |
+| `updated_at` | INTEGER | Unix seconds, most recent scored event |
+
+**Index**: `idx_lead_score_updated_at` on `updated_at`.
+
+**Identity resolution**: the webhook prefers `EXTERNAL_ID` if the recipient
+configured Brevo to include that contact attribute in the webhook payload;
+otherwise it falls back to `email → event_log.raw_email → sessions` — the
+same lookup `functions/webhook/pipedrive/[slug].js` uses for won-deal
+enrichment, taking the earliest session on record for that address. An
+event for an unresolvable identity is acknowledged and skipped, not an
+error — Brevo may report engagement for contacts that predate this
+integration.
+
 ## Things NOT in the schema (deliberate)
 
 - **No `leads` table.** Lead events live in `event_log` and are joined to
