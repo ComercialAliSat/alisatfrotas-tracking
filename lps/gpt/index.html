@@ -61,10 +61,10 @@
 
     .btn-submit {
       display: block; width: 100%;
-      background: var(--green); color: #fff;
-      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 15px;
+      background: var(--green); color: var(--navy);
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 15px; text-transform: uppercase;
       border: none; border-radius: 10px;
-      padding: 15px; text-align: center; letter-spacing: 0.02em;
+      padding: 15px; text-align: center; letter-spacing: 0.04em;
       cursor: pointer; transition: background .25s;
     }
     .btn-submit:hover { background: #178f5a; }
@@ -94,6 +94,7 @@
 
   <!-- HERO -->
   <section style="background:linear-gradient(160deg, #0A4178 0%, #033566 60%, #022649 100%), url('assets/asset-031.png');background-size:cover, cover;background-blend-mode:overlay;position:relative;padding:44px 32px 140px;overflow:hidden;">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);background-size:64px 64px;pointer-events:none;"></div>
     <div style="position:absolute;inset:0;background:radial-gradient(700px 420px at 82% 12%, rgba(0,136,224,0.28), transparent 60%);pointer-events:none;"></div>
     <img src="assets/asset-009.png" alt="" style="position:absolute;bottom:0;left:0;width:100%;height:auto;opacity:0.5;pointer-events:none;">
     <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;">
@@ -102,11 +103,13 @@
 
       <div class="lp-hero-imgs" style="margin-top:48px;width:100%;max-width:980px;position:relative;display:flex;align-items:center;justify-content:center;">
         <img src="assets/asset-015.png" alt="Câmera interna Ali Sat" style="width:190px;height:190px;object-fit:contain;flex-shrink:0;margin-right:-40px;z-index:1;filter:drop-shadow(0 20px 40px rgba(0,0,0,0.4));">
-        <div style="flex-shrink:0;width:600px;max-width:64vw;aspect-ratio:16/9;border-radius:18px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,0.45);position:relative;z-index:2;background:#0A4178;">
-          <img src="assets/asset-021.png" alt="Vídeo de rodovia" style="width:100%;height:100%;object-fit:cover;">
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
-            <div style="width:64px;height:64px;border-radius:999px;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="#033566"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <div style="flex-shrink:0;width:632px;max-width:66vw;aspect-ratio:16/9;padding:9px;border-radius:22px;background:linear-gradient(160deg,#3a5f8a,#1c3f68);box-shadow:0 30px 70px rgba(0,0,0,0.45);position:relative;z-index:2;">
+          <div style="width:100%;height:100%;border-radius:15px;overflow:hidden;position:relative;background:#0A4178;">
+            <img src="assets/hero-video.png" alt="Vídeo de rodovia" style="width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+              <div style="width:64px;height:64px;border-radius:999px;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="#033566"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </div>
             </div>
           </div>
         </div>
@@ -285,13 +288,13 @@
   <section style="padding:56px 32px;background:#fff;">
     <div style="max-width:1200px;margin:0 auto;">
       <p style="text-align:center;font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#98A1AB;margin:0 0 32px;">Empresas que confiam na Ali Sat</p>
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:32px;">
-        <span style="font-size:22px;font-weight:700;color:#98A1AB;">Agilog</span>
-        <span style="font-size:20px;font-weight:700;color:#98A1AB;">ASUN <span style="font-size:10px;display:block;letter-spacing:0.1em;">SUPERMERCADOS</span></span>
-        <span style="font-size:24px;font-weight:800;color:#98A1AB;font-style:italic;">FG <span style="font-size:13px;font-weight:400;font-style:normal;">express</span></span>
-        <span style="font-size:24px;font-weight:800;color:#98A1AB;letter-spacing:-0.02em;">MICE <span style="font-size:10px;font-weight:400;letter-spacing:0.06em;display:block;">TRANSPORTES</span></span>
-        <span style="font-size:20px;font-weight:700;color:#98A1AB;font-family:Georgia,serif;">Casa Maria</span>
-        <span style="font-size:22px;font-weight:700;color:#98A1AB;">COESUL</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:32px 40px;">
+        <img src="assets/logo-agilog.png" alt="Agilog" style="height:32px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/logo-asun.png" alt="ASUN Supermercados" style="height:44px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/logo-fg.png" alt="FG Express" style="height:38px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/logo-mice.png" alt="Mice Transportes" style="height:34px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/logo-casamaria.png" alt="Casa Maria" style="height:42px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/logo-coesul.png" alt="Coesul" style="height:30px;width:auto;filter:grayscale(1);opacity:0.65;">
       </div>
     </div>
   </section>
@@ -337,11 +340,12 @@
             <div style="margin-bottom:16px;">
               <label class="lgpd-label">
                 <input type="checkbox" id="g-lgpd" class="lgpd-check" required>
-                <span>Concordo em fornecer meus dados. Seus dados estão seguros e não serão compartilhados.</span>
+                <span>Concordo em fornecer meus dados.</span>
               </label>
             </div>
 
-            <button type="button" id="g-submit" class="btn-submit" onclick="gptSubmit()" aria-label="Enviar dados">Enviar</button>
+            <button type="button" id="g-submit" class="btn-submit" onclick="gptSubmit()" aria-label="Enviar dados">ENVIAR</button>
+            <p style="font-size:12px;color:#98A1AB;margin:10px 0 0;text-align:center;">Seus dados estão seguros e não serão compartilhados.</p>
           </form>
         </div>
       </div>
@@ -349,18 +353,18 @@
   </section>
 
   <!-- FOOTER -->
-  <footer style="background:#022649;padding:40px 32px;">
-    <div style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
+  <footer style="background:#022649;padding:32px 32px 0;">
+    <div style="max-width:1200px;margin:0 auto;border-top:1px solid rgba(255,255,255,0.18);padding:28px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
       <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
         <img src="assets/asset-004.png" alt="Ali Sat" style="height:34px;">
         <div style="color:rgba(255,255,255,0.55);font-size:12.5px;line-height:1.6;">
-          Ali Sat Rastreamento e Monitoramento LTDA · 29.989.683/0001-33<br>© Copyright 2026 · Todos os direitos reservados. | <a href="/politica-de-privacidade" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Política de Privacidade</a>
+          Ali Sat Rastreamento e Monitoramento LTDA - 29.989.683/0001-33<br>© Copyright 2026 - Todos os direitos reservados. | <a href="/politica-de-privacidade" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Política de Privacidade</a>
         </div>
       </div>
-      <div style="display:flex;gap:14px;">
-        <a href="#" style="width:36px;height:36px;border-radius:999px;border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg></a>
-        <a href="#" style="width:36px;height:36px;border-radius:999px;border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        <a href="#" style="width:36px;height:36px;border-radius:999px;border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path><path d="m10 15 5-3-5-3z"></path></svg></a>
+      <div style="display:flex;gap:10px;">
+        <a href="#" style="width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#022649" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg></a>
+        <a href="#" style="width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#022649" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+        <a href="#" style="width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#022649" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path><path d="m10 15 5-3-5-3z"></path></svg></a>
       </div>
     </div>
   </footer>
