@@ -12,7 +12,7 @@
   <meta property="og:description" content="Câmeras com inteligência artificial embarcada detectam fadiga, distração e sinistros em tempo real, com provas em vídeo e redução de custos.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://comercial.alisat.com.br/lps/gpt">
-  <meta property="og:image" content="https://comercial.alisat.com.br/lps/gpt/assets/asset-011.png">
+  <meta property="og:image" content="https://comercial.alisat.com.br/lps/gpt/assets/panel-monitoramento.png">
 
   <script type="application/ld+json">
   {
@@ -35,14 +35,14 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; font-size: 16px; }
     body { font-family: 'Poppins', sans-serif; color: #033566; background: #fff; overflow-x: hidden; }
-    a { text-decoration: none; color: inherit; }
+    a { color: #0088E0; text-decoration: none; }
+    a:hover { color: #006FB8; text-decoration: underline; }
     img { max-width: 100%; height: auto; display: block; }
 
     :root {
       --navy: #033566;
       --blue: #0088E0;
       --green: #1FA86A;
-      --green-2: #3ECB86;
       --form-bg: #ffffff;
       --border: #E0E4E8;
     }
@@ -80,51 +80,53 @@
     @media (max-width: 900px) {
       .lp-two-col { grid-template-columns: 1fr !important; }
       .lp-hero-imgs { flex-direction: column !important; }
-      .lp-hero-imgs img { margin: 0 !important; }
+      .lp-hero-imgs img { position: static !important; margin: 0 !important; left: auto !important; top: auto !important; }
       .lp-three-col { grid-template-columns: 1fr !important; }
       .lp-four-col { grid-template-columns: 1fr 1fr !important; }
-      .lp-result-row { grid-template-columns: 1fr !important; }
-      .lp-result-row img { min-height: 220px !important; }
+      .lp-result-row { grid-template-columns: 1fr !important; width: 100% !important; height: auto !important; }
+      .lp-result-row img { min-height: 220px !important; width: 100% !important; height: 220px !important; }
+      .lp-result-row > div { width: 100% !important; height: auto !important; margin: 0 !important; left: 0 !important; top: 0 !important; }
     }
   </style>
 </head>
 <body>
 
-<div style="background:#ffffff;color:#033566;overflow:hidden;">
+<div style="background: #ffffff; color: #033566; overflow-x: hidden">
 
   <!-- HERO -->
-  <section style="background:linear-gradient(160deg, #0A4178 0%, #033566 60%, #022649 100%), url('assets/asset-031.png');background-size:cover, cover;background-blend-mode:overlay;position:relative;padding:44px 32px 140px;overflow:hidden;">
-    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);background-size:64px 64px;pointer-events:none;"></div>
+  <section style="background:url('assets/hero-bg.png');background-size:cover;background-position:center;position:relative;padding:44px 32px 140px;overflow:hidden;">
     <div style="position:absolute;inset:0;background:radial-gradient(700px 420px at 82% 12%, rgba(0,136,224,0.28), transparent 60%);pointer-events:none;"></div>
-    <img src="assets/asset-009.png" alt="" style="position:absolute;bottom:0;left:0;width:100%;height:auto;opacity:0.5;pointer-events:none;">
     <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;">
-      <img src="assets/asset-004.png" alt="Ali Sat" style="height:98px;margin-bottom:36px;width:223px;">
+      <img src="assets/logo-white.png" alt="Ali Sat" style="height: 95px; margin-bottom: 32px; width: 179px">
       <h1 style="font-size:44px;font-weight:700;line-height:1.18;letter-spacing:-0.01em;color:#fff;max-width:900px;margin:0;">O que você não pode ver, a <span style="background:linear-gradient(120deg,#1E9CE6,#7AC6F2);color:#022649;padding:0 6px;border-radius:4px;">videotelemetria</span> registra, entende e alerta em tempo real.</h1>
 
-      <div class="lp-hero-imgs" style="margin-top:48px;width:100%;max-width:980px;position:relative;display:flex;align-items:center;justify-content:center;">
-        <img src="assets/asset-015.png" alt="Câmera interna Ali Sat" style="width:190px;height:190px;object-fit:contain;flex-shrink:0;margin-right:-40px;z-index:1;filter:drop-shadow(0 20px 40px rgba(0,0,0,0.4));">
-        <div style="flex-shrink:0;width:632px;max-width:66vw;aspect-ratio:16/9;padding:9px;border-radius:22px;background:linear-gradient(160deg,#3a5f8a,#1c3f68);box-shadow:0 30px 70px rgba(0,0,0,0.45);position:relative;z-index:2;">
-          <div style="width:100%;height:100%;border-radius:15px;overflow:hidden;position:relative;background:#0A4178;">
-            <img src="assets/hero-video.png" alt="Vídeo de rodovia" style="width:100%;height:100%;object-fit:cover;">
-            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
-              <div style="width:64px;height:64px;border-radius:999px;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="#033566"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      <div class="lp-hero-imgs" style="margin-top:44px;width:100%;max-width:1040px;position:relative;display:flex;align-items:center;justify-content:center;">
+        <img src="assets/product-camera-dome.png" alt="Câmera interna Ali Sat" style="height: 180px; width: 180px; object-fit: cover; flex-shrink: 0; margin-right: -36px; z-index: 80; position: relative; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4)); left: 90px; top: 50px">
+        <div style="flex-shrink: 0; width: 600px; max-width:60vw; position:relative; margin-left: 25px; margin-right: 25px;">
+          <div style="width: 100%; aspect-ratio: 16/9; padding: 9px; border-radius: 18px; box-shadow: 30px 30px 80px 0px #00000096; position: relative; z-index: 2; background: linear-gradient(160deg,#3a5f8a,#1c3f68); margin-top: 80px; top: -80px; left: 50px;">
+            <div style="width:100%;height:100%;border-radius:12px;overflow:hidden;position:relative;background:#0A4178;">
+              <img src="assets/hero-video.png" alt="Vídeo de rodovia" style="width:100%;height:100%;object-fit:cover;">
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+                <div style="width:64px;height:64px;border-radius:999px;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="#033566"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <img src="assets/asset-019.png" alt="Câmera de frota Ali Sat" style="width:210px;height:230px;object-fit:contain;flex-shrink:0;margin-left:-40px;z-index:1;filter:drop-shadow(0 20px 40px rgba(0,0,0,0.4));">
+        <img src="assets/product-dashcam-front.png" alt="Câmera de frota Ali Sat" style="width: 301px; height: 381px; object-fit: cover; flex-shrink: 0; margin-left: -36px; z-index: 50; position: relative; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4)); left: -80px; top: -50px">
       </div>
 
-      <a href="#form-anchor" onclick="push({event:'CTA_Click',cta_text:'scroll-indicator',section:'hero'})" style="margin-top:40px;width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;">
+      <a href="#form-anchor" onclick="push({event:'CTA_Click',cta_text:'scroll-indicator',section:'hero'})" style="margin-top:8px;width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
       </a>
     </div>
   </section>
 
   <!-- RISK / MONITORING -->
-  <section style="padding:96px 32px;background:#fff;">
-    <div class="lp-two-col" style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+  <section style="padding:96px 32px;background:#fff;position:relative;overflow:hidden;">
+    <img src="assets/light-streak.png" alt="" style="position:absolute;top:0;left:50%;transform:translate(-50%,-50%);width:120%;max-width:1600px;pointer-events:none;z-index:0;">
+    <div class="lp-two-col" style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;position:relative;z-index:1;">
       <div>
         <h2 style="font-size:32px;font-weight:700;line-height:1.28;letter-spacing:-0.01em;margin:0;">
           <span style="color:#0088E0;">Uma frota gera risco em todo trajeto:</span> fadiga, distração, sinistros e fraude.
@@ -132,39 +134,36 @@
         <p style="font-size:18px;line-height:1.6;color:#4A5662;margin:28px 0 0;">Entenda como <strong style="color:#033566;">câmeras com inteligência artificial embarcada</strong> transformam cada viagem em dado e cada dado em decisão.</p>
       </div>
       <div style="position:relative;">
-        <img src="assets/asset-017.png" alt="" style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:140%;max-width:520px;pointer-events:none;opacity:0.9;">
-        <img src="assets/asset-011.png" alt="Painel de monitoramento ativo" style="width:100%;position:relative;z-index:1;border-radius:20px;">
+        <img src="assets/panel-monitoramento.png" alt="Painel de monitoramento ativo" style="width:100%;max-width:670px;position:relative;z-index:1;">
       </div>
     </div>
-    <div style="max-width:1200px;margin:56px auto 0;border:1px solid #E0E4E8;border-radius:999px;padding:20px 40px;display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px;">
-      <div style="display:flex;align-items:center;gap:10px;"><img src="assets/asset-002.png" alt="" style="width:20px;height:20px;"><span style="font-weight:600;font-size:15px;color:#033566;">Visão em tempo real</span></div>
-      <div style="display:flex;align-items:center;gap:10px;"><img src="assets/asset-002.png" alt="" style="width:20px;height:20px;"><span style="font-weight:600;font-size:15px;color:#033566;">Provas visuais jurídicas</span></div>
-      <div style="display:flex;align-items:center;gap:10px;"><img src="assets/asset-002.png" alt="" style="width:20px;height:20px;"><span style="font-weight:600;font-size:15px;color:#033566;">Controle de qualquer lugar</span></div>
+    <div style="max-width:1200px;margin:56px auto 0;border:1px solid #E0E4E8;border-radius:999px;padding:20px 40px;display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px;position:relative;z-index:1;">
+      <div style="display:flex;align-items:center;gap:10px;"><img src="assets/icon-check-circle.png" alt="" style="width:20px;height:20px;"><span style="font-weight:600;font-size:15px;color:#033566;">Visão em tempo real</span></div>
+      <div style="display:flex;align-items:center;gap:10px;"><img src="assets/icon-check-circle.png" alt="" style="width:20px;height:20px;"><span style="font-weight:600;font-size:15px;color:#033566;">Provas visuais jurídicas</span></div>
+      <div style="display:flex;align-items:center;gap:10px;"><img src="assets/icon-check-circle.png" alt="" style="width:20px;height:20px;"><span style="font-weight:600;font-size:15px;color:#033566;">Controle de qualquer lugar</span></div>
     </div>
   </section>
 
   <!-- THREE FRONTS -->
-  <section style="padding:96px 32px;background:linear-gradient(160deg, #0A4178 0%, #033566 60%, #022649 100%);">
-    <div style="max-width:1200px;margin:0 auto;text-align:center;">
+  <section style="padding:96px 32px;background:linear-gradient(160deg, #0A4178 0%, #033566 60%, #022649 100%);position:relative;overflow:hidden;">
+    <img src="assets/light-streak.png" alt="" style="position:absolute;top:0;left:50%;transform:translate(-50%,-50%);width:120%;max-width:1600px;pointer-events:none;z-index:0;">
+    <div style="max-width:1200px;margin:0 auto;text-align:center;position:relative;z-index:1;">
       <span style="display:inline-block;border:1px solid rgba(255,255,255,0.35);color:#fff;font-size:14px;padding:8px 20px;border-radius:999px;margin-bottom:24px;">O risco por trás de cada viagem</span>
-      <h2 style="font-size:34px;font-weight:700;line-height:1.28;color:#fff;margin:0 auto;max-width:820px;">Três frentes de exposição que toda empresa enfrenta, mesmo com veículos em dia</h2>
+      <h2 style="font-size:34px;font-weight:700;line-height:1.28;color:#fff;margin:0 auto;max-width:820px;">Três <span style="background:linear-gradient(120deg,#1E9CE6,#7AC6F2);color:#022649;padding:0 6px;border-radius:4px;">frentes de exposição</span> que toda empresa enfrenta, mesmo com veículos em dia</h2>
       <p style="font-size:17px;line-height:1.6;color:rgba(255,255,255,0.75);max-width:760px;margin:22px auto 0;">Nenhuma delas depende do estado do caminhão. Elas dependem de comportamento, de contexto e da velocidade com que a operação consegue enxergar o que está acontecendo na estrada.</p>
 
       <div class="lp-three-col" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px;text-align:left;">
-        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:28px;">
-          <img src="assets/asset-010.png" alt="" style="width:28px;height:28px;">
-          <h3 style="color:#fff;font-size:19px;font-weight:600;margin:16px 0 10px;">Sinistros sem versão clara dos fatos</h3>
-          <p style="color:rgba(255,255,255,0.68);font-size:14.5px;line-height:1.6;margin:0;">Sem imagem do momento do evento, apurar responsabilidade em um acidente ou incidente vira palavra contra palavra e isso encarece seguro, processos e negociação com terceiros.</p>
+        <div style="background:linear-gradient(160deg, rgba(255,255,255,0.22), rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.16);border-radius:18px;padding:26px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;"><img src="assets/icon-warning-triangle.png" alt="" style="width:43px;height:39px;flex-shrink:0;"><h3 style="color:#fff;font-size:18px;font-weight:700;margin:0;line-height:1.25;">Sinistros sem versão clara dos fatos</h3></div>
+          <p style="color:rgba(255,255,255,0.7);font-size:14.5px;line-height:1.6;margin:0;">Sem imagem do momento do evento, apurar responsabilidade em um acidente ou incidente vira palavra contra palavra e isso encarece seguro, processos e negociação com terceiros.</p>
         </div>
-        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:28px;">
-          <img src="assets/asset-014.png" alt="" style="width:28px;height:28px;">
-          <h3 style="color:#fff;font-size:19px;font-weight:600;margin:16px 0 10px;">Fadiga e distração não avisam antes</h3>
-          <p style="color:rgba(255,255,255,0.68);font-size:14.5px;line-height:1.6;margin:0;">Microssonos, celular ao volante e desatenção são as causas mais recorrentes de acidentes rodoviários e, sem visão, só viram estatística depois que já aconteceram.</p>
+        <div style="background:linear-gradient(160deg, rgba(255,255,255,0.22), rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.16);border-radius:18px;padding:26px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;"><img src="assets/icon-car-warning.png" alt="" style="width:47px;height:48px;flex-shrink:0;"><h3 style="color:#fff;font-size:18px;font-weight:700;margin:0;line-height:1.25;">Fadiga e distração não avisam antes</h3></div>
+          <p style="color:rgba(255,255,255,0.7);font-size:14.5px;line-height:1.6;margin:0;">Microssonos, celular ao volante e desatenção são as causas mais recorrentes de acidentes rodoviários e, sem visão, só viram estatística depois que já aconteceram.</p>
         </div>
-        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:28px;">
-          <img src="assets/asset-001.png" alt="" style="width:28px;height:28px;">
-          <h3 style="color:#fff;font-size:19px;font-weight:600;margin:16px 0 10px;">Custo invisível na operação</h3>
-          <p style="color:rgba(255,255,255,0.68);font-size:14.5px;line-height:1.6;margin:0;">Combustível, manutenção e franquias de seguro sobem quando a gestão não tem dado real de condução, cada real gasto sem visibilidade é uma decisão tomada no escuro.</p>
+        <div style="background:linear-gradient(160deg, rgba(255,255,255,0.22), rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.16);border-radius:18px;padding:26px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;"><img src="assets/icon-money-bag.png" alt="" style="width:44px;height:42px;flex-shrink:0;"><h3 style="color:#fff;font-size:18px;font-weight:700;margin:0;line-height:1.25;">Custo invisível na operação</h3></div>
+          <p style="color:rgba(255,255,255,0.7);font-size:14.5px;line-height:1.6;margin:0;">Combustível, manutenção e franquias de seguro sobem quando a gestão não tem dado real de condução, cada real gasto sem visibilidade é uma decisão tomada no escuro.</p>
         </div>
       </div>
     </div>
@@ -177,7 +176,7 @@
       <div class="lp-four-col" style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
         <div style="display:flex;flex-direction:column;align-items:center;">
           <div style="width:100%;display:flex;align-items:center;">
-            <img src="assets/asset-007.png" alt="1" style="width:40px;height:40px;flex-shrink:0;">
+            <img src="assets/icon-num-1.png" alt="1" style="width:40px;height:40px;flex-shrink:0;">
             <div style="flex:1;height:2px;background:repeating-linear-gradient(to right,#1FA86A 0,#1FA86A 6px,transparent 6px,transparent 12px);"></div>
           </div>
           <div style="border:1.5px solid #0088E0;border-radius:16px;padding:22px 18px;margin-top:24px;text-align:center;min-height:200px;">
@@ -187,7 +186,7 @@
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;">
           <div style="width:100%;display:flex;align-items:center;">
-            <img src="assets/asset-003.png" alt="2" style="width:40px;height:40px;flex-shrink:0;">
+            <img src="assets/icon-num-2.png" alt="2" style="width:40px;height:40px;flex-shrink:0;">
             <div style="flex:1;height:2px;background:repeating-linear-gradient(to right,#1FA86A 0,#1FA86A 6px,transparent 6px,transparent 12px);"></div>
           </div>
           <div style="border:1.5px solid #0088E0;border-radius:16px;padding:22px 18px;margin-top:24px;text-align:center;min-height:200px;">
@@ -197,7 +196,7 @@
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;">
           <div style="width:100%;display:flex;align-items:center;">
-            <img src="assets/asset-005.png" alt="3" style="width:40px;height:40px;flex-shrink:0;">
+            <img src="assets/icon-num-3.png" alt="3" style="width:40px;height:40px;flex-shrink:0;">
             <div style="flex:1;height:2px;background:repeating-linear-gradient(to right,#1FA86A 0,#1FA86A 6px,transparent 6px,transparent 12px);"></div>
           </div>
           <div style="border:1.5px solid #0088E0;border-radius:16px;padding:22px 18px;margin-top:24px;text-align:center;min-height:200px;">
@@ -207,7 +206,8 @@
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;">
           <div style="width:100%;display:flex;align-items:center;">
-            <img src="assets/asset-008.png" alt="4" style="width:40px;height:40px;flex-shrink:0;">
+            <div style="flex:1;height:2px;background:repeating-linear-gradient(to right,#1FA86A 0,#1FA86A 6px,transparent 6px,transparent 12px);"></div>
+            <img src="assets/icon-num-4.png" alt="4" style="width:40px;height:40px;flex-shrink:0;">
           </div>
           <div style="border:1.5px solid #0088E0;border-radius:16px;padding:22px 18px;margin-top:24px;text-align:center;min-height:200px;">
             <h3 style="color:#0088E0;font-size:17px;font-weight:700;margin:0 0 10px;">Evidência e gestão</h3>
@@ -219,17 +219,18 @@
   </section>
 
   <!-- THREE RESULTS -->
-  <section style="padding:96px 32px;background:linear-gradient(160deg, #0A4178 0%, #033566 60%, #022649 100%);">
-    <div style="max-width:1200px;margin:0 auto;">
+  <section style="padding:96px 32px;background:linear-gradient(160deg, #0A4178 0%, #033566 60%, #022649 100%);position:relative;overflow:hidden;">
+    <img src="assets/light-streak.png" alt="" style="position:absolute;top:0;left:50%;transform:translate(-50%,-50%);width:120%;max-width:1600px;pointer-events:none;z-index:0;">
+    <div style="max-width:1200px;margin:0 auto;position:relative;z-index:1;">
       <div style="text-align:center;">
         <span style="display:inline-block;border:1px solid rgba(255,255,255,0.35);color:#fff;font-size:14px;padding:8px 20px;border-radius:999px;margin-bottom:24px;">O que a videotelemetria entrega, na prática</span>
-        <h2 style="font-size:34px;font-weight:700;line-height:1.28;color:#fff;margin:0 auto;max-width:760px;">Três resultados que se conectam, não três ferramentas separadas</h2>
+        <h2 style="font-size:34px;font-weight:700;line-height:1.28;color:#fff;margin:0 auto;max-width:760px;"><span style="background:linear-gradient(120deg,#1E9CE6,#7AC6F2);color:#022649;padding:0 6px;border-radius:4px;">Três resultados que se conectam,</span> não três ferramentas separadas</h2>
         <p style="font-size:17px;line-height:1.6;color:rgba(255,255,255,0.75);max-width:760px;margin:22px auto 0;">Provas em vídeo, redução de custos e prevenção de acidentes não são módulos isolados: são consequência direta do mesmo sistema de captura e inteligência artificial atuando junto.</p>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:24px;margin-top:56px;">
-        <div class="lp-result-row" style="display:grid;grid-template-columns:340px 1fr;gap:0;background:linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));border:1px solid rgba(255,255,255,0.14);border-radius:18px;overflow:hidden;align-items:stretch;">
-          <img src="assets/asset-021.png" alt="Rodovia — visão frontal" style="width:100%;height:100%;min-height:200px;object-fit:cover;">
+        <div class="lp-result-row" style="display:grid;grid-template-columns:340px 1fr;gap:0;background:linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));border:1px solid rgba(255,255,255,0.16);border-radius:18px;overflow:hidden;align-items:stretch;">
+          <img src="assets/footage-highway-car.png" alt="Rodovia — visão frontal" style="width:100%;height:100%;min-height:200px;object-fit:cover;">
           <div style="padding:28px 32px;display:flex;flex-direction:column;justify-content:center;">
             <h3 style="color:#3ECB86;font-size:19px;font-weight:700;margin:0 0 14px;">Provas em vídeo para sua frota</h3>
             <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;">
@@ -241,7 +242,7 @@
           </div>
         </div>
 
-        <div class="lp-result-row" style="display:grid;grid-template-columns:1fr 340px;gap:0;background:linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));border:1px solid rgba(255,255,255,0.14);border-radius:18px;overflow:hidden;align-items:stretch;">
+        <div class="lp-result-row" style="display:grid;grid-template-columns:1fr 340px;gap:0;background:linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));border:1px solid rgba(255,255,255,0.16);border-radius:18px;overflow:hidden;align-items:stretch;">
           <div style="padding:28px 32px;display:flex;flex-direction:column;justify-content:center;">
             <h3 style="color:#3ECB86;font-size:19px;font-weight:700;margin:0 0 14px;">Redução de custos da frota</h3>
             <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;">
@@ -251,11 +252,11 @@
               <li style="color:rgba(255,255,255,0.85);font-size:14.5px;">• Decisão de investimento em frota baseada em dados</li>
             </ul>
           </div>
-          <img src="assets/asset-020.png" alt="Rodovia — motociclista" style="width:100%;height:100%;min-height:200px;object-fit:cover;">
+          <img src="assets/footage-highway-moto.png" alt="Rodovia — motociclista" style="width:100%;height:100%;min-height:200px;object-fit:cover;">
         </div>
 
-        <div class="lp-result-row" style="display:grid;grid-template-columns:340px 1fr;gap:0;background:linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));border:1px solid rgba(255,255,255,0.14);border-radius:18px;overflow:hidden;align-items:stretch;">
-          <img src="assets/asset-018.png" alt="Cabine — motorista" style="width:100%;height:100%;min-height:200px;object-fit:cover;">
+        <div class="lp-result-row" style="display:grid;grid-template-columns:340px 1fr;gap:0;background:linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));border:1px solid rgba(255,255,255,0.16);border-radius:18px;overflow:hidden;align-items:stretch;">
+          <img src="assets/footage-cabin-driver.png" alt="Cabine — motorista" style="width:100%;height:100%;min-height:200px;object-fit:cover;">
           <div style="padding:28px 32px;display:flex;flex-direction:column;justify-content:center;">
             <h3 style="color:#3ECB86;font-size:19px;font-weight:700;margin:0 0 14px;">Redução de acidentes com IA</h3>
             <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;">
@@ -270,45 +271,46 @@
 
       <!-- SYSTEM -->
       <div style="margin-top:96px;text-align:center;">
-        <h2 style="font-size:32px;font-weight:700;line-height:1.28;color:#fff;margin:0 auto;max-width:760px;">Um sistema pensado para gestão de risco, com transparência para quem dirige</h2>
+        <h2 style="font-size:32px;font-weight:700;line-height:1.28;color:#fff;margin:0 auto;max-width:760px;">Um <span style="background:linear-gradient(120deg,#1E9CE6,#7AC6F2);color:#022649;padding:0 6px;border-radius:4px;">sistema pensado para gestão de risco,</span> com transparência para quem dirige</h2>
       </div>
       <div class="lp-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-top:48px;">
-        <img src="assets/asset-022.png" alt="Câmeras e dispositivo embarcado" style="width:100%;height:320px;object-fit:contain;filter:drop-shadow(0 12px 30px rgba(0,0,0,0.3));">
-        <div style="border:1px solid rgba(255,255,255,0.25);border-radius:18px;padding:32px;display:flex;flex-direction:column;gap:22px;">
-          <div style="display:flex;align-items:center;gap:14px;"><img src="assets/asset-012.png" alt="" style="width:24px;height:24px;"><span style="color:#fff;font-size:17px;">Foco em segurança, não em punição</span></div>
-          <div style="display:flex;align-items:center;gap:14px;"><img src="assets/asset-016.png" alt="" style="width:24px;height:24px;"><span style="color:#fff;font-size:17px;">Integração com a rotina de gestão</span></div>
-          <div style="display:flex;align-items:center;gap:14px;"><img src="assets/asset-006.png" alt="" style="width:24px;height:24px;"><span style="color:#fff;font-size:17px;">Suporte a compliance e seguro</span></div>
-          <div style="display:flex;align-items:center;gap:14px;"><img src="assets/asset-013.png" alt="" style="width:24px;height:24px;"><span style="color:#fff;font-size:17px;">Visão consolidada por frota</span></div>
+        <img src="assets/product-camera-set.png" alt="Câmeras e dispositivo embarcado" style="width:100%;max-width:464px;height:auto;object-fit:contain;filter:drop-shadow(0 12px 30px rgba(0,0,0,0.3));margin:0 auto;">
+        <div style="border:1px solid rgba(255,255,255,0.25);border-radius:18px;padding:32px;display:flex;flex-direction:column;gap:22px;position:relative;overflow:hidden;">
+          <div style="display:flex;align-items:center;gap:14px;"><img src="assets/icon-shield-check.png" alt="" style="width:24px;height:24px;"><span style="color:#fff;font-size:17px;">Foco em segurança, não em punição</span></div>
+          <div style="display:flex;align-items:center;gap:14px;"><img src="assets/icon-gear-cycle.png" alt="" style="width:24px;height:24px;"><span style="color:#fff;font-size:17px;">Integração com a rotina de gestão</span></div>
+          <div style="display:flex;align-items:center;gap:14px;"><img src="assets/icon-doc-check.png" alt="" style="width:24px;height:24px;"><span style="color:#fff;font-size:17px;">Suporte a compliance e seguro</span></div>
+          <div style="display:flex;align-items:center;gap:14px;"><img src="assets/icon-eye.png" alt="" style="width:24px;height:24px;"><span style="color:#fff;font-size:17px;">Visão consolidada por frota</span></div>
+          <div style="position:absolute;bottom:0;left:10%;width:80%;height:2px;background:radial-gradient(ellipse 50% 100% at 50% 50%, rgba(122,198,242,0.9), transparent 80%);filter:blur(2px);"></div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- LOGOS -->
-  <section style="padding:56px 32px;background:#fff;">
+  <section style="padding:56px 32px;background:#F4F6F8;">
     <div style="max-width:1200px;margin:0 auto;">
       <p style="text-align:center;font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#98A1AB;margin:0 0 32px;">Empresas que confiam na Ali Sat</p>
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:32px 40px;">
-        <img src="assets/logo-agilog.png" alt="Agilog" style="height:32px;width:auto;filter:grayscale(1);opacity:0.65;">
-        <img src="assets/logo-asun.png" alt="ASUN Supermercados" style="height:44px;width:auto;filter:grayscale(1);opacity:0.65;">
-        <img src="assets/logo-fg.png" alt="FG Express" style="height:38px;width:auto;filter:grayscale(1);opacity:0.65;">
-        <img src="assets/logo-mice.png" alt="Mice Transportes" style="height:34px;width:auto;filter:grayscale(1);opacity:0.65;">
-        <img src="assets/logo-casamaria.png" alt="Casa Maria" style="height:42px;width:auto;filter:grayscale(1);opacity:0.65;">
-        <img src="assets/logo-coesul.png" alt="Coesul" style="height:30px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/client-agilog.png" alt="Agilog" style="height:32px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/client-asun.png" alt="ASUN Supermercados" style="height:44px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/client-fg.png" alt="FG Express" style="height:38px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/client-mice.png" alt="Mice Transportes" style="height:34px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/client-casamaria.png" alt="Casa Maria" style="height:42px;width:auto;filter:grayscale(1);opacity:0.65;">
+        <img src="assets/client-coesul.png" alt="Coesul" style="height:30px;width:auto;filter:grayscale(1);opacity:0.65;">
       </div>
     </div>
   </section>
 
   <!-- FINAL CTA -->
-  <section id="form-anchor" style="padding:96px 32px;background:linear-gradient(160deg, #0A4178 0%, #033566 60%, #022649 100%);">
-    <div class="lp-two-col" style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:64px;align-items:center;">
+  <section id="form-anchor" style="padding:96px 32px;background:linear-gradient(160deg, #0A4178 0%, #033566 60%, #022649 100%);position:relative;">
+    <div class="lp-two-col" style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:64px;align-items:center;position:relative;z-index:1;">
       <div>
         <span style="display:inline-block;border:1px solid rgba(255,255,255,0.35);color:#fff;font-size:14px;padding:8px 20px;border-radius:999px;margin-bottom:28px;">Próximo passo</span>
         <h2 style="font-size:38px;font-weight:700;line-height:1.22;color:#fff;margin:0;">Veja a videotelemetria <span style="background:linear-gradient(120deg,#1E9CE6,#7AC6F2);color:#022649;padding:0 6px;border-radius:4px;">aplicada à sua frota.</span></h2>
         <p style="font-size:17px;line-height:1.6;color:rgba(255,255,255,0.78);margin:28px 0 0;max-width:480px;">Um especialista Ali Sat analisa o perfil da sua operação, número de veículos, rotas e principais riscos e mostra como o sistema se aplicaria na prática, sem compromisso.</p>
       </div>
 
-      <div id="gpt-form-wrap" class="form-wrap" style="background:var(--form-bg);border-radius:18px;padding:32px;box-shadow:0 30px 70px rgba(0,0,0,0.3);">
+      <div id="gpt-form-wrap" class="form-wrap" style="background:var(--form-bg);border-radius:5px;padding:32px;box-shadow:0 30px 70px rgba(0,0,0,0.3);">
 
         <!-- Thank you -->
         <div class="ty" style="flex-direction:column;align-items:center;justify-content:center;padding:24px 8px;text-align:center;gap:14px;">
@@ -344,7 +346,7 @@
               </label>
             </div>
 
-            <button type="button" id="g-submit" class="btn-submit" onclick="gptSubmit()" aria-label="Enviar dados">ENVIAR</button>
+            <button type="button" id="g-submit" class="btn-submit" onclick="gptSubmit()" aria-label="Enviar dados">Enviar</button>
             <p style="font-size:12px;color:#98A1AB;margin:10px 0 0;text-align:center;">Seus dados estão seguros e não serão compartilhados.</p>
           </form>
         </div>
@@ -353,18 +355,18 @@
   </section>
 
   <!-- FOOTER -->
-  <footer style="background:#022649;padding:32px 32px 0;">
-    <div style="max-width:1200px;margin:0 auto;border-top:1px solid rgba(255,255,255,0.18);padding:28px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
+  <footer style="background:#022649;padding:40px 32px;">
+    <div style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
       <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
-        <img src="assets/asset-004.png" alt="Ali Sat" style="height:34px;">
+        <img src="assets/logo-white.png" alt="Ali Sat" style="height:60px;width:118px;">
         <div style="color:rgba(255,255,255,0.55);font-size:12.5px;line-height:1.6;">
-          Ali Sat Rastreamento e Monitoramento LTDA - 29.989.683/0001-33<br>© Copyright 2026 - Todos os direitos reservados. | <a href="/politica-de-privacidade" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Política de Privacidade</a>
+          Ali Sat Rastreamento e Monitoramento LTDA · 29.989.683/0001-33<br>© Copyright 2026 · Todos os direitos reservados. | <a href="/politica-de-privacidade" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Política de Privacidade</a>
         </div>
       </div>
-      <div style="display:flex;gap:10px;">
-        <a href="#" style="width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#022649" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg></a>
-        <a href="#" style="width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#022649" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        <a href="#" style="width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#022649" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path><path d="m10 15 5-3-5-3z"></path></svg></a>
+      <div style="display:flex;gap:14px;">
+        <a href="#" style="width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg></a>
+        <a href="#" style="width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+        <a href="#" style="width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path><path d="m10 15 5-3-5-3z"></path></svg></a>
       </div>
     </div>
   </footer>
