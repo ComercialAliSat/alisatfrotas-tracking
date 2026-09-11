@@ -73,7 +73,10 @@ One row per non-PageView event. Written by `functions/tracker.js` in
 | `raw_email` | TEXT | Unhashed, for dashboard display of lead list (added 0010) |
 
 **Indexes**: `idx_event_log_timestamp`, `idx_event_log_event_name`,
-`idx_event_log_browser`.
+`idx_event_log_browser`, `idx_event_log_event_id_unique` (unique, added
+0024 — makes ingestion idempotent against a client retry that resends the
+same event_id; mirrors the protection `purchase_log.transaction_id` already
+had via 0012).
 
 ## `checkout_sessions`
 
@@ -237,6 +240,62 @@ enrichment, taking the earliest session on record for that address. An
 event for an unresolvable identity is acknowledged and skipped, not an
 error — Brevo may report engagement for contacts that predate this
 integration.
+
+## `crm_deals`
+
+Added in migration 0023 (see `ARCHITECTURE_V2_PLAN.md` Fase 1). Bridges our
+identity (`external_id`) to the Pipedrive CRM (`person_id` / `deal_id`) so a
+contact who resubmits a Lead form never generates a duplicate Deal. One row
+per Deal **we** created or backfilled — never more than one open/won/lost
+Deal per person in this phase. Written by both
+`functions/outputs/pipedrive.js` (Lead-time creation/reuse/reopen) and
+`functions/webhook/pipedrive/[slug].js` (status-transition bookkeeping).
+
+| Column | Type | Purpose |
+|---|---|---|
+| `deal_id` | INTEGER PK | Pipedrive deal id — doubles as our `opportunity_id` |
+| `person_id` | INTEGER | Pipedrive person id |
+| `org_id` | INTEGER | Pipedrive organization id, when applicable |
+| `external_id` | TEXT | Our contact_id (`sessions.external_id`), stamped at Deal-creation time when known |
+| `status` | TEXT | `open` \| `won` \| `lost` |
+| `pipeline_id` / `stage_id` | INTEGER | Kept in sync on every webhook delivery, even non-lifecycle ones |
+| `value` / `currency` | REAL / TEXT | Internal bookkeeping only — **never** sent to Meta/Google Ads (see Pipedrive lifecycle note below) |
+| `lost_reason` | TEXT | From Pipedrive's `current.lost_reason`, when present |
+| `created_at` / `updated_at` | INTEGER | Unix seconds |
+| `won_at` / `lost_at` / `reopened_at` | INTEGER | Nullable, set on the matching transition. `won_at` is never cleared, even if the Deal is later reopened. |
+| `pipedrive_updated_at` | INTEGER | Added in migration 0025. Microseconds, from the webhook's `meta.timestamp_micro` (fallback: `meta.timestamp * 1_000_000`). Used to reject an out-of-order webhook delivery that describes an older change than one already applied — see "Pipedrive lifecycle" below and Hop 8 in `docs/data-flow.md`. NULL for rows never touched by a webhook (created via the Lead flow or backfilled from a plain API read). |
+
+**Indexes**: `idx_crm_deals_external_id`, `idx_crm_deals_person_id`,
+`idx_crm_deals_status` (`deal_id` is already indexed as the PK).
+
+**Deliberately not stored here**: email/phone (Pipedrive's own Person
+record is already the source of truth for those — `crm_deals` only needs to
+know *which* person/deal, not re-store contact fields).
+
+**Pipedrive lifecycle (Fase 1)**:
+- No Deal yet → create, insert `crm_deals` (`status='open'`).
+- Deal `open` → reuse it, add a note, no new Deal.
+- Deal `lost` → reopen the *same* Deal (moved to the first stage of
+  "Pré Vendas"), add a note, `status` back to `open`, `reopened_at` set.
+- Deal `won` → never reopened or duplicated; only a note is added. A Won
+  customer converting again may want a different product — creating a
+  *new* opportunity for existing customers is deliberately deferred to a
+  future phase with its own rule.
+- `updated.deal` webhook: only an `open → won` transition fires ad-platform
+  conversions (Meta CAPI + Google Ads `uploadClickConversions`), and only
+  the *occurrence* of a sale — `value`/`currency` are never included in
+  those payloads, even though the real value is stored in `crm_deals.value`
+  and `purchase_log.value` for internal reporting. `lost`, `lost → open`,
+  and `won → open` (a rep manually reopening a Won deal directly in
+  Pipedrive — `won_at` stays intact) update `crm_deals` only; nothing is
+  sent to ad platforms for those.
+- Every status transition is claimed with a conditional
+  `INSERT ... ON CONFLICT DO UPDATE ... WHERE status != 'X' AND (incoming
+  meta.timestamp_micro > crm_deals.pipedrive_updated_at OR the latter is
+  NULL)`. The status check alone protects against a *redelivered* webhook;
+  the timestamp check additionally protects against an *out-of-order*
+  delivery (an older change arriving after a newer one already moved the
+  status elsewhere) — see Hop 8 in `docs/data-flow.md`.
 
 ## Things NOT in the schema (deliberate)
 

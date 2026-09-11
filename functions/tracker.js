@@ -166,6 +166,7 @@ export async function onRequestPost(context) {
         utmSource: body.utm_source || '', utmMedium: body.utm_medium || '',
         utmCampaign: body.utm_campaign || '', utmContent: body.utm_content || '',
         utmTerm: body.utm_term || '',
+        externalId,
         env,
       }),
       sendToBrevo({

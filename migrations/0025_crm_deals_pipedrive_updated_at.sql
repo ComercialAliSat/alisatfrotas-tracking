@@ -1,0 +1,17 @@
+-- Out-of-order webhook protection.
+--
+-- Pipedrive's v1 webhook envelope carries a documented `meta` object with
+-- `meta.timestamp` (unix seconds, 10 digits) and `meta.timestamp_micro`
+-- (microseconds, 16 digits) — confirmed against the official docs at
+-- https://pipedrive.readme.io/docs/guide-for-webhooks. This is a real,
+-- documented field (not invented) that lets us detect when a webhook
+-- delivery describes an OLDER change than one we've already applied.
+--
+-- Stored in microseconds (matching meta.timestamp_micro's unit, with
+-- meta.timestamp * 1_000_000 as the fallback when only the coarser field is
+-- present) so two events within the same second still compare correctly.
+-- NULL for rows created before this migration, or backfilled from a plain
+-- Pipedrive API read (GET .../deals) rather than from a webhook delivery —
+-- see functions/webhook/pipedrive/[slug].js, which treats NULL as "no
+-- ordering information yet" and always allows the next delivery through.
+ALTER TABLE crm_deals ADD COLUMN pipedrive_updated_at INTEGER;

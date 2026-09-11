@@ -397,6 +397,150 @@ lead in the Jornada / lead-score tabs.
 
 ---
 
+## Hop 8 — Pipedrive Deal lifecycle → `crm_deals` → ad platforms
+
+**Trigger A (outbound)**: a `Lead` event on `/tracker` reaches
+`functions/outputs/pipedrive.js`.
+
+**Trigger B (inbound)**: Pipedrive POSTs `updated.deal` to
+`/webhook/pipedrive/<slug>` whenever a Deal's status, stage, or value
+changes.
+
+**What happens** (Trigger A — see `functions/outputs/pipedrive.js`):
+
+1. Resolve/create the Person (e-mail first — normalized with
+   `.trim().toLowerCase()` before both the search and the create call, so
+   `"JOAO@X.COM"` and `"joao@x.com"` resolve to the same Person — normalized
+   phone as fallback, never by name alone).
+2. If the Person was just created, skip straight to creating a Deal (a
+   brand-new Person cannot already have one).
+3. Otherwise, look up `crm_deals` by `person_id`. If no local row exists
+   (Deal predates this table, or was created manually), ask Pipedrive
+   directly (`GET persons/:id/deals`) and backfill `crm_deals` from
+   whatever is found, instead of assuming "no Deal".
+4. Branch on the resolved status:
+   - none → create Deal, insert `crm_deals` (`open`).
+   - `open` → add a note, no new Deal.
+   - `lost` → reopen the same Deal (`PUT /deals/:id`, moved to the first
+     stage of "Pré Vendas"), add a note, update `crm_deals`.
+   - `won` → add a note only; never reopened or duplicated.
+
+**What happens** (Trigger B — see `functions/webhook/pipedrive/[slug].js`):
+
+1. Guard the URL slug, parse `current`/`previous`/`meta` from the payload.
+   `meta.timestamp_micro` (fallback: `meta.timestamp * 1_000_000`) — a
+   documented field in Pipedrive's v1 webhook envelope, see
+   [pipedrive.readme.io/docs/guide-for-webhooks](https://pipedrive.readme.io/docs/guide-for-webhooks)
+   — is extracted once, up front, as `incomingTs`.
+2. `open → won`: claim the transition with a conditional upsert
+   (`ON CONFLICT DO UPDATE ... WHERE status != 'won' AND (incomingTs IS
+   NULL OR crm_deals.pipedrive_updated_at IS NULL OR incomingTs >
+   crm_deals.pipedrive_updated_at)`); if the claim affects 0 rows, this is
+   either a duplicate delivery OR an out-of-order one describing an older
+   change — either way, stop, nothing is sent twice or incorrectly.
+   Otherwise fetch the Person's e-mail, recover the originating `sessions`
+   row (same email → `event_log` → `sessions` join the old won-only
+   handler used), and fire Meta CAPI + Google Ads `uploadClickConversions`
+   — **without** `value`/`currency`. The real value is stored in
+   `crm_deals.value` and `purchase_log.value` only.
+3. `* → lost`: same conditional-claim pattern (status + timestamp),
+   `crm_deals` only — `lost_reason`/`lost_at` recorded, nothing sent to ad
+   platforms.
+4. `lost → open` **or** `won → open` inside Pipedrive directly (not via
+   Trigger A) — a rep reopening the Deal, including a previously-Won one:
+   bookkeeping only, same handler, `reopened_at` recorded. `won_at` is
+   never cleared — we keep remembering the Deal was won at some point even
+   though it's open again.
+5. Anything else (stage move, value edit with no status change):
+   bookkeeping only — `pipeline_id`/`stage_id`/`value`/`currency`/
+   `pipedrive_updated_at` refreshed (still gated on the timestamp check, so
+   a stale delivery can't overwrite newer data), never a lifecycle side
+   effect.
+
+**Out-of-order example this closes**: Deal goes `open→won` (event A), then
+seconds later a rep corrects it to `won→lost` (event B). If B is delivered
+before A (Pipedrive does not guarantee delivery order), our `status` is
+`'lost'` with `pipedrive_updated_at` = B's timestamp. When the late A
+arrives, its target status (`'won'`) differs from the current one — the
+status-only check alone would have accepted it and incorrectly re-fired a
+conversion — but A's timestamp is *older* than what's stored, so the
+timestamp half of the guard rejects it. `status` stays `'lost'`, and
+neither Meta nor Google is called for the stale A.
+
+**Known tech debt — "External conversion delivery retry"**: the claim
+above happens *before* we know whether the Meta/Google calls actually
+succeed. If both fail on the one attempt a Won gets, `crm_deals.status` is
+already `'won'`, so a Pipedrive redelivery of that same webhook is treated
+as an already-processed duplicate and will not retry the external send.
+This stack has no retry queue by design (see `docs/architecture.md`) —
+noted here as a gap to revisit later, not fixed in Fase 1.
+
+**Example `crm_deals` row after a Won**:
+```
+deal_id:     4821
+person_id:   9142
+external_id: 4c2d8a91-6f5b-4a2e-9c1d-3e7b8f4a2c6d
+status:      won
+value:       4500.00        -- internal only, never sent to Meta/Google
+currency:    BRL
+won_at:      1729601000
+pipedrive_updated_at: 1729601000384700   -- from meta.timestamp_micro
+```
+
+**Meta CAPI payload for the same Won** — notice there is no `value` or
+`currency` key under `custom_data`:
+```json
+{
+  "data": [{
+    "event_name": "Purchase",
+    "event_time": 1729601000,
+    "event_id": "e1a2…",
+    "action_source": "website",
+    "user_data": { "em": ["b0c2…"], "external_id": ["4f2e…"] },
+    "custom_data": { "content_type": "product", "content_ids": ["4821"], "num_items": 1 }
+  }]
+}
+```
+
+**Failure modes**:
+
+- **Two Deals exist for the same Person in Pipedrive** (e.g. one created by
+  a rep manually before this migration, one from an old bug) → the backfill
+  in step 3 of Trigger A picks one deterministically (open > won > lost,
+  most recently updated within a tier) and adopts it into `crm_deals`; the
+  other is left alone in Pipedrive. This is a one-time reconciliation
+  concern, not something the webhook re-checks on every request.
+- **Won webhook delivered twice** (Pipedrive's own retry-on-failure
+  behavior) → the second delivery's claim UPDATE affects 0 rows
+  (`crm_deals.status` is already `'won'`); the handler returns
+  `{ skipped: 'won already processed' }` without calling Meta or Google
+  again.
+- **`crm_deals` row missing entirely when a Won webhook arrives** (a Deal
+  that was never touched by Trigger A after this migration, e.g. created
+  and won entirely by a rep) → the claim's `INSERT` branch creates the row
+  fresh from the webhook payload itself; the flow continues exactly as if
+  the row had already existed.
+- **`sessionData` lookup fails** (no `event_log` row with that e-mail, or —
+  historically — a SQL error from selecting `sessions.gbraid`/`wbraid`,
+  columns that table has never had; fixed as part of this Hop) → Meta still
+  fires with whatever identifiers are available (e-mail hash at minimum);
+  Google Ads is skipped (`{ skipped: 'no click id in session' }`) since it
+  requires a `gclid`.
+- **A webhook is delivered out of order** (an older change arrives after a
+  newer one already moved the status) → rejected by the
+  `pipedrive_updated_at` comparison in the claim's `WHERE` clause; see the
+  worked example above. Reported the same way as a plain duplicate
+  (`{ skipped: '<status> already processed' }`) — the response doesn't
+  distinguish "duplicate" from "stale/out-of-order" since both are a
+  correct no-op.
+- **Neither `meta.timestamp` nor `meta.timestamp_micro` is present** (a
+  malformed or hand-crafted test payload — a real Pipedrive delivery always
+  includes them) → the timestamp half of the guard is skipped entirely;
+  the pre-existing status-only check is the sole protection for that one
+  delivery.
+
+---
+
 ## Quick queries for triage
 
 ```bash

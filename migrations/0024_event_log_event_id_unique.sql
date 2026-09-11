@@ -1,0 +1,16 @@
+-- Idempotency guard: a network retry of the exact same /tracker POST
+-- carries the same client-generated event_id. Without a uniqueness
+-- constraint, that retry can double-insert into event_log (purchase_log
+-- already got this protection via transaction_id in migration 0012).
+--
+-- SAFETY NOTE: this migration does NOT delete any rows. If duplicate
+-- event_id values already exist in production, this CREATE UNIQUE INDEX
+-- will fail and the migration will simply not apply — no data is altered
+-- either way. Run this check first if you want to know ahead of time:
+--
+--   SELECT event_id, COUNT(*) FROM event_log GROUP BY event_id HAVING COUNT(*) > 1;
+--
+-- If that returns rows, decide how to handle them (they are a pre-existing
+-- condition, not something this migration should silently delete) before
+-- retrying this migration.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_event_log_event_id_unique ON event_log(event_id);

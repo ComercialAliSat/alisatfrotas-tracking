@@ -65,10 +65,56 @@ Pipedrive (CRM flow) bypasses `trk` entirely: on deal-won, the adapter
 fetches the contact email from Pipedrive, then recovers the earliest
 matching session from D1 by email for attribution enrichment.
 
-Hop-by-hop debugging bible: `docs/data-flow.md`
+Hop-by-hop debugging bible: `docs/data-flow.md` (includes Hop 8 — the
+Pipedrive Deal lifecycle below).
+
+## Pipedrive Deal lifecycle (dedup rule)
+
+A contact must never generate more than one Deal by resubmitting a form.
+`crm_deals` (migration 0023) bridges `external_id` ↔ Pipedrive
+`person_id`/`deal_id` and tracks `status`. On every `Lead` event,
+`functions/outputs/pipedrive.js` finds-or-creates the Person — e-mail
+first (normalized with `.trim().toLowerCase()` before both the search and
+the create call, so `"JOAO@X.COM"` and `"joao@x.com"` resolve to the same
+Person), normalized phone as fallback — **never** by name alone. It then
+branches on the existing Deal's status instead of always creating a new one:
+
+| Existing Deal | Action |
+|---|---|
+| None | Create Deal, insert `crm_deals` (`status='open'`). |
+| `open` | Reuse it — add a note describing the new conversion, no new Deal. |
+| `lost` | Reopen the *same* Deal (moved to the first stage of "Pré Vendas"), add a note, `crm_deals.status` back to `open`. History/notes are never deleted. |
+| `won` | Add a note only. Never reopened, never duplicated — creating a new opportunity for an existing customer (upsell/cross-sell) is deferred to a future phase with its own rule. |
+
+`functions/webhook/pipedrive/[slug].js` mirrors this from the Pipedrive
+side: only an `open → won` transition fires Meta CAPI + Google Ads, and
+**never with the real deal value** — those platforms only learn that a
+sale occurred. The real value is stored internally in `crm_deals.value`
+and `purchase_log.value`. A `won → open` (a rep manually reopening a Won
+deal) is bookkeeping-only, same handler as `lost → open` — `won_at` is
+never cleared, nothing is sent to Meta/Google.
+
+Every transition is claimed with a conditional
+`INSERT ... ON CONFLICT DO UPDATE ... WHERE status != 'X'`, so a Pipedrive
+webhook retry never double-fires a conversion. That claim is ALSO gated on
+`crm_deals.pipedrive_updated_at` (migration 0025) against the incoming
+webhook's `meta.timestamp_micro` — a documented field in Pipedrive's v1
+webhook envelope — so a late, out-of-order delivery describing an OLDER
+change than one already applied is ignored instead of regressing the
+status. See Hop 8 in `docs/data-flow.md` for the full mechanics and the
+"External conversion delivery retry" known tech-debt note.
 
 ## Hard rules (do not violate)
 
+- **Never create a second Pipedrive Deal for a contact that already has
+  one.** Check `crm_deals` (falling back to a live Pipedrive lookup if no
+  local row exists yet) before calling `POST /deals` — see "Pipedrive Deal
+  lifecycle" below. This is the core invariant of the CRM bridge; violating
+  it is exactly the bug Fase 1 of `ARCHITECTURE_V2_PLAN.md` fixed.
+- **Never send the real Deal value to Meta or Google Ads on Won.** They
+  only learn that a sale occurred (no `value`/`currency` in the outbound
+  payload). The real value stays internal, in `crm_deals.value` and
+  `purchase_log.value`.
 - **Never log PageView events to `event_log`.** PageView still fires to
   Meta/GA4 — it just doesn't write to D1. This keeps per-instance D1 write
   volume sustainable forever. Enforced by `shouldLogEvent` in `functions/tracker.js`.
@@ -113,7 +159,8 @@ Hop-by-hop debugging bible: `docs/data-flow.md`
 | `scripts/[[path]].js` | First-party proxy for `gtag.js`. Example pages load GA4 via `/scripts/gtag.js?id=...`. |
 | `webhook/_core.js` | Platform-agnostic brain: lookup `trk` → enrich → fan out to Meta/GA4/Google Ads/LinkedIn/Encharge/ManyChat → persist `purchase_log` + `purchase_items`. |
 | `webhook/_utils.js` | `timingSafeEqual` + `guardSlug` helpers shared by adapters. |
-| `webhook/pipedrive/[slug].js` | Pipedrive adapter. Gates on `PIPEDRIVE_WEBHOOK_SLUG`. On deal-won, fetches contact email via Pipedrive Persons API, recovers session from D1 by email, fans out to Meta CAPI + Google Ads. |
+| `webhook/pipedrive/[slug].js` | Pipedrive adapter. Gates on `PIPEDRIVE_WEBHOOK_SLUG`. Handles the full Deal lifecycle (open→won, *→lost, lost→open, stage/value bookkeeping) against `crm_deals` — see "Pipedrive Deal lifecycle" below. Only an open→won transition fires Meta CAPI + Google Ads, and never with the real deal value. |
+| `outputs/pipedrive.js` | Fires on every `Lead` event from `/tracker`. Finds-or-creates the Person (e-mail first, phone fallback), then reuses/reopens/notes the existing Deal per `crm_deals` instead of always creating a new one — see "Pipedrive Deal lifecycle" below. |
 | `webhook/brevo/[slug].js` | Brevo adapter. Gates on `BREVO_WEBHOOK_SLUG`. Turns opened/click/unsubscribed/hard_bounce/soft_bounce events into `lead_score` points, keyed by `external_id` (falls back to email → `event_log` → `sessions` lookup, same pattern as the Pipedrive adapter). |
 | `api/revenue.js` | Dashboard: gross revenue, sales, AOV, daily time series from `purchase_log`. |
 | `api/products.js` | Dashboard: per-product breakdown + time series from `purchase_items`. |
@@ -128,7 +175,7 @@ Hop-by-hop debugging bible: `docs/data-flow.md`
 
 | Path | Purpose |
 |---|---|
-| `migrations/` | D1 schema, numbered 0001-0015 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`. |
+| `migrations/` | D1 schema, numbered 0001-0024 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users`, `page_views`, `lead_score`, `crm_deals`. |
 | `config/products.js` | Per-product integration config: Encharge tag, ManyChat tag ID, Google Ads conversion action. Keyed by `platform → productId`. Tracked in git; no secrets. |
 | `dash/index.html` | Self-contained dashboard. Tailwind + Chart.js via CDN, no build step. Auth via `DASH_KEY` query param. Click any Lead or Purchase row to inspect the exact payload sent to Meta/GA4/Google Ads and the response. |
 | `examples/lead-form-page/index.html` | Lead form starter (email-only by default; add phone/name per `docs/page-types/lead-form-page.md`). Demonstrates the full pixel+CAPI dedup pattern. |
