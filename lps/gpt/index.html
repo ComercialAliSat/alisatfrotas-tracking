@@ -88,11 +88,26 @@
       .af-logos-track { animation: none !important; }
     }
 
-    /* Hero video facade → YouTube embed */
-    #yt-facade { cursor: pointer; }
-    #yt-facade .yt-play:hover { background: #fff; }
-    #yt-player { display: none; width: 100%; height: 100%; }
+    /* Hero video → autoplay YouTube embed */
     #yt-player iframe { width: 100%; height: 100%; border: 0; display: block; }
+    #yt-mute-toggle {
+      display: flex; align-items: center; gap: 7px;
+      border: none; border-radius: 999px;
+      background: #fff; color: var(--navy);
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px;
+      padding: 10px 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+      cursor: pointer;
+      animation: yt-mute-pulse 2.2s ease-in-out infinite;
+    }
+    #yt-mute-toggle:hover { background: #f0f3f6; animation-play-state: paused; }
+    @keyframes yt-mute-pulse {
+      0%, 100% { box-shadow: 0 6px 20px rgba(0,0,0,0.35), 0 0 0 0 rgba(255,255,255,0.55); }
+      50% { box-shadow: 0 6px 20px rgba(0,0,0,0.35), 0 0 0 8px rgba(255,255,255,0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #yt-mute-toggle { animation: none; }
+    }
 
     /* Hero primary CTA — mobile/tablet only, desktop keeps its original hero (no button) */
     .hero-cta-btn {
@@ -182,17 +197,14 @@
         <div class="lp-hero-video-outer" style="flex-shrink: 0; width: 600px; max-width:60vw; position:relative; margin-left: 25px; margin-right: 25px;">
           <div class="lp-hero-video-box" style="width: 100%; aspect-ratio: 16/9; padding: 9px; border-radius: 18px; box-shadow: 30px 30px 80px 0px #00000096; position: relative; z-index: 2; background: linear-gradient(160deg,#3a5f8a,#1c3f68); margin-top: 80px; top: -80px; left: 50px;">
             <div style="width:100%;height:100%;border-radius:12px;overflow:hidden;position:relative;background:#0A4178;">
-              <div id="yt-facade" onclick="loadYT()" role="button" aria-label="Assistir vídeo" style="position:absolute;inset:0;">
-                <img src="assets/hero-video.png" alt="Vídeo de rodovia" style="width:100%;height:100%;object-fit:cover;">
-                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
-                  <div class="yt-play" style="width:64px;height:64px;border-radius:999px;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;transition:background .2s;">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="#033566"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                  </div>
-                </div>
-              </div>
-              <div id="yt-player">
+              <img src="assets/hero-video.png" alt="Vídeo de rodovia" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+              <div id="yt-player" style="position:absolute;inset:0;">
                 <iframe id="yt-iframe" src="" title="Vídeo Ali Sat — Videotelemetria" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
               </div>
+              <button type="button" id="yt-mute-toggle" onclick="toggleYTMute()" aria-label="Ativar som do vídeo" style="position:absolute;bottom:14px;right:14px;z-index:5;">
+                <svg id="yt-mute-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#033566" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                <span id="yt-mute-label">Ativar som</span>
+              </button>
             </div>
           </div>
         </div>
@@ -574,14 +586,31 @@ async function gptSubmit() {
   }
 }
 
-// ── YouTube facade ──────────────────────────────────
+// ── YouTube autoplay (muted — required by browser autoplay policy
+//    on both desktop and mobile; playsinline stops iOS forcing fullscreen) ──
 let ytLoaded = false;
+let ytMuted = true;
 function loadYT() {
   if (ytLoaded) return; ytLoaded = true;
-  $('yt-facade').style.display = 'none';
-  $('yt-player').style.display = 'block';
-  $('yt-iframe').src = 'https://www.youtube.com/embed/t60tY2u4r0Y?autoplay=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
-  push({ event: 'Video_View', percent: 0, action: 'play' });
+  const id = 'L1YTA8DTTSA';
+  $('yt-iframe').src = 'https://www.youtube.com/embed/' + id +
+    '?autoplay=1&mute=1&playsinline=1&loop=1&playlist=' + id +
+    '&rel=0&modestbranding=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+  push({ event: 'Video_View', percent: 0, action: 'autoplay' });
+}
+
+function toggleYTMute() {
+  const iframe = $('yt-iframe');
+  if (!iframe || !iframe.contentWindow) return;
+  ytMuted = !ytMuted;
+  iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: ytMuted ? 'mute' : 'unMute', args: [] }), '*');
+  $('yt-mute-icon').innerHTML = ytMuted
+    ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>'
+    : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>';
+  $('yt-mute-label').textContent = ytMuted ? 'Ativar som' : 'Silenciar';
+  $('yt-mute-toggle').setAttribute('aria-label', ytMuted ? 'Ativar som do vídeo' : 'Silenciar vídeo');
+  $('yt-mute-toggle').style.animation = ytMuted ? '' : 'none';
+  push({ event: 'Video_Sound_Toggle', muted: ytMuted });
 }
 
 // ── Scroll depth ────────────────────────────────────
@@ -610,6 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tel  = $('g-tel');  if (tel)  tel.addEventListener('input',  () => maskPhone(tel));
   const cnpj = $('g-cnpj'); if (cnpj) cnpj.addEventListener('input', () => maskCNPJ(cnpj));
   initStickyCta();
+  loadYT();
 });
 </script>
 
