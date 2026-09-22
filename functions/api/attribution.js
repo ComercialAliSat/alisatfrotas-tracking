@@ -21,6 +21,7 @@ export async function onRequestGet(context) {
           WHEN (gclid != '' AND gclid IS NOT NULL)
             OR (gbraid != '' AND gbraid IS NOT NULL)
             OR (wbraid != '' AND wbraid IS NOT NULL) THEN 'google'
+          WHEN oppref IS NOT NULL AND oppref != '' THEN 'chatgpt'
           ELSE 'organic'
         END as source_type,
         COUNT(*) as sales,
@@ -30,7 +31,7 @@ export async function onRequestGet(context) {
       GROUP BY source_type
     `).bind(since, until).all();
 
-    const groups = { meta: empty(), google: empty(), organic: empty() };
+    const groups = { meta: empty(), google: empty(), chatgpt: empty(), organic: empty() };
     for (const row of rows.results || []) {
       if (groups[row.source_type]) {
         groups[row.source_type] = {
@@ -50,10 +51,24 @@ export async function onRequestGet(context) {
 
     const metaSpend = Number(spendRow?.spend_cents || 0) / 100;
 
+    const chatgptSpendRow = await env.DB.prepare(`
+      SELECT COALESCE(SUM(spend_cents), 0) as spend_cents
+      FROM ad_spend
+      WHERE platform = 'chatgpt' AND date >= ? AND date <= ?
+    `).bind(sinceDate, untilDate).first();
+
+    const chatgptSpend = Number(chatgptSpendRow?.spend_cents || 0) / 100;
+
     const syncRow = await env.DB.prepare(`
       SELECT MAX(run_at) as last_synced_at
       FROM sync_log
       WHERE platform = 'meta' AND status = 'ok'
+    `).first();
+
+    const chatgptSyncRow = await env.DB.prepare(`
+      SELECT MAX(run_at) as last_synced_at
+      FROM sync_log
+      WHERE platform = 'chatgpt' AND status = 'ok'
     `).first();
 
     return json({
@@ -63,6 +78,10 @@ export async function onRequestGet(context) {
       meta_cpa:      groups.meta.sales  > 0 ? metaSpend / groups.meta.sales  : null,
       meta_roas:     metaSpend          > 0 ? groups.meta.revenue / metaSpend : null,
       last_synced_at: syncRow?.last_synced_at || null,
+      chatgpt_spend:    chatgptSpend,
+      chatgpt_cpa:      groups.chatgpt.sales > 0 ? chatgptSpend / groups.chatgpt.sales : null,
+      chatgpt_roas:     chatgptSpend         > 0 ? groups.chatgpt.revenue / chatgptSpend : null,
+      chatgpt_last_synced_at: chatgptSyncRow?.last_synced_at || null,
     });
   } catch (err) {
     return json({ error: err.message }, 500);

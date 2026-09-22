@@ -30,7 +30,7 @@ export async function onRequestGet(context) {
         raw_email, raw_name, raw_phone,
         value, currency, transaction_id,
         product_id, product_name,
-        gclid, gbraid, wbraid,
+        gclid, gbraid, wbraid, oppref,
         utm_source, utm_medium, utm_campaign, utm_content, utm_term,
         meta_status_code, meta_response_ok, meta_response_body, meta_payload_sent,
         ga4_status_code, ga4_response_ok, ga4_response_body, ga4_payload_sent,

@@ -123,10 +123,12 @@
             Sales grouped by the click identifier on the originating session.
             Meta spend is synced from Meta Marketing API
             <span id="attribution-sync-note" class="ml-1"></span>.
+            ChatGPT spend is synced from the OpenAI Ads API
+            <span id="chatgpt-sync-note" class="ml-1"></span>.
           </div>
         </div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <div class="border border-[color:var(--border)] rounded-lg p-4">
           <div class="flex items-center gap-2 mb-2">
             <div class="w-2 h-2 rounded-full" style="background:var(--accent-blue)"></div>
@@ -176,6 +178,34 @@
         </div>
         <div class="border border-[color:var(--border)] rounded-lg p-4">
           <div class="flex items-center gap-2 mb-2">
+            <div class="w-2 h-2 rounded-full" style="background:var(--accent-purple)"></div>
+            <div class="text-sm font-semibold">ChatGPT</div>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mt-3 mono">
+            <div>
+              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Sales</div>
+              <div class="text-xl" id="chatgpt-sales">—</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Revenue</div>
+              <div class="text-xl" id="chatgpt-revenue">—</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Spend</div>
+              <div class="text-xl" id="chatgpt-spend">—</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">CPA</div>
+              <div class="text-xl" id="chatgpt-cpa">—</div>
+            </div>
+            <div class="col-span-2">
+              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">ROAS</div>
+              <div class="text-2xl" id="chatgpt-roas">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="border border-[color:var(--border)] rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-2">
             <div class="w-2 h-2 rounded-full" style="background:var(--accent-green)"></div>
             <div class="text-sm font-semibold">Organic</div>
           </div>
@@ -190,7 +220,7 @@
             </div>
           </div>
           <div class="text-[11px] text-[color:var(--muted)] mt-3 leading-snug">
-            No fbclid / gclid / wbraid / gbraid on the originating session.
+            No fbclid / gclid / wbraid / gbraid / oppref on the originating session.
           </div>
         </div>
       </div>
@@ -504,6 +534,11 @@
     qs('#meta-roas').textContent    = data.meta_roas != null ? data.meta_roas.toFixed(2) + 'x' : '—';
     qs('#google-sales').textContent  = fmtInt(data.groups.google.sales);
     qs('#google-revenue').textContent= money(data.groups.google.revenue);
+    qs('#chatgpt-sales').textContent   = fmtInt(data.groups.chatgpt.sales);
+    qs('#chatgpt-revenue').textContent = money(data.groups.chatgpt.revenue);
+    qs('#chatgpt-spend').textContent   = data.chatgpt_spend > 0 ? money(data.chatgpt_spend) : '—';
+    qs('#chatgpt-cpa').textContent     = data.chatgpt_cpa != null ? money(data.chatgpt_cpa) : '—';
+    qs('#chatgpt-roas').textContent    = data.chatgpt_roas != null ? data.chatgpt_roas.toFixed(2) + 'x' : '—';
     qs('#organic-sales').textContent = fmtInt(data.groups.organic.sales);
     qs('#organic-revenue').textContent = money(data.groups.organic.revenue);
 
@@ -513,6 +548,14 @@
       note.textContent = `(last sync ${dt.toLocaleString()})`;
     } else {
       note.textContent = '(sync not configured yet — see docs/ad-spend-sync.md)';
+    }
+
+    const chatgptNote = qs('#chatgpt-sync-note');
+    if (data.chatgpt_last_synced_at) {
+      const dt = new Date(data.chatgpt_last_synced_at * 1000);
+      chatgptNote.textContent = `(last sync ${dt.toLocaleString()})`;
+    } else {
+      chatgptNote.textContent = '(sync not configured yet — see docs/ad-spend-sync.md)';
     }
   }
 

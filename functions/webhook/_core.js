@@ -362,13 +362,13 @@ async function handlePurchaseLog({ parsed, eventId, eventTime, resultMap, env })
         meta_status_code, meta_response_ok, meta_response_body, meta_payload_sent,
         ga4_status_code, ga4_response_ok, ga4_response_body, ga4_payload_sent,
         google_ads_status_code, google_ads_response_ok, google_ads_response_body, google_ads_payload_sent,
-        gclid, gbraid, wbraid,
+        gclid, gbraid, wbraid, oppref,
         utm_source, utm_medium, utm_campaign, utm_content, utm_term,
         product_id, product_name,
         encharge_status_code, encharge_response_ok, encharge_response_body,
         manychat_status_code, manychat_response_ok, manychat_response_body,
         created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       trk || '', eventId, eventTime,
       email, name, phone,
@@ -381,7 +381,7 @@ async function handlePurchaseLog({ parsed, eventId, eventTime, resultMap, env })
       tracking.metaStatusCode || 0, tracking.metaResponseOk || 0, tracking.metaResponseBody || '', tracking.metaPayloadSent ?? null,
       tracking.ga4StatusCode || 0, tracking.ga4ResponseOk || 0, tracking.ga4ResponseBody || '', tracking.ga4PayloadSent ?? null,
       tracking.googleAdsStatusCode || 0, tracking.googleAdsResponseOk || 0, tracking.googleAdsResponseBody || '', tracking.googleAdsPayloadSent ?? null,
-      checkoutData.gclid || '', checkoutData.gbraid || '', checkoutData.wbraid || '',
+      checkoutData.gclid || '', checkoutData.gbraid || '', checkoutData.wbraid || '', checkoutData.oppref || '',
       // UTMs prefer what the sales platform echoes back in the webhook
       // (platformUtm, authoritative when present), then fall back to what
       // the sales page persisted to checkout_sessions (checkoutData).

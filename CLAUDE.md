@@ -56,6 +56,7 @@ purchase with its original attribution.
 | `trk` | Sales page JS, UUID per checkout intent | `checkout_sessions.trk` (unique) | Webhook lookup after purchase |
 | `event_id` | Client, UUID per event | `event_log`, `purchase_log` | Dedup between browser pixel and server CAPI |
 | `external_id` | Middleware, UUID per visitor | Cookie + `sessions.external_id` | Meta Advanced Matching |
+| `oppref` | Middleware, raw `oppref` URL param | `sessions.oppref` / `checkout_sessions.oppref` / `purchase_log.oppref` | ChatGPT Ads click id (gclid/fbclid equivalent), used for paid-traffic attribution — added migration 0026 |
 
 **The `trk` chain is the critical one for sales pages**: generated on the
 sales page visit → persisted to `checkout_sessions` with all attribution →
@@ -170,12 +171,13 @@ status. See Hop 8 in `docs/data-flow.md` for the full mechanics and the
 | `api/events.js` | Dashboard: tracking-health stats (ITP recovery, adblock, bot filter, fbp source). |
 | `api/purchases.js` | Dashboard: purchases table with platform delivery status. |
 | `api/sync/meta-ads.js` | `POST /api/sync/meta-ads` — cron-triggered Meta Marketing API pull into `ad_spend`. Gated by `SYNC_SECRET` header. |
+| `api/sync/chatgpt-ads.js` | `POST /api/sync/chatgpt-ads` — cron-triggered OpenAI Ads Insights API pull into `ad_spend` (`platform='chatgpt'`). Gated by the same `SYNC_SECRET` header. |
 
 ### Schema, config, and static (`migrations/`, `config/`, `dash/`, `examples/`)
 
 | Path | Purpose |
 |---|---|
-| `migrations/` | D1 schema, numbered 0001-0024 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users`, `page_views`, `lead_score`, `crm_deals`. |
+| `migrations/` | D1 schema, numbered 0001-0026 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users`, `page_views`, `lead_score`, `crm_deals`. |
 | `config/products.js` | Per-product integration config: Encharge tag, ManyChat tag ID, Google Ads conversion action. Keyed by `platform → productId`. Tracked in git; no secrets. |
 | `dash/index.html` | Self-contained dashboard. Tailwind + Chart.js via CDN, no build step. Auth via `DASH_KEY` query param. Click any Lead or Purchase row to inspect the exact payload sent to Meta/GA4/Google Ads and the response. |
 | `examples/lead-form-page/index.html` | Lead form starter (email-only by default; add phone/name per `docs/page-types/lead-form-page.md`). Demonstrates the full pixel+CAPI dedup pattern. |
@@ -219,4 +221,4 @@ These have sensible defaults. Change them only if you know why.
 | PII retention window | Raw email/name/phone stored indefinitely | Manual: run a periodic `DELETE` via scheduled worker. Not enforced by default. |
 | Which sales platforms are active | Pipedrive built in | A platform goes live once its `<PLATFORM>_WEBHOOK_SLUG` env var is set. Configure the full `/webhook/<platform>/<slug>` URL in the platform's webhook settings; wrong slug = 404 |
 | Dashboard auth | Query param `?key=<DASH_KEY>` | Rotate by changing the env var; no code change |
-| Ad-spend sync | Off until recipient configures Meta Ads cron (see `docs/ad-spend-sync.md`) | Set `META_ADS_ACCESS_TOKEN`, `META_ADS_ACCOUNT_ID`, `SYNC_SECRET` and schedule an external cron to hit `/api/sync/meta-ads` hourly |
+| Ad-spend sync | Off until recipient configures Meta Ads / ChatGPT Ads cron (see `docs/ad-spend-sync.md`) | Set `META_ADS_ACCESS_TOKEN`, `META_ADS_ACCOUNT_ID`, `SYNC_SECRET` and schedule an external cron to hit `/api/sync/meta-ads` hourly; set `CHATGPT_ADS_API_KEY` (reuses `SYNC_SECRET`) and hit `/api/sync/chatgpt-ads` hourly |

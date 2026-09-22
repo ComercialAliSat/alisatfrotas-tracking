@@ -23,6 +23,7 @@ enrich outgoing events with server-captured attribution.
 | `fbclid` | TEXT | Raw value from URL, undecoded |
 | `gclid` | TEXT | Google Ads click id |
 | `msclkid` | TEXT | Microsoft Ads click id |
+| `oppref` | TEXT | ChatGPT Ads click id (added in migration 0026) — OpenAI's `gclid`/`fbclid` equivalent, appended to the destination URL on ad clicks |
 | `fbc` | TEXT | Meta spec: `fb.{subdomainIndex}.{ts}.{fbclid}` |
 | `fbp` | TEXT | Meta spec: `fb.{subdomainIndex}.{ts}.{10-digit random}` |
 | `ip_address` | TEXT | From `cf-connecting-ip` |
@@ -93,6 +94,7 @@ enrichment join that makes purchase-time attribution work.
 | `external_id` | TEXT | From cookie / sessions row |
 | `fbp` / `fbc` | TEXT | Resolved with fallback chain |
 | `gclid` / `gbraid` / `wbraid` | TEXT | Google Ads click ids |
+| `oppref` | TEXT | ChatGPT Ads click id (added in migration 0026) |
 | `ga_client_id` | TEXT | Parsed from `_ga` cookie (added 0009); fallback to synthetic |
 | `utm_source` / `utm_medium` / `utm_campaign` / `utm_content` / `utm_term` | TEXT | UTMs at checkout-intent time |
 | `event_source_url` | TEXT | Full URL of the sales page |
@@ -122,7 +124,7 @@ rejected a specific sale without needing to re-run anything.
 | **Meta response** | `meta_status_code`, `meta_response_ok`, `meta_response_body`, `meta_payload_sent` | Full request + response |
 | **GA4 response** | `ga4_status_code`, `ga4_response_ok`, `ga4_response_body`, `ga4_payload_sent` | Same |
 | **Google Ads response** | `google_ads_status_code`, `google_ads_response_ok`, `google_ads_response_body`, `google_ads_payload_sent` | `response_ok = 0` if Google Ads returned 200 but the body had a `partialFailureError` |
-| **Click IDs** | `gclid`, `gbraid`, `wbraid` | Copied from `checkout_sessions`; used by Google Ads fan-out |
+| **Click IDs** | `gclid`, `gbraid`, `wbraid`, `oppref` | Copied from `checkout_sessions`; `gclid`/`gbraid`/`wbraid` used by Google Ads fan-out, `oppref` (added 0026) is the ChatGPT Ads click id |
 | **UTMs (from webhook)** | `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term` | The webhook payload's UTMs (may differ from `sessions`/`checkout_sessions` if the platform appends its own) |
 | **Encharge response** | `encharge_status_code`, `encharge_response_ok`, `encharge_response_body` | |
 | **ManyChat response** | `manychat_status_code`, `manychat_response_ok`, `manychat_response_body` | |
@@ -166,13 +168,14 @@ deleted so the invariant always holds.
 ## `ad_spend`
 
 One row per `(platform, date, campaign_id, ad_id)` tuple. Written by
-`functions/api/sync/meta-ads.js` on each cron run via UPSERT. Read by
-`functions/api/attribution.js` for CPA/ROAS calculations.
+`functions/api/sync/meta-ads.js` and `functions/api/sync/chatgpt-ads.js` on
+each cron run via UPSERT. Read by `functions/api/attribution.js` for
+CPA/ROAS calculations.
 
 | Column | Type | Purpose |
 |---|---|---|
 | `id` | INTEGER PK | Auto |
-| `platform` | TEXT | `meta` today; `google` is the slot for future Google Ads sync |
+| `platform` | TEXT | `meta`, `chatgpt` today; `google` is the slot for future Google Ads sync |
 | `date` | TEXT | `'YYYY-MM-DD'` in the ad account's timezone |
 | `campaign_id` | TEXT NOT NULL | Meta campaign ID |
 | `campaign_name` | TEXT | |
@@ -199,7 +202,7 @@ by the dashboard's "last synced at" indicator.
 | Column | Type | Purpose |
 |---|---|---|
 | `id` | INTEGER PK | Auto |
-| `platform` | TEXT NOT NULL | `meta` / `google` |
+| `platform` | TEXT NOT NULL | `meta` / `chatgpt` / `google` |
 | `status` | TEXT NOT NULL | `ok` / `error` |
 | `rows_upserted` | INTEGER | 0 on failure |
 | `date_from` / `date_to` | TEXT | `'YYYY-MM-DD'` range pulled |

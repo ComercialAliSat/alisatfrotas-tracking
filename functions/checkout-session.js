@@ -44,6 +44,7 @@ export async function onRequestPost(context) {
     const gclid = sessionData.gclid || body.gclid || '';
     const gbraid = body.gbraid || '';
     const wbraid = body.wbraid || '';
+    const oppref = sessionData.oppref || body.oppref || '';
     // Extract GA4 client_id from _ga cookie (format: GA1.1.{timestamp}.{random})
     const gaCookie = cookies['_ga'] || '';
     const gaClientId = gaCookie ? gaCookie.split('.').slice(-2).join('.') : '';
@@ -53,13 +54,13 @@ export async function onRequestPost(context) {
       await env.DB.prepare(`
         INSERT OR REPLACE INTO checkout_sessions (
           trk, session_id, ip_address, user_agent, external_id,
-          fbp, fbc, gclid, gbraid, wbraid, ga_client_id,
+          fbp, fbc, gclid, gbraid, wbraid, oppref, ga_client_id,
           utm_source, utm_medium, utm_campaign, utm_content, utm_term,
           event_source_url, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         trk, sessionId, clientIp, userAgent, externalId,
-        fbp, fbc, gclid, gbraid, wbraid, gaClientId,
+        fbp, fbc, gclid, gbraid, wbraid, oppref, gaClientId,
         body.utm_source || '', body.utm_medium || '', body.utm_campaign || '',
         body.utm_content || '', body.utm_term || '',
         body.event_source_url || '', now

@@ -26,6 +26,7 @@ export async function onRequest(context) {
   const fbclid = getRawParam(url.search, 'fbclid');
   const gclid = getRawParam(url.search, 'gclid');
   const msclkid = getRawParam(url.search, 'msclkid');
+  const oppref = getRawParam(url.search, 'oppref');
 
   // --- Extract UTM parameters ---
   const utmSource = url.searchParams.get('utm_source') || '';
@@ -236,12 +237,13 @@ export async function onRequest(context) {
       try {
         if (env.DB) {
           await env.DB.prepare(`
-            INSERT INTO sessions (session_id, external_id, fbclid, gclid, msclkid, fbc, fbp, ip_address, user_agent, referrer, landing_url, utm_source, utm_medium, utm_campaign, utm_content, utm_term, li_fat_id, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO sessions (session_id, external_id, fbclid, gclid, msclkid, oppref, fbc, fbp, ip_address, user_agent, referrer, landing_url, utm_source, utm_medium, utm_campaign, utm_content, utm_term, li_fat_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(session_id) DO UPDATE SET
               fbclid = CASE WHEN excluded.fbclid != '' THEN excluded.fbclid ELSE sessions.fbclid END,
               gclid = CASE WHEN excluded.gclid != '' THEN excluded.gclid ELSE sessions.gclid END,
               msclkid = CASE WHEN excluded.msclkid != '' THEN excluded.msclkid ELSE sessions.msclkid END,
+              oppref = CASE WHEN excluded.oppref != '' THEN excluded.oppref ELSE sessions.oppref END,
               fbc = CASE WHEN excluded.fbc != '' THEN excluded.fbc ELSE sessions.fbc END,
               utm_source = CASE WHEN excluded.utm_source != '' THEN excluded.utm_source ELSE sessions.utm_source END,
               utm_medium = CASE WHEN excluded.utm_medium != '' THEN excluded.utm_medium ELSE sessions.utm_medium END,
@@ -250,7 +252,7 @@ export async function onRequest(context) {
               utm_term = CASE WHEN excluded.utm_term != '' THEN excluded.utm_term ELSE sessions.utm_term END,
               li_fat_id = CASE WHEN excluded.li_fat_id IS NOT NULL AND excluded.li_fat_id != '' THEN excluded.li_fat_id ELSE sessions.li_fat_id END,
               updated_at = excluded.updated_at
-          `).bind(sessionId, externalId, fbclid, gclid, msclkid, fbc, fbp, clientIp, userAgent, referrer, url.toString(), utmSource, utmMedium, utmCampaign, utmContent, utmTerm, liFatId || null, now, now).run();
+          `).bind(sessionId, externalId, fbclid, gclid, msclkid, oppref, fbc, fbp, clientIp, userAgent, referrer, url.toString(), utmSource, utmMedium, utmCampaign, utmContent, utmTerm, liFatId || null, now, now).run();
         }
       } catch (e) {
         console.error('Middleware D1 error:', e.message);

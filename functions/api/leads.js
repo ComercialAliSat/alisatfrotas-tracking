@@ -53,6 +53,7 @@ export async function onRequestGet(context) {
         COALESCE(NULLIF(e.utm_term,''),     s.utm_term)     AS utm_term,
         s.fbclid,
         s.gclid,
+        s.oppref,
         s.referrer,
         s.landing_url
       FROM event_log e

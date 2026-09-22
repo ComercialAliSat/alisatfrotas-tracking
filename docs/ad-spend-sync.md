@@ -1,8 +1,10 @@
-# Ad spend sync — Meta Ads
+# Ad spend sync — Meta Ads & ChatGPT Ads
 
 The dashboard's paid-traffic attribution card shows CPA and ROAS only when
-Meta spend data is present in D1. This guide walks through the one-time
-setup to connect Meta Marketing API and schedule hourly syncs.
+spend data for that platform is present in D1. This guide walks through the
+one-time setup to connect Meta Marketing API and the OpenAI Ads API, and
+schedule hourly syncs for both. The two syncs are independent endpoints —
+set up either one on its own, or both.
 
 Google Ads spend sync arrives in v1.1 — until then the Google column shows
 attributed revenue only (purchases with a gclid on the originating session)
@@ -204,3 +206,93 @@ curl -X POST https://your-deployment.pages.dev/api/sync/meta-ads \
 This is safe to run repeatedly — the upsert uses
 `(platform, date, campaign_id)` as the unique key, so re-syncing the same
 window replaces existing rows rather than duplicating them.
+
+---
+
+## Ad spend sync — ChatGPT Ads
+
+Same pattern as Meta, pointed at a different endpoint and a different API.
+
+```
+external cron (hourly)
+     │
+     ▼
+POST /api/sync/chatgpt-ads   ← guarded by x-sync-secret header
+     │
+     ▼
+OpenAI Ads Insights API      ← https://api.ads.openai.com/v1/ad_account/insights
+     │
+     ▼
+D1 ad_spend table            ← UPSERT by (platform, date, campaign_id), platform='chatgpt'
+```
+
+### 1. Get an Advertiser API key
+
+1. Open Ads Manager → **Settings**.
+2. Issue an **Advertiser API key** (Bearer token — no OAuth flow, no
+   refresh cycle). The key is scoped to a single ad account, so you don't
+   need to supply an account ID separately for the Insights endpoints.
+3. Copy the generated key — store it as a Cloudflare secret, never in code.
+
+### 2. Set the environment variables
+
+| Name | Value |
+|---|---|
+| `CHATGPT_ADS_API_KEY` 🔒 | The Advertiser API key from step 1 |
+| `SYNC_SECRET` 🔒 | Reuses the **same** `SYNC_SECRET` already configured for Meta — no separate secret needed |
+
+Env-var changes don't apply to existing deployments — trigger a redeploy
+(Cloudflare dashboard → **Deployments** → **Retry deployment**, or push any
+commit to `main`).
+
+### 3. Verify the endpoint works
+
+```bash
+curl -X POST https://your-deployment.pages.dev/api/sync/chatgpt-ads \
+  -H "x-sync-secret: <YOUR_SYNC_SECRET>" \
+  -H "Content-Type: application/json" \
+  -d '{"date_from":"2026-09-01","date_to":"2026-09-22"}'
+```
+
+A healthy response looks the same shape as the Meta one:
+
+```json
+{
+  "ok": true,
+  "rows_upserted": 12,
+  "duration_ms": 640,
+  "date_from": "2026-09-01",
+  "date_to": "2026-09-22"
+}
+```
+
+**Before trusting the spend numbers**, check one row directly:
+
+```bash
+wrangler d1 execute <your-db-name> --remote --command \
+  "SELECT * FROM ad_spend WHERE platform = 'chatgpt' ORDER BY synced_at DESC LIMIT 5"
+```
+
+The OpenAI Ads API documentation does not explicitly state the unit of the
+`spend` field returned by `/insights` (the rest of the API uses
+micro-currency units — millionths — for budgets and bids, but no sample
+Insights response with a real spend value is published). The sync code
+currently assumes a decimal currency amount, mirroring Meta's
+`"19.47"` → cents conversion. If the numbers in `ad_spend.spend_cents` look
+implausibly large (roughly 1,000,000x too big), the field is actually in
+micros — divide the conversion in `functions/api/sync/chatgpt-ads.js`
+(`upsertAdSpend`) accordingly and re-sync.
+
+### 4. Schedule hourly syncs
+
+Same providers and pattern as the Meta section above — just point at
+`/api/sync/chatgpt-ads` with the same `x-sync-secret` header.
+
+### 5. Check the dashboard
+
+Open `/dash`. The paid-traffic attribution card now has a fourth "ChatGPT"
+column alongside Meta / Google / Organic, showing sales, revenue, spend,
+CPA, and ROAS. Sales are attributed to ChatGPT via the `oppref` click
+identifier captured on the originating session (see `docs/schema.md`,
+`sessions.oppref` / `checkout_sessions.oppref` / `purchase_log.oppref`,
+added in migration 0026) — the same mechanism `gclid` uses for Google.
