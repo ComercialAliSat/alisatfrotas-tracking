@@ -1,8 +1,15 @@
 // POST /api/auth/login
 // Body: { email, password }
-// Returns: { ok: true, key: DASH_KEY } on success, { error: '...' } on failure.
-// The key is stored client-side in sessionStorage so the existing ?key= API pattern
-// continues to work without touching any other endpoint.
+// Returns: { ok: true, key: DASH_KEY, role, sessionToken } on success,
+// { error: '...' } on failure.
+// `key` is unchanged — stored client-side in sessionStorage so the existing
+// ?key= API pattern continues to work without touching any other endpoint.
+// `role` + `sessionToken` are new: a per-user signed token (see _session.js)
+// that lets the 3 admin-only endpoints (users.js, delete-user.js,
+// update-role.js) verify WHICH user is calling, something the shared `key`
+// alone can't do.
+
+import { createSessionToken } from './_session.js';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -20,7 +27,7 @@ export async function onRequestPost(context) {
   if (!email || !password) return json({ error: 'E-mail e senha obrigatórios' }, 400);
 
   const user = await env.DB
-    .prepare('SELECT id, password_hash FROM platform_users WHERE email = ?')
+    .prepare('SELECT id, password_hash, role FROM platform_users WHERE email = ?')
     .bind(email).first();
 
   if (!user) return json({ error: 'E-mail ou senha incorretos' }, 401);
@@ -32,7 +39,10 @@ export async function onRequestPost(context) {
     .prepare('UPDATE platform_users SET last_login = ? WHERE id = ?')
     .bind(Math.floor(Date.now() / 1000), user.id).run();
 
-  return json({ ok: true, key: env.DASH_KEY });
+  const role = user.role || 'member';
+  const sessionToken = await createSessionToken(env, user.id, role);
+
+  return json({ ok: true, key: env.DASH_KEY, role, sessionToken });
 }
 
 // ── PBKDF2 helpers ─────────────────────────────────────────────────────────

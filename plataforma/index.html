@@ -388,24 +388,9 @@
       <div style="max-width:720px;display:flex;flex-direction:column;gap:20px">
 
         <!-- Usuários -->
-        <div class="kcard">
+        <div class="kcard" id="users-card">
           <div style="font-size:16px;font-weight:700;margin-bottom:6px">Usuários</div>
-          <div style="font-size:13px;color:var(--dim);margin-bottom:18px">
-            Cadastre os membros da equipe. Cada pessoa acessa com seu próprio e-mail e senha.
-          </div>
-          <div style="display:flex;flex-direction:column;gap:10px;max-width:400px">
-            <input id="reg-email" type="email" placeholder="E-mail do novo usuário" class="inp">
-            <input id="reg-pass"  type="password" placeholder="Senha (mín. 8 caracteres)" class="inp">
-            <input id="reg-pass2" type="password" placeholder="Confirmar senha" class="inp">
-            <div id="reg-msg" style="font-size:12px;min-height:18px"></div>
-            <button id="reg-btn" class="btn btn-dark" style="align-self:flex-start">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-              Cadastrar usuário
-            </button>
-          </div>
+          <div id="users-card-body"><!-- filled by renderUsersCard() once role is known --></div>
         </div>
 
         <div class="kcard">
@@ -461,8 +446,10 @@
 'use strict';
 
 let KEY = '';
+let ROLE = '';
+let SESSION_TOKEN = '';
 let iframeSet = false;
-const loaded = { paginas: false, leads: false };
+const loaded = { paginas: false, leads: false, config: false };
 let allPages = [];
 let leadsData = [];
 
@@ -486,8 +473,14 @@ function rangeQuery(fromId, toId) {
 // ── Auth ──────────────────────────────────────────────────────────────────
 {
   const s = sessionStorage.getItem('dash_key');
-  if (s) { KEY = s; boot(); }
-  else   { g('d-load').style.display = 'none'; showEl('d-auth'); }
+  if (s) {
+    KEY = s;
+    ROLE = sessionStorage.getItem('dash_role') || 'member';
+    SESSION_TOKEN = sessionStorage.getItem('dash_session_token') || '';
+    boot();
+  } else {
+    g('d-load').style.display = 'none'; showEl('d-auth');
+  }
 }
 
 g('auth-btn').onclick = tryLogin;
@@ -509,7 +502,11 @@ async function tryLogin() {
     const data = await res.json();
     if (res.ok && data.key) {
       KEY = data.key;
+      ROLE = data.role || 'member';
+      SESSION_TOKEN = data.sessionToken || '';
       sessionStorage.setItem('dash_key', KEY);
+      sessionStorage.setItem('dash_role', ROLE);
+      sessionStorage.setItem('dash_session_token', SESSION_TOKEN);
       hideEl('d-auth'); showEl('d-load');
       boot();
     } else {
@@ -526,14 +523,60 @@ function boot() {
   const sec = location.hash.replace('#','') || 'paginas';
   nav(sec);
   buildCfgLinks();
-  g('btn-logout').onclick = () => { sessionStorage.removeItem('dash_key'); location.reload(); };
+  g('btn-logout').onclick = () => {
+    sessionStorage.removeItem('dash_key');
+    sessionStorage.removeItem('dash_role');
+    sessionStorage.removeItem('dash_session_token');
+    location.reload();
+  };
+}
+
+// ── Usuários (Configurações) ─────────────────────────────────────────────
+
+function renderUsersCard() {
+  const body = g('users-card-body');
+  if (ROLE !== 'admin') {
+    body.innerHTML = `
+      <div style="font-size:13px;color:var(--dim)">
+        Apenas administradores podem gerenciar usuários. Fale com um administrador
+        da equipe se precisar cadastrar, remover ou promover alguém.
+      </div>`;
+    return;
+  }
+
+  body.innerHTML = `
+    <div style="font-size:13px;color:var(--dim);margin-bottom:18px">
+      Cadastre os membros da equipe. Cada pessoa acessa com seu próprio e-mail e senha.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:400px;margin-bottom:24px">
+      <input id="reg-email" type="email" placeholder="E-mail do novo usuário" class="inp">
+      <input id="reg-pass"  type="password" placeholder="Senha (mín. 8 caracteres)" class="inp">
+      <input id="reg-pass2" type="password" placeholder="Confirmar senha" class="inp">
+      <select id="reg-role" class="inp">
+        <option value="member" selected>Membro</option>
+        <option value="admin">Administrador</option>
+      </select>
+      <div id="reg-msg" style="font-size:12px;min-height:18px"></div>
+      <button id="reg-btn" class="btn btn-dark" style="align-self:flex-start">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        Cadastrar usuário
+      </button>
+    </div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px">Equipe</div>
+    <div id="users-list" style="font-size:13px;color:var(--dim)">Carregando…</div>
+  `;
   g('reg-btn').onclick = registerUser;
+  loadUsersList();
 }
 
 async function registerUser() {
   const email = (g('reg-email').value || '').trim();
   const pass  = (g('reg-pass').value  || '').trim();
   const pass2 = (g('reg-pass2').value || '').trim();
+  const role  = (g('reg-role').value  || 'member');
   const msg   = g('reg-msg');
   msg.style.color = 'var(--red)';
   if (!email || !pass || !pass2) { msg.textContent = 'Preencha todos os campos.'; return; }
@@ -544,18 +587,89 @@ async function registerUser() {
   try {
     const res  = await fetch('/api/auth/register', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({email, password: pass, adminKey: KEY}),
+      body: JSON.stringify({email, password: pass, adminKey: KEY, role, sessionToken: SESSION_TOKEN}),
     });
     const data = await res.json();
     if (res.ok) {
       msg.style.color = 'var(--green)';
       msg.textContent = 'Usuário cadastrado com sucesso!';
       g('reg-email').value = g('reg-pass').value = g('reg-pass2').value = '';
+      g('reg-role').value = 'member';
+      loadUsersList();
     } else {
       msg.textContent = data.error || 'Erro ao cadastrar.';
     }
   } catch { msg.textContent = 'Erro de conexão.'; }
   finally  { btn.disabled = false; }
+}
+
+async function loadUsersList() {
+  const el = g('users-list');
+  if (!el) return;
+  try {
+    const res  = await fetch('/api/auth/users', { headers: { 'x-session-token': SESSION_TOKEN } });
+    const data = await res.json();
+    if (!res.ok) { el.innerHTML = `<span style="color:var(--red)">${esc(data.error || 'Erro ao carregar usuários.')}</span>`; return; }
+
+    const rows = (data.users || []).map(u => {
+      const isMe = u.id === data.currentUserId;
+      const roleLabel = u.role === 'admin' ? 'Administrador' : 'Membro';
+      const badgeClass = u.role === 'admin' ? 'badge-pub' : 'badge-det';
+      const lastLogin = u.last_login ? new Date(u.last_login * 1000).toLocaleString('pt-BR') : '—';
+      return `
+        <tr>
+          <td>${esc(u.email)}${isMe ? ' <span style="color:var(--muted)">(você)</span>' : ''}</td>
+          <td><span class="badge ${badgeClass}">${roleLabel}</span></td>
+          <td>${lastLogin}</td>
+          <td style="white-space:nowrap">
+            ${isMe ? '' : `
+              <button class="btn-s" style="padding:5px 10px;font-size:12.5px;border-radius:6px;cursor:pointer"
+                onclick="toggleRole(${u.id}, '${u.role === 'admin' ? 'member' : 'admin'}')">
+                ${u.role === 'admin' ? 'Tornar membro' : 'Tornar admin'}
+              </button>
+              <button class="btn-s" style="padding:5px 10px;font-size:12.5px;border-radius:6px;cursor:pointer;color:var(--red);margin-left:6px"
+                onclick="deleteUserRow(${u.id}, '${esc(u.email)}')">
+                Excluir
+              </button>`}
+          </td>
+        </tr>`;
+    }).join('');
+
+    el.innerHTML = `
+      <table class="ltable">
+        <thead><tr><th>E-mail</th><th>Papel</th><th>Último acesso</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } catch {
+    el.innerHTML = '<span style="color:var(--red)">Erro de conexão.</span>';
+  }
+}
+
+async function toggleRole(userId, newRole) {
+  try {
+    const res  = await fetch('/api/auth/update-role', {
+      method:'POST',
+      headers:{'Content-Type':'application/json', 'x-session-token': SESSION_TOKEN},
+      body: JSON.stringify({ userId, role: newRole }),
+    });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || 'Erro ao atualizar papel.'); return; }
+    loadUsersList();
+  } catch { alert('Erro de conexão.'); }
+}
+
+async function deleteUserRow(userId, email) {
+  if (!confirm(`Excluir o usuário ${email}? Essa ação não pode ser desfeita.`)) return;
+  try {
+    const res  = await fetch('/api/auth/delete-user', {
+      method:'POST',
+      headers:{'Content-Type':'application/json', 'x-session-token': SESSION_TOKEN},
+      body: JSON.stringify({ userId }),
+    });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || 'Erro ao excluir usuário.'); return; }
+    loadUsersList();
+  } catch { alert('Erro de conexão.'); }
 }
 
 // ── Routing ───────────────────────────────────────────────────────────────
@@ -585,6 +699,7 @@ function nav(sec) {
   if (sec === 'paginas'      && !loaded.paginas) loadPaginas();
   if (sec === 'leads'        && !loaded.leads)   loadLeads();
   if (sec === 'rastreamento' && !iframeSet)       setIframe();
+  if (sec === 'config'       && !loaded.config)  { loaded.config = true; renderUsersCard(); }
 }
 
 // ══ PÁGINAS ══════════════════════════════════════════════════════════════
@@ -1166,6 +1281,8 @@ function buildCfgLinks() {
 // ── Helpers ───────────────────────────────────────────────────────────────
 function authFail() {
   sessionStorage.removeItem('dash_key');
+  sessionStorage.removeItem('dash_role');
+  sessionStorage.removeItem('dash_session_token');
   g('auth-err').textContent = 'Chave inválida.';
   showEl('d-auth');
 }
@@ -1223,8 +1340,10 @@ function showEl(id) { g(id).style.display='flex'; }
 function hideEl(id) { g(id).style.display='none'; }
 
 // Exposto globalmente para os atributos onclick inline
-window.openDetail  = openDetail;
-window.closeDetail = closeDetail;
+window.openDetail   = openDetail;
+window.closeDetail  = closeDetail;
+window.toggleRole   = toggleRole;
+window.deleteUserRow = deleteUserRow;
 
 })();
 </script>
