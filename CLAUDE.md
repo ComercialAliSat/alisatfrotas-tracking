@@ -154,8 +154,8 @@ status. See Hop 8 in `docs/data-flow.md` for the full mechanics and the
 
 | Path | Purpose |
 |---|---|
-| `_middleware.js` | Runs on every page request. Generates `_krob_sid`, captures `fbclid`/`gclid`/UTMs, computes `SUB_DOMAIN_INDEX` from the Host header, sets 400-day cookies, upserts `sessions`. Skips `/tracker`, `/webhook/*`, `/api/*`, `/dash`. |
-| `tracker.js` | `POST /tracker` — client events. Hashes PII, fires Meta CAPI + GA4 MP + LinkedIn CAPI + Google Ads (lead conversion), logs to `event_log` (PageView skipped). |
+| `_middleware.js` | Runs on every page request. Generates `_krob_sid`, captures `fbclid`/`gclid`/`oppref`/UTMs, computes `SUB_DOMAIN_INDEX` from the Host header, sets 400-day cookies, upserts `sessions`. Also injects consent-gated pixel snippets (Meta, GA4, LinkedIn, ChatGPT Ads `oaiq`) into `<head>` when `alisat_lgpd=all`. Skips `/tracker`, `/webhook/*`, `/api/*`, `/dash`. |
+| `tracker.js` | `POST /tracker` — client events. Hashes PII, fires Meta CAPI + GA4 MP + LinkedIn CAPI + Google Ads (lead conversion) + ChatGPT Ads Conversions API (Lead only, `lead_created`), logs to `event_log` (PageView skipped). |
 | `checkout-session.js` | `POST /checkout-session` — persists `trk` + attribution when a sales-page loads or a checkout button fires. |
 | `scripts/[[path]].js` | First-party proxy for `gtag.js`. Example pages load GA4 via `/scripts/gtag.js?id=...`. |
 | `webhook/_core.js` | Platform-agnostic brain: lookup `trk` → enrich → fan out to Meta/GA4/Google Ads/LinkedIn/Encharge/ManyChat → persist `purchase_log` + `purchase_items`. |
@@ -222,3 +222,4 @@ These have sensible defaults. Change them only if you know why.
 | Which sales platforms are active | Pipedrive built in | A platform goes live once its `<PLATFORM>_WEBHOOK_SLUG` env var is set. Configure the full `/webhook/<platform>/<slug>` URL in the platform's webhook settings; wrong slug = 404 |
 | Dashboard auth | Query param `?key=<DASH_KEY>` | Rotate by changing the env var; no code change |
 | Ad-spend sync | Off until recipient configures Meta Ads / ChatGPT Ads cron (see `docs/ad-spend-sync.md`) | Set `META_ADS_ACCESS_TOKEN`, `META_ADS_ACCOUNT_ID`, `SYNC_SECRET` and schedule an external cron to hit `/api/sync/meta-ads` hourly; set `CHATGPT_ADS_API_KEY` (reuses `SYNC_SECRET`) and hit `/api/sync/chatgpt-ads` hourly |
+| ChatGPT Ads pixel + conversions | Off until `CHATGPT_ADS_PIXEL_ID` is set | Set `CHATGPT_ADS_PIXEL_ID` (public, non-secret — the `pixelId` embedded in the injected `oaiq` snippet) to enable the browser pixel on every page (LGPD-gated, same as Meta/GA4/LinkedIn). Set `CHATGPT_ADS_API_CONVERSION_KEY` — a **separate key from `CHATGPT_ADS_API_KEY`**, scoped with `ads.third_party_events.write`, generated in Ads Manager's Conversions section — to enable the server-side fan-out in `tracker.js` for Lead events. Both must be set for full pixel+CAPI dedup, matching the Meta pattern. |

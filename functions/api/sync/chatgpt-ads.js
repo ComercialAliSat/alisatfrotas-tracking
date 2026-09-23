@@ -21,8 +21,22 @@
 // cron provider doesn't mark the endpoint as failing.
 //
 // Source of the API shape: https://developers.openai.com/ads/api-reference/insights
-// (GET /ad_account/insights, cursor pagination via first_id/last_id, fields[]
-// projection, time_ranges[] as a JSON date_range object).
+// verified live against the real account on 2026-09-23:
+//   - `time_ranges[]` must be a single JSON OBJECT per entry (not an array):
+//     `{"type":"date_range","since":"YYYY-MM-DD","until":"YYYY-MM-DD"}`.
+//   - `fields[]` values are dotted `entity.field` names, and the valid set
+//     depends on `aggregation_level`. At `aggregation_level=campaign` the
+//     available fields are `campaign.id/name/spend/impressions/clicks/...`
+//     — no ad-level fields (mirrors Meta's `level=campaign` call, where
+//     `ad_id`/`ad_name` are always null; ad-level breakdown would need a
+//     separate `aggregation_level=ad` call and is not done here).
+//   - The response rows are flat snake_case (`campaign_id`, `campaign_name`,
+//     `spend`, `impressions`, `clicks`, `readable_time`), regardless of the
+//     dotted request field names.
+//   - `spend` is a decimal currency amount (e.g. `50.29`), NOT micros —
+//     confirmed against a real response. `GET /ad_account` returned
+//     `currency_code: "BRL"` for this account, matching the hardcoded
+//     'BRL' fallback below (no currency field is present per-row).
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -83,20 +97,19 @@ async function fetchAllInsights(apiKey, dateFrom, dateTo) {
   let after = null;
   let safety = 20; // prevent runaway pagination on buggy responses
 
-  const timeRange = JSON.stringify([{ type: 'date_range', since: dateFrom, until: dateTo }]);
+  const timeRange = JSON.stringify({ type: 'date_range', since: dateFrom, until: dateTo });
 
   while (safety-- > 0) {
     const params = new URLSearchParams();
     params.set('aggregation_level', 'campaign');
     params.set('time_granularity', 'daily');
     params.append('time_ranges[]', timeRange);
-    params.append('fields[]', 'campaign_id');
-    params.append('fields[]', 'campaign_name');
-    params.append('fields[]', 'ad_id');
-    params.append('fields[]', 'ad_name');
-    params.append('fields[]', 'spend');
-    params.append('fields[]', 'impressions');
-    params.append('fields[]', 'clicks');
+    params.append('fields[]', 'campaign.id');
+    params.append('fields[]', 'campaign.name');
+    params.append('fields[]', 'campaign.spend');
+    params.append('fields[]', 'campaign.impressions');
+    params.append('fields[]', 'campaign.clicks');
+    params.append('fields[]', 'metadata.readable_time');
     params.set('limit', '500');
     if (after) params.set('after', after);
 
@@ -126,20 +139,15 @@ async function upsertAdSpend(db, rows) {
   if (!db || rows.length === 0) return 0;
   const now = Math.floor(Date.now() / 1000);
 
-  // NOTE: the OpenAI Ads Insights API does not document the unit of the
-  // `spend` field the way Meta documents its decimal-string spend. This
-  // conversion assumes a decimal currency amount (mirroring Meta's
-  // `parseFloat(spend) * 100`) — verify against a real response (see
-  // docs/ad-spend-sync.md "ChatGPT Ads" troubleshooting) before trusting
-  // the numbers, and adjust here if the account actually returns micros.
+  // aggregation_level=campaign never returns ad-level fields, so ad_id/
+  // ad_name stay NULL here — mirrors the Meta sync's own campaign-level call.
   const stmt = db.prepare(`
     INSERT INTO ad_spend
       (platform, date, campaign_id, campaign_name, ad_id, ad_name, spend_cents, currency, impressions, clicks, synced_at)
-    VALUES ('chatgpt', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES ('chatgpt', ?, ?, ?, NULL, NULL, ?, ?, ?, ?, ?)
     ON CONFLICT(platform, date, campaign_id, COALESCE(ad_id, ''))
     DO UPDATE SET
       campaign_name = excluded.campaign_name,
-      ad_name       = excluded.ad_name,
       spend_cents   = excluded.spend_cents,
       currency      = excluded.currency,
       impressions   = excluded.impressions,
@@ -151,8 +159,6 @@ async function upsertAdSpend(db, rows) {
     r.readable_time || '',
     String(r.campaign_id || ''),
     r.campaign_name || '',
-    r.ad_id ? String(r.ad_id) : null,
-    r.ad_name || null,
     Math.round(parseFloat(r.spend || '0') * 100),
     'BRL',
     parseInt(r.impressions || '0', 10) || 0,

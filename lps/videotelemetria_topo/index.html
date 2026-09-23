@@ -1495,6 +1495,8 @@
       fbc:          cookie('_fbc'),
     };
 
+    try { if (window.oaiq) oaiq('measure', 'lead_created', { type: 'customer_action' }, { event_id: payload.event_id }); } catch (err) {}
+
     try {
       const res = await fetch('/tracker', {
         method: 'POST',

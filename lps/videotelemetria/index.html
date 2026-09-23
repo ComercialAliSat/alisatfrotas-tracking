@@ -54,12 +54,14 @@
     if (span) span.textContent = 'Enviando...';
 
     var parts = data.nome.split(/\s+/);
+    var vtEventId = crypto.randomUUID();
+    try { if (window.oaiq) oaiq('measure', 'lead_created', { type: 'customer_action' }, { event_id: vtEventId }); } catch (err) {}
     fetch('/tracker', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         event_name: 'Lead',
-        event_id: crypto.randomUUID(),
+        event_id: vtEventId,
         event_time: Math.floor(Date.now() / 1000),
         event_source_url: window.location.href,
         product: 'videotelemetria',

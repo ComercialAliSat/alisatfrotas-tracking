@@ -1298,6 +1298,7 @@ function heroAdvance() {
 
   heroS1.nome = nome; heroS1.email = email; heroS1.tel = tel;
   const eid = crypto.randomUUID(); heroS1.eid = eid;
+  try { if (window.oaiq) oaiq('measure', 'lead_created', { type: 'customer_action' }, { event_id: eid }); } catch (err) {}
   const parts = nome.split(/\s+/);
   fetch('/tracker', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },

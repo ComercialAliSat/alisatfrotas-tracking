@@ -172,6 +172,16 @@ export async function onRequest(context) {
       );
     }
 
+    if (trackingOk && env.CHATGPT_ADS_PIXEL_ID) {
+      const pid = env.CHATGPT_ADS_PIXEL_ID;
+      snippets.push(
+        `<script>!function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];` +
+        `w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];` +
+        `f.parentNode.insertBefore(j,f)}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");` +
+        `oaiq("init",{pixelId:"${pid}",debug:true});</script>`
+      );
+    }
+
     // LGPD banner — shown when visitor has not yet made a cookie choice.
     // Uses an HTTP cookie so the server can read it on the next request.
     // "Aceitar todos"  → cookie alisat_lgpd=all   + page reload (pixels fire on reload)

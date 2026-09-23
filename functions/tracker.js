@@ -175,6 +175,7 @@ export async function onRequestPost(context) {
         externalId,
         env,
       }),
+      sendToChatGptAds({ body, clientIp, userAgent, hashedEm, hashedFn, hashedLn, hashedPh, hashedExternalId, sessionData, env }),
     ]);
 
     // --- Parse Meta result ---
@@ -244,6 +245,17 @@ export async function onRequestPost(context) {
       if (brevoStatus >= 400) {
         const brevoBody = await results[5].value.response.text().catch(() => '');
         console.error('Brevo contact sync non-2xx:', brevoStatus, brevoBody);
+      }
+    }
+
+    // --- Parse ChatGPT Ads Conversions API result (fire-and-forget — not persisted to event_log) ---
+    if (results[6]?.status === 'rejected') {
+      console.error('ChatGPT Ads CAPI error:', results[6].reason?.message || 'unknown');
+    } else if (results[6]?.status === 'fulfilled' && results[6].value?.response && !results[6].value?.skipped) {
+      const chatgptStatus = results[6].value.response.status;
+      if (chatgptStatus >= 400) {
+        const chatgptBody = await results[6].value.response.text().catch(() => '');
+        console.error('ChatGPT Ads CAPI non-2xx:', chatgptStatus, chatgptBody);
       }
     }
 
@@ -420,6 +432,62 @@ async function sendToMeta({ body, clientIp, userAgent, fbp, fbc, hashedEm, hashe
   const response = await fetch(`https://graph.facebook.com/v25.0/${env.META_PIXEL_ID}/events?access_token=${env.META_ACCESS_TOKEN}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    body: payloadJson,
+  });
+  return { payload: payloadJson, response };
+}
+
+// -------------------------------------------------------
+// CHATGPT ADS — CONVERSIONS API
+// Fires only for Lead events (mirrors the oaiq browser pixel's
+// 'lead_created' measure() call on the LP — same event_id, so OpenAI's
+// system dedupes the two signals). Uses env.CHATGPT_ADS_API_CONVERSION_KEY,
+// a separate key from CHATGPT_ADS_API_KEY (Insights): the Conversions
+// endpoint requires the `ads.third_party_events.write` scope, which the
+// Insights-only key doesn't have. Endpoint/payload shape verified live
+// against the real account on 2026-09-23 — see functions/api/sync/chatgpt-ads.js.
+// -------------------------------------------------------
+async function sendToChatGptAds({ body, clientIp, userAgent, hashedEm, hashedFn, hashedLn, hashedPh, hashedExternalId, sessionData, env }) {
+  if (!env.CHATGPT_ADS_PIXEL_ID || !env.CHATGPT_ADS_API_CONVERSION_KEY) {
+    return { skipped: 'missing chatgpt ads env', payload: null, response: null };
+  }
+
+  const eventName = (body.event_name || '').toLowerCase();
+  if (eventName !== 'lead') {
+    return { skipped: 'not a lead event', payload: null, response: null };
+  }
+
+  const chatgptUser = {};
+  if (hashedEm) chatgptUser.emails_sha256 = [hashedEm];
+  if (hashedFn) chatgptUser.first_names_sha256 = [hashedFn];
+  if (hashedLn) chatgptUser.last_names_sha256 = [hashedLn];
+  if (hashedPh) chatgptUser.phone_numbers_sha256 = [hashedPh];
+  if (hashedExternalId) chatgptUser.external_ids_sha256 = [hashedExternalId];
+  if (clientIp) chatgptUser.ip_address = clientIp;
+  if (userAgent) chatgptUser.user_agent = userAgent;
+
+  const event = {
+    id: body.event_id,
+    type: 'lead_created',
+    timestamp_ms: (body.event_time || Math.floor(Date.now() / 1000)) * 1000,
+    action_source: 'web',
+    source_url: body.event_source_url || '',
+    data: { type: 'customer_action' },
+  };
+
+  const oppref = sessionData.oppref || body.oppref || '';
+  if (oppref) event.oppref = oppref;
+  if (Object.keys(chatgptUser).length > 0) event.user = chatgptUser;
+
+  const payload = { validate_only: false, events: [event] };
+  const payloadJson = JSON.stringify(payload);
+
+  const response = await fetch(`https://bzr.openai.com/v1/events?pid=${env.CHATGPT_ADS_PIXEL_ID}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${env.CHATGPT_ADS_API_CONVERSION_KEY}`,
+      'Content-Type': 'application/json',
+    },
     body: payloadJson,
   });
   return { payload: payloadJson, response };
