@@ -169,24 +169,24 @@
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mono">
         <div>
-          <div class="kpi-label">Real events</div>
+          <div class="kpi-label">Eventos reais</div>
           <div class="text-2xl" id="health-real">—</div>
         </div>
         <div>
-          <div class="kpi-label">ITP recovered</div>
+          <div class="kpi-label">Recuperados via ITP</div>
           <div class="text-2xl accent-blue" id="health-itp">—</div>
         </div>
         <div>
-          <div class="kpi-label">Adblock recovered</div>
+          <div class="kpi-label">Recuperados via Adblock</div>
           <div class="text-2xl accent-green" id="health-adblock">—</div>
         </div>
         <div>
-          <div class="kpi-label">Bots filtered</div>
+          <div class="kpi-label">Bots filtrados</div>
           <div class="text-2xl accent-red" id="health-bots">—</div>
         </div>
       </div>
       <div class="mt-5">
-        <div class="text-xs uppercase tracking-wider text-[color:var(--dim)] mb-2">fbp source breakdown</div>
+        <div class="text-xs uppercase tracking-wider text-[color:var(--dim)] mb-2">Origem do fbp</div>
         <div class="flex flex-wrap gap-2 text-xs" id="health-fbp"></div>
       </div>
     </section>
@@ -544,10 +544,10 @@
     qs('#health-bots').textContent    = fmtInt((rec.total_events || 0) - (rec.real_events || 0));
     const fbp = qs('#health-fbp');
     fbp.innerHTML = [
-      ['pixel_js',         rec.fbp_from_pixel,      'blue'],
-      ['middleware_http',  rec.fbp_from_middleware, 'green'],
-      ['tracker_http',     rec.fbp_from_session,    'amber'],
-      ['none',             rec.fbp_none,            'red'],
+      ['Pixel (navegador)',    rec.fbp_from_pixel,      'blue'],
+      ['Middleware (servidor)', rec.fbp_from_middleware, 'green'],
+      ['Tracker (servidor)',   rec.fbp_from_session,    'amber'],
+      ['Nenhum',                rec.fbp_none,            'red'],
     ].map(([label, val, color]) => `
       <span class="border border-[color:var(--border)] rounded-lg px-2 py-1">
         <span class="accent-${color} mono font-semibold">${fmtInt(val)}</span>
