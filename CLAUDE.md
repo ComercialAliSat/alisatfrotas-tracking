@@ -172,6 +172,7 @@ status. See Hop 8 in `docs/data-flow.md` for the full mechanics and the
 | `api/purchases.js` | Dashboard: purchases table with platform delivery status. |
 | `api/sync/meta-ads.js` | `POST /api/sync/meta-ads` — cron-triggered Meta Marketing API pull into `ad_spend`. Gated by `SYNC_SECRET` header. |
 | `api/sync/chatgpt-ads.js` | `POST /api/sync/chatgpt-ads` — cron-triggered OpenAI Ads Insights API pull into `ad_spend` (`platform='chatgpt'`). Gated by the same `SYNC_SECRET` header. |
+| `api/sync/google-ads.js` | `POST /api/sync/google-ads` — cron-triggered Google Ads reporting query (`googleAds:searchStream`) into `ad_spend` (`platform='google'`). Reuses the same OAuth credentials already used by `sendToGoogleAds` in `tracker.js` — no new env vars. Gated by the same `SYNC_SECRET` header. |
 
 ### Schema, config, and static (`migrations/`, `config/`, `dash/`, `examples/`)
 
@@ -221,5 +222,5 @@ These have sensible defaults. Change them only if you know why.
 | PII retention window | Raw email/name/phone stored indefinitely | Manual: run a periodic `DELETE` via scheduled worker. Not enforced by default. |
 | Which sales platforms are active | Pipedrive built in | A platform goes live once its `<PLATFORM>_WEBHOOK_SLUG` env var is set. Configure the full `/webhook/<platform>/<slug>` URL in the platform's webhook settings; wrong slug = 404 |
 | Dashboard auth | Query param `?key=<DASH_KEY>` | Rotate by changing the env var; no code change |
-| Ad-spend sync | Off until recipient configures Meta Ads / ChatGPT Ads cron (see `docs/ad-spend-sync.md`) | Set `META_ADS_ACCESS_TOKEN`, `META_ADS_ACCOUNT_ID`, `SYNC_SECRET` and schedule an external cron to hit `/api/sync/meta-ads` hourly; set `CHATGPT_ADS_API_KEY` (reuses `SYNC_SECRET`) and hit `/api/sync/chatgpt-ads` hourly |
+| Ad-spend sync | Off until recipient configures Meta/ChatGPT/Google Ads cron (see `docs/ad-spend-sync.md`) | Set `META_ADS_ACCESS_TOKEN`, `META_ADS_ACCOUNT_ID`, `SYNC_SECRET` and schedule an external cron to hit `/api/sync/meta-ads` hourly; set `CHATGPT_ADS_API_KEY` (reuses `SYNC_SECRET`) and hit `/api/sync/chatgpt-ads` hourly; `/api/sync/google-ads` reuses the existing `GOOGLE_ADS_*` conversion-upload credentials — just needs a valid (non-revoked) `GOOGLE_ADS_REFRESH_TOKEN` |
 | ChatGPT Ads pixel + conversions | Off until `CHATGPT_ADS_PIXEL_ID` is set | Set `CHATGPT_ADS_PIXEL_ID` (public, non-secret — the `pixelId` embedded in the injected `oaiq` snippet) to enable the browser pixel on every page (LGPD-gated, same as Meta/GA4/LinkedIn). Set `CHATGPT_ADS_API_CONVERSION_KEY` — a **separate key from `CHATGPT_ADS_API_KEY`**, scoped with `ads.third_party_events.write`, generated in Ads Manager's Conversions section — to enable the server-side fan-out in `tracker.js` for Lead events. Both must be set for full pixel+CAPI dedup, matching the Meta pattern. |

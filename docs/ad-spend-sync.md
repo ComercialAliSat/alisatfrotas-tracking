@@ -290,9 +290,74 @@ Same providers and pattern as the Meta section above — just point at
 
 ### 5. Check the dashboard
 
-Open `/dash`. The paid-traffic attribution card now has a fourth "ChatGPT"
-column alongside Meta / Google / Organic, showing sales, revenue, spend,
-CPA, and ROAS. Sales are attributed to ChatGPT via the `oppref` click
-identifier captured on the originating session (see `docs/schema.md`,
-`sessions.oppref` / `checkout_sessions.oppref` / `purchase_log.oppref`,
-added in migration 0026) — the same mechanism `gclid` uses for Google.
+Open `/dash`. The "Investimento por canal" table has a row for ChatGPT with
+Investimento/Impressões/Cliques (from this sync) and Visitas/Leads/Vendas/
+CPL/CAC (classified via the `oppref` click identifier captured on the
+originating session — see `docs/schema.md`, `sessions.oppref` /
+`checkout_sessions.oppref` / `purchase_log.oppref`, added in migration
+0026 — the same mechanism `gclid` uses for Google).
+
+---
+
+## Ad spend sync — Google Ads
+
+Same pattern again, reusing credentials that likely already exist if
+you've set up Google Ads lead-conversion uploads (`sendToGoogleAds` in
+`functions/tracker.js`) — no new OAuth app needed.
+
+```
+external cron (hourly)
+     │
+     ▼
+POST /api/sync/google-ads    ← guarded by x-sync-secret header
+     │
+     ▼
+Google Ads API (googleAds:searchStream)  ← campaign-level report query
+     │
+     ▼
+D1 ad_spend table            ← UPSERT by (platform, date, campaign_id), platform='google'
+```
+
+### 1. Required environment variables
+
+All six are the SAME ones already used by the conversion-upload flow — if
+Google Ads lead conversions already work in this deployment, this sync
+needs nothing new:
+
+| Name | Value |
+|---|---|
+| `GOOGLE_ADS_CUSTOMER_ID` | Account being queried (digits only, no dashes) |
+| `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | Manager (MCC) account for the `login-customer-id` header |
+| `GOOGLE_ADS_DEVELOPER_TOKEN` 🔒 | Developer token |
+| `GOOGLE_ADS_CLIENT_ID` | OAuth client ID |
+| `GOOGLE_ADS_CLIENT_SECRET` 🔒 | OAuth client secret |
+| `GOOGLE_ADS_REFRESH_TOKEN` 🔒 | OAuth refresh token — **must be valid and not revoked**; the sync calls `oauth2.googleapis.com/token` on every run and fails the whole sync with `invalid_grant` if this token has expired or been revoked. Re-run the OAuth consent flow to get a fresh one if that happens. |
+| `SYNC_SECRET` 🔒 | Reuses the same value already configured for Meta/ChatGPT |
+
+### 2. Verify the endpoint works
+
+```bash
+curl -X POST https://your-deployment.pages.dev/api/sync/google-ads \
+  -H "x-sync-secret: <YOUR_SYNC_SECRET>" \
+  -H "Content-Type: application/json" \
+  -d '{"date_from":"2026-09-01","date_to":"2026-09-22"}'
+```
+
+`{"ok":true,"rows_upserted":N,...}` means it worked. An `invalid_grant`
+error in the response means the refresh token needs to be regenerated
+(see above) — this is a Google OAuth problem, not a bug in the sync code.
+
+### 3. Schedule hourly syncs
+
+Same pattern as Meta/ChatGPT — point at `/api/sync/google-ads`.
+
+### 4. Check the dashboard
+
+The "Investimento por canal" table's Google row fills in Investimento/
+Impressões/Cliques once this sync has run successfully at least once.
+Visitas/Leads/Vendas for Google were already working before this sync
+existed (classified via `gclid`/`gbraid`/`wbraid`) — this sync only adds
+the spend side, enabling CPL/CAC for that row.
+
+`metrics.cost_micros` is a documented, stable Google Ads API unit (1,000,000
+micros = 1 currency unit) — divided by 10,000 to store as integer cents.

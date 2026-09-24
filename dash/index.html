@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tracking Dashboard</title>
+<title>Painel de Acompanhamento</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
 <style>
   :root {
     --bg: #f7f7f8;
@@ -49,8 +48,8 @@
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg bg-[color:var(--text)] text-white flex items-center justify-center font-bold">T</div>
         <div>
-          <div class="font-semibold">Tracking Dashboard</div>
-          <div class="text-xs text-[color:var(--muted)]">Attribution &amp; performance for this deployment</div>
+          <div class="font-semibold">Painel de Acompanhamento</div>
+          <div class="text-xs text-[color:var(--muted)]">Atribuição e performance deste ambiente</div>
         </div>
       </div>
       <div class="flex items-center gap-2" id="range-picker">
@@ -63,225 +62,70 @@
 
   <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
 
-    <!-- Revenue Overview -->
-    <section class="fade-in">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="card p-5">
-          <div class="kpi-label">Gross Revenue</div>
-          <div class="kpi-value mono accent-amber mt-1" id="kpi-revenue">—</div>
-          <div class="text-xs text-[color:var(--muted)] mt-1" id="kpi-revenue-sub">&nbsp;</div>
-        </div>
-        <div class="card p-5">
-          <div class="kpi-label">Sales</div>
-          <div class="kpi-value mono mt-1" id="kpi-sales">—</div>
-          <div class="text-xs text-[color:var(--muted)] mt-1">Paid transactions</div>
-        </div>
-        <div class="card p-5">
-          <div class="kpi-label">Average Order</div>
-          <div class="kpi-value mono accent-blue mt-1" id="kpi-aov">—</div>
-          <div class="text-xs text-[color:var(--muted)] mt-1">Gross / sales</div>
-        </div>
-        <div class="card p-5">
-          <div class="kpi-label">Leads</div>
-          <div class="kpi-value mono accent-green mt-1" id="kpi-leads">—</div>
-          <div class="text-xs text-[color:var(--muted)] mt-1">Non-bot, last window</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Revenue time series -->
-    <section class="card p-5 fade-in">
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <div class="font-semibold">Revenue over time</div>
-          <div class="text-xs text-[color:var(--muted)]">Daily gross revenue and sales count</div>
-        </div>
-      </div>
-      <div class="h-64"><canvas id="chart-revenue"></canvas></div>
-    </section>
-
-    <!-- Product cards + time series -->
-    <section class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 fade-in">
-      <div class="card p-5">
-        <div class="font-semibold mb-3">Products</div>
-        <div id="product-cards" class="space-y-2">
-          <div class="text-sm text-[color:var(--muted)]">Loading…</div>
-        </div>
-      </div>
-      <div class="card p-5">
-        <div class="font-semibold mb-3">Sales per product over time</div>
-        <div class="h-64"><canvas id="chart-products"></canvas></div>
-      </div>
-    </section>
-
-    <!-- Paid Traffic Attribution -->
+    <!-- Investimento por Canal -->
     <section class="card p-5 fade-in">
       <div class="flex items-center justify-between mb-4">
         <div>
-          <div class="font-semibold">Paid traffic attribution</div>
+          <div class="font-semibold">Investimento por canal</div>
           <div class="text-xs text-[color:var(--muted)]">
-            Sales grouped by the click identifier on the originating session.
-            Meta spend is synced from Meta Marketing API
-            <span id="attribution-sync-note" class="ml-1"></span>.
-            ChatGPT spend is synced from the OpenAI Ads API
-            <span id="chatgpt-sync-note" class="ml-1"></span>.
+            Visitas/Leads/Vendas classificados pelo identificador de clique da sessão de origem
+            (fbc → Meta, gclid/gbraid/wbraid → Google, li_fat_id → LinkedIn, oppref → ChatGPT Ads).
           </div>
         </div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div class="border border-[color:var(--border)] rounded-lg p-4">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="w-2 h-2 rounded-full" style="background:var(--accent-blue)"></div>
-            <div class="text-sm font-semibold">Meta</div>
-          </div>
-          <div class="grid grid-cols-2 gap-3 mt-3 mono">
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Sales</div>
-              <div class="text-xl" id="meta-sales">—</div>
-            </div>
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Revenue</div>
-              <div class="text-xl" id="meta-revenue">—</div>
-            </div>
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Spend</div>
-              <div class="text-xl" id="meta-spend">—</div>
-            </div>
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">CPA</div>
-              <div class="text-xl" id="meta-cpa">—</div>
-            </div>
-            <div class="col-span-2">
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">ROAS</div>
-              <div class="text-2xl" id="meta-roas">—</div>
-            </div>
-          </div>
-        </div>
-        <div class="border border-[color:var(--border)] rounded-lg p-4">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="w-2 h-2 rounded-full" style="background:var(--accent-amber)"></div>
-            <div class="text-sm font-semibold">Google</div>
-          </div>
-          <div class="grid grid-cols-2 gap-3 mt-3 mono">
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Sales</div>
-              <div class="text-xl" id="google-sales">—</div>
-            </div>
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Revenue</div>
-              <div class="text-xl" id="google-revenue">—</div>
-            </div>
-          </div>
-          <div class="text-[11px] text-[color:var(--muted)] mt-3 leading-snug">
-            Spend sync for Google Ads arrives in v1.1. Revenue above is from purchases with gclid/gbraid/wbraid captured on the session.
-          </div>
-        </div>
-        <div class="border border-[color:var(--border)] rounded-lg p-4">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="w-2 h-2 rounded-full" style="background:var(--accent-purple)"></div>
-            <div class="text-sm font-semibold">ChatGPT</div>
-          </div>
-          <div class="grid grid-cols-2 gap-3 mt-3 mono">
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Sales</div>
-              <div class="text-xl" id="chatgpt-sales">—</div>
-            </div>
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Revenue</div>
-              <div class="text-xl" id="chatgpt-revenue">—</div>
-            </div>
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Spend</div>
-              <div class="text-xl" id="chatgpt-spend">—</div>
-            </div>
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">CPA</div>
-              <div class="text-xl" id="chatgpt-cpa">—</div>
-            </div>
-            <div class="col-span-2">
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">ROAS</div>
-              <div class="text-2xl" id="chatgpt-roas">—</div>
-            </div>
-          </div>
-        </div>
-        <div class="border border-[color:var(--border)] rounded-lg p-4">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="w-2 h-2 rounded-full" style="background:var(--accent-green)"></div>
-            <div class="text-sm font-semibold">Organic</div>
-          </div>
-          <div class="grid grid-cols-2 gap-3 mt-3 mono">
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Sales</div>
-              <div class="text-xl" id="organic-sales">—</div>
-            </div>
-            <div>
-              <div class="text-[11px] text-[color:var(--muted)] uppercase tracking-wider">Revenue</div>
-              <div class="text-xl" id="organic-revenue">—</div>
-            </div>
-          </div>
-          <div class="text-[11px] text-[color:var(--muted)] mt-3 leading-snug">
-            No fbclid / gclid / wbraid / gbraid / oppref on the originating session.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- UTM Breakdown -->
-    <section class="card p-5 fade-in">
-      <div class="flex items-center justify-between mb-3">
-        <div class="font-semibold">UTM breakdown</div>
-        <div class="text-xs text-[color:var(--muted)]">Grouped from purchase_log</div>
-      </div>
-      <div class="flex gap-1 border-b border-[color:var(--border)] mb-4 -mx-5 px-5" id="utm-tabs">
-        <div class="dash-tab active" data-dim="utm_source">source</div>
-        <div class="dash-tab" data-dim="utm_medium">medium</div>
-        <div class="dash-tab" data-dim="utm_campaign">campaign</div>
-        <div class="dash-tab" data-dim="utm_content">content</div>
-        <div class="dash-tab" data-dim="utm_term">term</div>
-      </div>
-      <div id="utm-filters" class="flex flex-wrap gap-2 mb-3"></div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead class="text-xs uppercase tracking-wider text-[color:var(--dim)] border-b border-[color:var(--border)]">
             <tr>
-              <th class="text-left py-2 pr-4">Value</th>
-              <th class="text-right py-2 pr-4">Sales</th>
-              <th class="text-right py-2 pr-4">Revenue</th>
-              <th class="text-right py-2">AOV</th>
+              <th class="text-left py-2 pr-4">Canal</th>
+              <th class="text-right py-2 pr-4">Investimento</th>
+              <th class="text-right py-2 pr-4">Impressões</th>
+              <th class="text-right py-2 pr-4">Cliques</th>
+              <th class="text-right py-2 pr-4">Visitas</th>
+              <th class="text-right py-2 pr-4">Leads</th>
+              <th class="text-right py-2 pr-4">Vendas</th>
+              <th class="text-right py-2 pr-4">CPL</th>
+              <th class="text-right py-2">CAC</th>
             </tr>
           </thead>
-          <tbody id="utm-tbody" class="mono">
-            <tr><td colspan="4" class="py-6 text-center text-[color:var(--muted)]">Loading…</td></tr>
+          <tbody id="channel-tbody" class="mono">
+            <tr><td colspan="9" class="py-6 text-center text-[color:var(--muted)]">Carregando…</td></tr>
           </tbody>
         </table>
       </div>
+      <div class="text-[11px] text-[color:var(--muted)] mt-3 leading-snug" id="channel-sync-note"></div>
     </section>
 
-    <!-- Leads with UTMs -->
+    <!-- Lead Scorecard -->
     <section class="card p-5 fade-in">
       <div class="flex items-center justify-between mb-3">
         <div>
-          <div class="font-semibold">Recent leads</div>
-          <div class="text-xs text-[color:var(--muted)]">Click a row to inspect the exact payload sent to Meta / GA4 and the response</div>
+          <div class="font-semibold">Lead Scorecard</div>
+          <div class="text-xs text-[color:var(--muted)]">
+            Pontuação e estágio do lead_score (engajamento de e-mail via Brevo). Clique no e-mail pra ver o payload técnico, ou em "Jornada" pra ver as páginas visitadas.
+          </div>
         </div>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead class="text-xs uppercase tracking-wider text-[color:var(--dim)] border-b border-[color:var(--border)]">
             <tr>
-              <th class="text-left py-2 pr-4">When</th>
-              <th class="text-left py-2 pr-4">Email</th>
-              <th class="text-left py-2 pr-4">Source</th>
-              <th class="text-left py-2 pr-4">Campaign</th>
-              <th class="text-left py-2 pr-4">Medium</th>
-              <th class="text-center py-2 pr-4">Meta</th>
-              <th class="text-center py-2">GA4</th>
+              <th class="text-left py-2 pr-4">Quando</th>
+              <th class="text-left py-2 pr-4">Lead</th>
+              <th class="text-left py-2 pr-4">Origem</th>
+              <th class="text-right py-2 pr-4">Pontuação</th>
+              <th class="text-left py-2 pr-4">Estágio</th>
+              <th class="text-left py-2 pr-4">Último evento</th>
+              <th class="text-center py-2">Jornada</th>
             </tr>
           </thead>
           <tbody id="leads-tbody">
-            <tr><td colspan="7" class="py-6 text-center text-[color:var(--muted)]">Loading…</td></tr>
+            <tr><td colspan="7" class="py-6 text-center text-[color:var(--muted)]">Carregando…</td></tr>
           </tbody>
         </table>
+      </div>
+      <div class="text-[11px] text-[color:var(--muted)] mt-3 leading-snug">
+        Pontuação vem só de e-mails (aberturas/cliques via Brevo). Temas de e-mail abertos e blogs acessados ainda não são capturados pelo rastreamento — precisa de uma etapa extra de captura se quiser esse detalhe.
       </div>
     </section>
 
@@ -289,8 +133,8 @@
     <section class="card p-5 fade-in">
       <div class="flex items-center justify-between mb-3">
         <div>
-          <div class="font-semibold">Recent purchases</div>
-          <div class="text-xs text-[color:var(--muted)]">Click a row to inspect the exact payload sent to Meta / GA4 / Google Ads and the response</div>
+          <div class="font-semibold">Compras recentes</div>
+          <div class="text-xs text-[color:var(--muted)]">Clique em uma linha para ver o payload exato enviado ao Meta / GA4 / Google Ads e a resposta</div>
         </div>
       </div>
       <div class="overflow-x-auto">
@@ -317,9 +161,9 @@
     <section class="card p-5 fade-in">
       <div class="flex items-center justify-between mb-4">
         <div>
-          <div class="font-semibold">Tracking health</div>
+          <div class="font-semibold">Saúde do rastreamento</div>
           <div class="text-xs text-[color:var(--muted)]">
-            First-party capture vs pixel. Shows how many events you would have lost without server-side tracking.
+            Captura first-party vs. pixel. Mostra quantos eventos seriam perdidos sem o rastreamento server-side.
           </div>
         </div>
       </div>
@@ -470,10 +314,6 @@
   // -------- State --------
   let currentFrom = '';
   let currentTo   = '';
-  let utmDimension = 'utm_source';
-  let utmFilters = {};
-  let revenueChart = null;
-  let productsChart = null;
 
   // -------- Helpers --------
   const fetchJson = path => fetch(`${path}${path.includes('?') ? '&' : '?'}key=${encodeURIComponent(key)}`).then(r => r.json());
@@ -495,146 +335,79 @@
   const fmtDate = ts => new Date(Number(ts) * 1000).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
   // -------- Data loaders --------
-  async function loadRevenue() {
-    const data = await fetchJson(`/api/revenue?${rangeParam()}`);
-    qs('#kpi-revenue').textContent = money(data.gross, data.currency);
-    qs('#kpi-revenue-sub').textContent = currentFrom && currentTo
-      ? `${currentFrom.split('-').reverse().join('/')} – ${currentTo.split('-').reverse().join('/')}`
-      : '30 dias';
-    qs('#kpi-sales').textContent = fmtInt(data.sales);
-    qs('#kpi-aov').textContent = money(data.aov, data.currency);
-    renderRevenueChart(data.time_series || []);
-  }
+  const CHANNEL_LABELS = { meta: 'Meta', google: 'Google', linkedin: 'LinkedIn', chatgpt: 'ChatGPT', organic: 'Orgânico' };
 
-  async function loadProducts() {
-    const data = await fetchJson(`/api/products?${rangeParam()}`);
-    const container = qs('#product-cards');
-    if (!data.products || data.products.length === 0) {
-      container.innerHTML = '<div class="text-sm text-[color:var(--muted)]">No products yet.</div>';
-    } else {
-      container.innerHTML = data.products.map(p => `
-        <div class="border border-[color:var(--border)] rounded-lg p-3">
-          <div class="text-xs text-[color:var(--muted)] truncate">${escapeHtml(p.product_name || p.product_id)}</div>
-          <div class="mt-1 flex items-baseline justify-between">
-            <div class="mono text-lg accent-amber">${money(p.revenue, p.currency || 'BRL')}</div>
-            <div class="mono text-xs text-[color:var(--dim)]">${fmtInt(p.sales)} sales</div>
-          </div>
-        </div>
-      `).join('');
-    }
-    renderProductsChart(data.time_series || []);
-  }
-
-  async function loadAttribution() {
+  async function loadChannels() {
     const data = await fetchJson(`/api/attribution?${rangeParam()}`);
-    qs('#meta-sales').textContent   = fmtInt(data.groups.meta.sales);
-    qs('#meta-revenue').textContent = money(data.groups.meta.revenue);
-    qs('#meta-spend').textContent   = data.meta_spend > 0 ? money(data.meta_spend) : '—';
-    qs('#meta-cpa').textContent     = data.meta_cpa != null ? money(data.meta_cpa) : '—';
-    qs('#meta-roas').textContent    = data.meta_roas != null ? data.meta_roas.toFixed(2) + 'x' : '—';
-    qs('#google-sales').textContent  = fmtInt(data.groups.google.sales);
-    qs('#google-revenue').textContent= money(data.groups.google.revenue);
-    qs('#chatgpt-sales').textContent   = fmtInt(data.groups.chatgpt.sales);
-    qs('#chatgpt-revenue').textContent = money(data.groups.chatgpt.revenue);
-    qs('#chatgpt-spend').textContent   = data.chatgpt_spend > 0 ? money(data.chatgpt_spend) : '—';
-    qs('#chatgpt-cpa').textContent     = data.chatgpt_cpa != null ? money(data.chatgpt_cpa) : '—';
-    qs('#chatgpt-roas').textContent    = data.chatgpt_roas != null ? data.chatgpt_roas.toFixed(2) + 'x' : '—';
-    qs('#organic-sales').textContent = fmtInt(data.groups.organic.sales);
-    qs('#organic-revenue').textContent = money(data.groups.organic.revenue);
+    const tbody = qs('#channel-tbody');
+    const rows = ['meta', 'google', 'linkedin', 'chatgpt', 'organic'].map(ch => {
+      const g = data.groups[ch] || {};
+      const hasSpend = ch !== 'organic';
+      const investCell = !hasSpend ? '—'
+        : g.sync_configured ? money(g.investimento)
+        : '<span class="text-[color:var(--muted)]">não configurado</span>';
+      return `
+        <tr class="border-b border-[color:var(--border)]">
+          <td class="py-2 pr-4 font-sans font-medium">${CHANNEL_LABELS[ch]}</td>
+          <td class="py-2 pr-4 text-right">${investCell}</td>
+          <td class="py-2 pr-4 text-right">${hasSpend ? fmtInt(g.impressoes) : '—'}</td>
+          <td class="py-2 pr-4 text-right">${hasSpend ? fmtInt(g.cliques) : '—'}</td>
+          <td class="py-2 pr-4 text-right">${fmtInt(g.visitas)}</td>
+          <td class="py-2 pr-4 text-right">${fmtInt(g.leads)}</td>
+          <td class="py-2 pr-4 text-right">${fmtInt(g.vendas)}</td>
+          <td class="py-2 pr-4 text-right">${g.cpl != null ? money(g.cpl) : '—'}</td>
+          <td class="py-2 text-right">${g.cac != null ? money(g.cac) : '—'}</td>
+        </tr>`;
+    }).join('');
+    tbody.innerHTML = rows;
 
-    const note = qs('#attribution-sync-note');
-    if (data.last_synced_at) {
-      const dt = new Date(data.last_synced_at * 1000);
-      note.textContent = `(last sync ${dt.toLocaleString()})`;
-    } else {
-      note.textContent = '(sync not configured yet — see docs/ad-spend-sync.md)';
-    }
-
-    const chatgptNote = qs('#chatgpt-sync-note');
-    if (data.chatgpt_last_synced_at) {
-      const dt = new Date(data.chatgpt_last_synced_at * 1000);
-      chatgptNote.textContent = `(last sync ${dt.toLocaleString()})`;
-    } else {
-      chatgptNote.textContent = '(sync not configured yet — see docs/ad-spend-sync.md)';
-    }
-  }
-
-  async function loadUtm() {
-    const params = new URLSearchParams({ dimension: utmDimension });
-    if (currentFrom && currentTo) {
-      params.set('from', currentFrom);
-      params.set('to', currentTo);
-    } else {
-      params.set('days', '30');
-    }
-    for (const [k, v] of Object.entries(utmFilters)) params.set(k, v);
-    const data = await fetchJson(`/api/utm-breakdown?${params.toString()}`);
-    renderUtmFilters();
-    const tbody = qs('#utm-tbody');
-    if (!data.rows || data.rows.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-[color:var(--muted)]">No purchases in this window.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = data.rows.map(r => `
-      <tr class="row-hover cursor-pointer border-b border-[color:var(--border)]" data-value="${escapeHtml(r.value)}">
-        <td class="py-2 pr-4 font-sans">${escapeHtml(r.value)}</td>
-        <td class="py-2 pr-4 text-right">${fmtInt(r.sales)}</td>
-        <td class="py-2 pr-4 text-right accent-amber">${money(r.revenue)}</td>
-        <td class="py-2 text-right text-[color:var(--dim)]">${money(r.aov)}</td>
-      </tr>
-    `).join('');
-    qsa('#utm-tbody tr[data-value]').forEach(row => {
-      row.addEventListener('click', () => {
-        const v = row.getAttribute('data-value');
-        if (v && v !== '(not set)') {
-          utmFilters[utmDimension] = v;
-          loadUtm();
-        }
-      });
-    });
-  }
-
-  function renderUtmFilters() {
-    const container = qs('#utm-filters');
-    const entries = Object.entries(utmFilters);
-    if (entries.length === 0) { container.innerHTML = ''; return; }
-    container.innerHTML = entries.map(([k, v]) => `
-      <button class="inline-flex items-center gap-1 bg-[color:var(--text)] text-white rounded-full px-3 py-1 text-xs" data-filter-key="${k}">
-        <span class="text-[color:var(--muted)]">${k}:</span> ${escapeHtml(v)} <span class="ml-1">&times;</span>
-      </button>
-    `).join('');
-    qsa('#utm-filters button[data-filter-key]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        delete utmFilters[btn.getAttribute('data-filter-key')];
-        loadUtm();
-      });
-    });
+    const lastSyncs = ['meta', 'chatgpt', 'google']
+      .map(ch => data.groups[ch]?.last_synced_at ? `${CHANNEL_LABELS[ch]}: ${new Date(data.groups[ch].last_synced_at * 1000).toLocaleString()}` : null)
+      .filter(Boolean);
+    qs('#channel-sync-note').textContent = lastSyncs.length > 0
+      ? `Último sync de investimento — ${lastSyncs.join(' · ')}`
+      : 'Nenhum sync de investimento rodou ainda — veja docs/ad-spend-sync.md';
   }
 
   async function loadLeads() {
     const data = await fetchJson(`/api/leads?${rangeParam()}&limit=50`);
-    qs('#kpi-leads').textContent = fmtInt((data.leads || []).length);
     const tbody = qs('#leads-tbody');
     if (!data.leads || data.leads.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-[color:var(--muted)]">No leads in this window.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-[color:var(--muted)]">Nenhum lead nesse período.</td></tr>';
       return;
     }
-    tbody.innerHTML = data.leads.map((l, i) => `
-      <tr class="row-hover border-b border-[color:var(--border)] cursor-pointer" data-idx="${i}">
+    tbody.innerHTML = data.leads.map((l, i) => {
+      const score = l.score != null ? Number(l.score) : null;
+      const scoreColor = score == null ? 'text-[color:var(--muted)]' : score >= 60 ? 'accent-green' : score >= 20 ? 'accent-amber' : 'accent-red';
+      const stageLabels = { topo: 'Topo', meio: 'Meio', fundo: 'Fundo' };
+      return `
+      <tr class="border-b border-[color:var(--border)]">
         <td class="py-2 pr-4 text-[color:var(--dim)]">${fmtDate(l.timestamp)}</td>
-        <td class="py-2 pr-4 mono">${escapeHtml(l.raw_email || '—')}</td>
+        <td class="py-2 pr-4 mono row-hover cursor-pointer" data-idx="${i}">${escapeHtml(l.raw_email || '—')}</td>
         <td class="py-2 pr-4">${escapeHtml(l.utm_source || '(direct)')}</td>
-        <td class="py-2 pr-4 text-[color:var(--dim)]">${escapeHtml(l.utm_campaign || '—')}</td>
-        <td class="py-2 pr-4 text-[color:var(--dim)]">${escapeHtml(l.utm_medium || '—')}</td>
-        <td class="py-2 pr-4 text-center">${l.meta_response_ok ? '<span class="accent-green">✓</span>' : '<span class="accent-red">✕</span>'}</td>
-        <td class="py-2 text-center">${l.ga4_response_ok ? '<span class="accent-green">✓</span>' : '<span class="accent-red">✕</span>'}</td>
-      </tr>
-    `).join('');
-    qsa('#leads-tbody tr[data-idx]').forEach(row => {
-      row.addEventListener('click', () => {
-        openDetails('lead', data.leads[parseInt(row.getAttribute('data-idx'), 10)]);
+        <td class="py-2 pr-4 text-right mono ${scoreColor}">${score != null ? score : '—'}</td>
+        <td class="py-2 pr-4">${l.funnel_stage ? (stageLabels[l.funnel_stage] || escapeHtml(l.funnel_stage)) : '—'}</td>
+        <td class="py-2 pr-4 text-[color:var(--dim)]">${l.last_event_type ? `${escapeHtml(l.last_event_type)} · ${fmtDateShort(l.last_event_at)}` : '—'}</td>
+        <td class="py-2 text-center">${l.raw_email ? `<button class="text-xs underline text-[color:var(--accent-blue)]" data-jrn-link="${escapeHtml(l.raw_email)}">ver</button>` : '—'}</td>
+      </tr>`;
+    }).join('');
+    qsa('#leads-tbody [data-idx]').forEach(el => {
+      el.addEventListener('click', () => {
+        openDetails('lead', data.leads[parseInt(el.getAttribute('data-idx'), 10)]);
       });
     });
+    qsa('#leads-tbody [data-jrn-link]').forEach(el => {
+      el.addEventListener('click', () => goToJourney(el.getAttribute('data-jrn-link')));
+    });
+  }
+
+  function goToJourney(email) {
+    qs('#journey-search').value = email;
+    journeySelected = email;
+    _journeyFiltered = journeyLeads.filter(l => l.email.toLowerCase().includes(email.toLowerCase()));
+    renderJourneyList(_journeyFiltered);
+    loadJourneyDetail(email);
+    qs('#journey-search').closest('section').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   async function loadPurchases() {
@@ -783,72 +556,6 @@
     `).join('');
   }
 
-  // -------- Charts --------
-  function renderRevenueChart(series) {
-    const ctx = qs('#chart-revenue').getContext('2d');
-    if (revenueChart) revenueChart.destroy();
-    revenueChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: series.map(r => r.date),
-        datasets: [{
-          label: 'Revenue',
-          data: series.map(r => r.revenue),
-          borderColor: 'rgb(37, 99, 235)',
-          backgroundColor: 'rgba(37, 99, 235, 0.08)',
-          fill: true,
-          tension: 0.35,
-          pointRadius: 0,
-          borderWidth: 2,
-        }],
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: { size: 11 } } },
-          y: { grid: { color: '#f1f1f3' }, ticks: { color: '#a1a1aa', font: { size: 11 } } },
-        },
-      },
-    });
-  }
-
-  function renderProductsChart(series) {
-    const ctx = qs('#chart-products').getContext('2d');
-    if (productsChart) productsChart.destroy();
-    // Group by product_name
-    const byProduct = {};
-    const dates = new Set();
-    for (const row of series) {
-      if (!byProduct[row.product_name]) byProduct[row.product_name] = {};
-      byProduct[row.product_name][row.date] = Number(row.sales || 0);
-      dates.add(row.date);
-    }
-    const sortedDates = [...dates].sort();
-    const palette = ['rgb(37, 99, 235)', 'rgb(22, 163, 74)', 'rgb(217, 119, 6)', 'rgb(220, 38, 38)', 'rgb(124, 58, 237)'];
-    const datasets = Object.entries(byProduct).slice(0, 5).map(([name, bydate], i) => ({
-      label: name,
-      data: sortedDates.map(d => bydate[d] || 0),
-      borderColor: palette[i % palette.length],
-      backgroundColor: palette[i % palette.length] + '20',
-      tension: 0.35,
-      pointRadius: 0,
-      borderWidth: 2,
-    }));
-    productsChart = new Chart(ctx, {
-      type: 'line',
-      data: { labels: sortedDates, datasets },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: { size: 11 } } },
-          y: { grid: { color: '#f1f1f3' }, ticks: { color: '#a1a1aa', font: { size: 11 }, precision: 0 } },
-        },
-      },
-    });
-  }
-
   // -------- Jornada do Lead --------
   let journeyLeads = [];
   let journeySelected = null;
@@ -978,10 +685,7 @@
   // -------- Load orchestration --------
   async function loadAll() {
     await Promise.all([
-      loadRevenue(),
-      loadProducts(),
-      loadAttribution(),
-      loadUtm(),
+      loadChannels(),
       loadLeads(),
       loadPurchases(),
       loadHealth(),
@@ -998,15 +702,6 @@
       currentTo   = todayYmd();
       currentFrom = daysAgoYmd(n);
       loadAll();
-    });
-  });
-  qsa('#utm-tabs .dash-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      qsa('#utm-tabs .dash-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      utmDimension = tab.getAttribute('data-dim');
-      utmFilters = {};
-      loadUtm();
     });
   });
 
