@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Descubra quanto um acidente com caminhão custa para a sua frota de carga. Calculadora gratuita considera franquia, veículo parado, carga e processos. Receba o relatório em minutos.">
+  <meta name="robots" content="index, follow">
+  <title>Calculadora do Custo de um Acidente de Caminhão | Ali Sat</title>
+  <link rel="canonical" href="https://comercial.alisat.com.br/lps/calculadoradeacidentes">
+
+  <meta property="og:title" content="Calculadora do Custo de um Acidente de Caminhão | Ali Sat">
+  <meta property="og:description" content="Responda algumas perguntas sobre a sua frota e descubra o custo real de um acidente, além da economia potencial com videotelemetria.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://comercial.alisat.com.br/lps/calculadoradeacidentes">
+  <meta property="og:image" content="https://comercial.alisat.com.br/lps/calculadoradeacidentes/assets/hero-bg.png">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org","@type":"WebPage",
+    "name":"Calculadora do Custo de um Acidente de Caminhão — Ali Sat",
+    "description":"Calculadora que estima o custo de um acidente com caminhão para frotas de carga, considerando franquia, veículo parado, carga e processos.",
+    "url":"https://comercial.alisat.com.br/lps/calculadoradeacidentes",
+    "publisher":{"@type":"Organization","name":"Ali Sat Rastreamento e Monitoramento LTDA","url":"https://www.alisat.com.br","telephone":"+55-51-3034-2111"}
+  }
+  </script>
+
+  <!-- Pixels (Meta, GA4, LinkedIn) injetados pelo _middleware.js via HTMLRewriter -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,700;1,800&display=swap">
+
+<style>
+:root {
+  --bg: #fcfcfd;
+  --surface: #ffffff;
+  --surface-2: #eef3f9;
+  --line: #d3deea;
+  --fg: #0b1f38;
+  --muted: #51657d;
+  --accent: #0088e3;
+  --accent-ink: #ffffff;
+  --link: #0069b3;
+  --navy: #033566;
+  --band: #033566;
+  --band-fg: #ffffff;
+  --danger: #d6392b;
+  --ok: #1a8f5c;
+  --radius: 14px;
+  --font: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font); font-size: 16px; line-height: 1.55;
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
+.band { padding-left: 16px; padding-right: 16px; }
+h1, h2, h3 { font-weight: 700; line-height: 1.12; margin: 0; letter-spacing: -.01em; }
+p { margin: 0; }
+a { color: var(--link); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* faixa azul */
+.hero-band { background: linear-gradient(90deg, rgba(3,41,82,.97) 0%, rgba(3,53,102,.9) 48%, rgba(3,53,102,.55) 100%), url("assets/hero-bg.png") center right / cover no-repeat; background-color: var(--band); color: var(--band-fg); }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; flex-wrap: wrap; }
+.top img { height: 46px; width: auto; display: block; }
+.top-phone { font-size: 14px; color: rgba(255,255,255,.82); }
+.top-phone b { color: #fff; font-weight: 600; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px 48px; padding-block: 36px 52px; align-items: center; }
+.eyebrow { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #6bc0ff; font-weight: 600; margin-bottom: 14px; }
+.hero h1 { font-size: clamp(32px, 5.4vw, 58px); font-weight: 700; }
+.hero h1 em { font-style: italic; font-weight: 800; color: #4db2ff; }
+.lead { color: rgba(255,255,255,.86); font-size: 17px; max-width: 50ch; margin-top: 18px; }
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.fact { background: var(--surface); color: var(--fg); border-radius: var(--radius); padding: 16px 16px 14px; }
+.fact b { display: block; font-style: italic; font-weight: 800; font-size: clamp(30px, 4vw, 40px); line-height: 1.05; color: var(--accent); }
+.fact span { display: block; font-size: 13px; color: var(--muted); line-height: 1.4; margin-top: 6px; }
+
+/* card da calculadora */
+.calc { border: 1px solid var(--line); background: var(--surface); border-radius: 20px; margin-block: -28px 48px; position: relative; scroll-margin-top: 12px; box-shadow: 0 10px 30px rgba(3,53,102,.12); overflow: hidden; }
+.calc-head { display: flex; align-items: center; gap: 16px; padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--surface-2); min-height: 54px; }
+.prog { flex: 1; height: 6px; background: var(--line); border-radius: 6px; overflow: hidden; }
+.prog i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 6px; transition: width .3s ease; }
+.link { appearance: none; background: none; border: 0; color: var(--muted); font: inherit; font-size: 14px; cursor: pointer; padding: 6px 4px; text-decoration: underline; }
+.link:hover { color: var(--fg); }
+.panel { padding: 30px 24px 32px; }
+.q-title { font-size: clamp(24px, 3.6vw, 36px); margin-bottom: 8px; outline: none; max-width: 26ch; font-weight: 700; }
+.q-sub { color: var(--muted); margin-bottom: 24px; max-width: 60ch; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.opt { appearance: none; text-align: left; cursor: pointer; font: inherit; color: var(--fg); background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: block; min-width: 0; }
+.opt:hover { border-color: var(--accent); }
+.opt strong { display: block; font-size: 17px; font-weight: 600; line-height: 1.25; }
+.opt span { display: block; font-size: 13px; color: var(--muted); line-height: 1.35; margin-top: 3px; }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--accent); }
+
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; max-width: 760px; }
+.grid .full { grid-column: 1 / -1; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label { font-size: 13px; font-weight: 600; color: var(--muted); }
+.inp { display: flex; align-items: stretch; border: 2px solid var(--line); border-radius: 10px; background: var(--surface); min-width: 0; overflow: hidden; }
+.inp:focus-within { border-color: var(--accent); }
+.inp .pre, .inp .suf { display: flex; align-items: center; padding: 0 10px; color: var(--muted); font-size: 14px; background: var(--surface-2); white-space: nowrap; }
+.inp input, .inp select { flex: 1; min-width: 0; width: 100%; border: 0; background: transparent; color: var(--fg); font: inherit; font-size: 17px; font-weight: 500; padding: 11px 12px; outline: none; font-variant-numeric: tabular-nums; }
+.inp select option { background: var(--surface); color: var(--fg); }
+.field.err .inp { border-color: var(--danger); }
+.msg { font-size: 13px; color: var(--danger); }
+.actions { display: flex; align-items: center; gap: 16px; margin-top: 26px; flex-wrap: wrap; }
+.btn { appearance: none; border: 0; cursor: pointer; font-family: var(--font); font-weight: 600; font-size: 17px; padding: 14px 28px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); text-decoration: none; display: inline-block; text-align: center; line-height: 1.2; }
+.btn:hover { filter: brightness(1.07); }
+.btn.ghost { background: transparent; color: var(--fg); border: 2px solid var(--line); padding: 12px 24px; }
+.btn.ghost:hover { border-color: var(--accent); filter: none; }
+.note { font-size: 13px; color: var(--muted); }
+.lgpd { font-size: 12px; color: var(--muted); max-width: 70ch; margin-top: 16px; }
+
+.calcing { padding: 60px 24px 64px; }
+.calcing h2 { font-size: clamp(24px, 3.6vw, 36px); max-width: 26ch; margin-bottom: 22px; outline: none; }
+.calcing .bar { height: 8px; max-width: 420px; background: var(--line); border-radius: 8px; overflow: hidden; }
+.calcing .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 8px; }
+
+/* resultado */
+.res { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px 36px; }
+.res-head { grid-column: 1 / -1; }
+.res-head .eyebrow { color: var(--link); margin-bottom: 10px; }
+.res-head h2 { font-size: clamp(26px, 4vw, 42px); max-width: 28ch; outline: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+.total { border-radius: var(--radius); padding: 20px 22px; background: var(--navy); color: #fff; }
+.total .lab { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+.total .v { font-style: italic; font-weight: 800; font-size: clamp(44px, 8vw, 76px); line-height: 1.05; margin-top: 4px; color: #fff; }
+.total .sub2 { color: rgba(255,255,255,.82); font-size: 15px; margin-top: 8px; }
+.total .sub2 b { color: #fff; }
+.annual { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.annual div { border-radius: var(--radius); padding: 14px 16px; background: var(--surface-2); }
+.annual b { display: block; font-style: italic; font-weight: 800; font-size: 28px; line-height: 1.1; color: var(--danger); }
+.annual span { font-size: 13px; color: var(--muted); display: block; margin-top: 2px; }
+.save { margin-top: 12px; border-radius: var(--radius); padding: 16px 18px; background: var(--accent); color: var(--accent-ink); }
+.save .lab { font-size: 13px; font-weight: 600; opacity: .92; }
+.save .v { font-style: italic; font-weight: 800; font-size: clamp(24px, 3.4vw, 32px); line-height: 1.15; margin-top: 2px; }
+.save .small { font-size: 12px; opacity: .92; margin-top: 6px; }
+.bars { display: grid; gap: 14px; margin-top: 22px; }
+.bar-row .top2 { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; margin-bottom: 5px; }
+.bar-row .top2 span { min-width: 0; }
+.bar-row .top2 b { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.track { height: 14px; background: var(--surface-2); border-radius: 8px; overflow: hidden; }
+.fill { height: 100%; background: var(--accent); min-width: 2px; border-radius: 8px; transition: width .35s ease; }
+.bar-row small { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+.insurer { margin-top: 16px; font-size: 14px; color: var(--muted); border-left: 3px solid var(--ok); padding-left: 12px; }
+.prem { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); align-self: start; overflow: hidden; }
+.prem summary { cursor: pointer; font-weight: 700; font-size: 18px; padding: 14px 16px; list-style: none; display: flex; justify-content: space-between; align-items: center; background: var(--surface-2); }
+.prem summary::-webkit-details-marker { display: none; }
+.prem summary::after { content: "+"; color: var(--accent); font-size: 26px; line-height: 1; }
+.prem[open] summary::after { content: "–"; }
+.prem-body { padding: 14px 16px 6px; display: grid; gap: 14px; }
+.prow { display: grid; gap: 5px; }
+.prow label { font-size: 14px; color: var(--fg); font-weight: 500; }
+.cmp { grid-column: 1 / -1; border-radius: var(--radius); background: var(--surface-2); padding: 22px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; align-items: center; }
+.cmp h3 { font-size: 24px; margin-bottom: 8px; }
+.cmp p { color: var(--muted); font-size: 15px; }
+.cmp .ctas { display: flex; flex-direction: column; gap: 10px; }
+.ebook { grid-column: 1 / -1; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 22px; background: var(--surface); }
+.ebook h3 { font-size: 22px; margin-bottom: 6px; }
+.ebook p { color: var(--muted); font-size: 15px; margin-bottom: 14px; }
+.preview-note { grid-column: 1 / -1; font-size: 12px; color: var(--muted); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 14px; }
+
+footer { border-top: 1px solid var(--line); padding-block: 22px 40px; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+@media (max-width: 860px) {
+  .hero, .res, .cmp { grid-template-columns: minmax(0, 1fr); }
+  .hero { padding-block: 24px 48px; }
+  .hero-band { background-position: 70% center; }
+}
+@media (max-width: 520px) {
+  .grid, .annual { grid-template-columns: minmax(0, 1fr); }
+  .panel { padding: 22px 16px 26px; }
+  .btn { width: 100%; }
+  .top img { height: 38px; }
+}
+@media (prefers-reduced-motion: reduce) { .fill, .prog i { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="band hero-band">
+  <div class="wrap">
+    <div class="top">
+      <img src="assets/logo-white.png" alt="Ali Sat Gestão de Frotas" style="height:46px;width:118px;object-fit:contain;object-position:left;">
+      <div class="top-phone">Dúvidas? <b>(51) 3034-2111</b> · Central 24h <b>0800 494 2166</b></div>
+    </div>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Para quem gerencia frota de carga</p>
+        <h1>Quanto custa <em>um acidente</em> com caminhão na sua frota?</h1>
+        <p class="lead">A conta vai além da franquia. Entram o veículo parado, a carga, o processo e o contrato em risco. Responda algumas perguntas e receba o número da sua operação.</p>
+      </div>
+      <div class="facts" aria-label="Números do panorama de acidentes">
+        <div class="fact"><b class="num">83%</b><span>dos acidentes nas estradas têm o fator humano como causa exclusiva.</span></div>
+        <div class="fact"><b class="num">R$ 150 mil</b><span>de prejuízo material médio em um sinistro com caminhão pesado.</span></div>
+        <div class="fact"><b class="num">43 dias</b><span>é o tempo médio do veículo parado para conserto.</span></div>
+        <div class="fact"><b class="num">60%</b><span>menos acidentes em frotas monitoradas por câmeras inteligentes.</span></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="calc" id="calc">
+    <div class="calc-head">
+      <div class="prog" role="progressbar" aria-label="Andamento" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="prog"><i id="progFill"></i></div>
+      <button class="link" type="button" id="back" hidden>Voltar</button>
+    </div>
+
+    <div class="panel" id="qpanel"><div id="qbody"></div></div>
+
+    <div class="calcing" id="calcing" hidden>
+      <h2 id="calcing-t" tabindex="-1">Calculando o custo de um acidente na sua operação</h2>
+      <div class="bar"><i id="calcBar"></i></div>
+    </div>
+
+    <div class="panel" id="v-result" hidden>
+      <div class="res">
+        <div class="res-head">
+          <p class="eyebrow" id="r-eyebrow"></p>
+          <h2 id="r-title" tabindex="-1"></h2>
+          <div class="chips" id="r-chips"></div>
+        </div>
+        <div>
+          <div class="total">
+            <div class="lab">Custo de um acidente para a sua empresa</div>
+            <div class="v num" id="r-total">R$ 0</div>
+            <p class="sub2" id="r-sub"></p>
+          </div>
+          <div class="annual">
+            <div><b class="num" id="r-anual">R$ 0</b><span id="r-anual-l">por ano em acidentes</span></div>
+            <div><b class="num" id="r-dias" style="color:var(--fg)">0</b><span>dias de veículo parado por acidente</span></div>
+          </div>
+          <div class="save">
+            <div class="lab">Economia potencial com videotelemetria</div>
+            <div class="v num" id="r-save">R$ 0</div>
+            <p class="small">Estudos do setor apontam redução de 50% a 80% nos custos com colisões e sinistros. Os resultados variam conforme a operação.</p>
+          </div>
+          <div class="bars" id="bars"></div>
+          <p class="insurer" id="r-ins"></p>
+        </div>
+        <details class="prem" id="premBox">
+          <summary>Ajustar premissas</summary>
+          <div class="prem-body" id="prem"></div>
+          <p class="note" style="padding:4px 16px 16px">Troque qualquer valor e o resultado recalcula na hora.</p>
+        </details>
+        <div class="cmp">
+          <div>
+            <h3 id="c-h"></h3>
+            <p id="c-p"></p>
+          </div>
+          <div class="ctas">
+            <a class="btn" id="cta-wa" target="_blank" rel="noopener" href="#" onclick="push({event:'CTA_Click',cta_text:'whatsapp-resultado',section:'resultado'})">Falar com especialista no WhatsApp</a>
+            <a class="btn ghost" id="cta-test" target="_blank" rel="noopener" href="https://mkt.alisat.com.br/lpvideotelemetria" onclick="push({event:'CTA_Click',cta_text:'teste-gratis',section:'resultado'})">Solicitar teste grátis</a>
+            <span class="note">WhatsApp comercial: (51) 3034-2111</span>
+          </div>
+        </div>
+        <div class="ebook">
+          <h3>Leve o panorama completo para a sua diretoria</h3>
+          <p>E-book com 33 páginas: dados de acidentes no Brasil e no mundo, o papel da videotelemetria, retorno sobre o investimento e casos por setor.</p>
+          <a class="btn ghost" href="panorama-acidentes-alisat.pdf" target="_blank" rel="noopener" onclick="push({event:'CTA_Click',cta_text:'ebook',section:'resultado'})">Abrir o e-book</a>
+        </div>
+        <p class="preview-note">Versão de validação. O envio do relatório em PDF por e-mail e o registro do contato no CRM entram na etapa de integração.</p>
+      </div>
+      <div class="actions"><button class="btn ghost" type="button" id="redo">Refazer o cálculo</button></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Ali Sat Rastreamento e Monitoramento LTDA · CNPJ 29.989.683/0001-33</span>
+    <span>Rua Porto Mauá, 742, Vargas, Sapucaia do Sul/RS</span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ── Tracking helpers (mesmo padrão das outras LPs) ──
+  window.dataLayer = window.dataLayer || [];
+  function push(obj) { window.dataLayer.push(obj); }
+  window.push = push;
+  function param(k) { return new URLSearchParams(window.location.search).get(k) || ""; }
+  function cookie(n) { var v = "; " + document.cookie; var p = v.split("; " + n + "="); return p.length === 2 ? p.pop().split(";").shift() : ""; }
+
+  /* Segmentos: para adaptar a LP (passageiros, construção civil, frota leve) troque tipos, textos e perguntas abaixo. */
+  var SEGMENT = {
+    id: "carga",
+    types: [
+      { key: "pesado", label: "Pesado", desc: "Cavalo com carreta, truck e bitruck", d: { dano: 150000, dias: 43, diaria: 808 } },
+      { key: "medio", label: "Médio", desc: "Toco, 3/4 e caminhão médio", d: { dano: 60000, dias: 25, diaria: 550 } },
+      { key: "leve", label: "Leve", desc: "VUC, van e utilitário de entrega", d: { dano: 25000, dias: 15, diaria: 350 } }
+    ],
+    cargas: ["Grãos e granéis", "Alimentos e refrigerados", "Combustíveis e químicos", "Carga geral e fracionada", "Máquinas e equipamentos", "Distribuição urbana e e-commerce"],
+    regioes: ["Só no Rio Grande do Sul", "Região Sul", "Sul e Sudeste", "Todo o Brasil"]
+  };
+  var FROTAS = [{ l: "1 a 5 veículos", v: 3 }, { l: "6 a 20 veículos", v: 12 }, { l: "21 a 50 veículos", v: 35 }, { l: "51 a 100 veículos", v: 75 }, { l: "Mais de 100 veículos", v: 150 }];
+  var VALORES = [{ l: "Até R$ 50 mil", v: 30000 }, { l: "R$ 50 a 150 mil", v: 100000 }, { l: "R$ 150 a 400 mil", v: 250000 }, { l: "Acima de R$ 400 mil", v: 500000 }];
+  var ACIDS = [{ l: "Nenhum", v: 0 }, { l: "1 acidente", v: 1 }, { l: "2 a 3 acidentes", v: 2.5 }, { l: "4 a 6 acidentes", v: 5 }, { l: "7 ou mais", v: 8 }];
+  var SAVE_MIN = 0.5, SAVE_MAX = 0.8;
+
+  var S = {
+    nome: "", empresa: "", cargo: "", tel: "", email: "", cnpj: "",
+    type: "pesado", cargaTipo: "", regiao: "", frotaL: "", acidL: "", valorL: "",
+    seguros: [], tech: [], semAcidentes: false,
+    frota: 12, acidentes: 1, carga: 250000, casco: true, rctr: true,
+    dano: 0, dias: 0, diaria: 0,
+    franquiaPct: 10, guincho: 4000, avariaPct: 30, franquiaCargaPct: 10, prob: 20, indeniz: 150000, reputacao: 0, camera: 150
+  };
+  var i = 0;
+
+  var brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+  function money(n) { return brl.format(Math.round(n)); }
+  function num(n, d) { return new Intl.NumberFormat("pt-BR", { maximumFractionDigits: d == null ? 1 : d }).format(n); }
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function typeObj() { return SEGMENT.types.filter(function (t) { return t.key === S.type; })[0]; }
+  function first() { return (S.nome.trim().split(/\s+/)[0]) || ""; }
+  function applyType() { var d = typeObj().d; S.dano = d.dano; S.dias = d.dias; S.diaria = d.diaria; }
+
+  /* Cálculo puro: custo que fica com a empresa por acidente. */
+  function calc(s) {
+    var reparo = (s.casco ? s.dano * s.franquiaPct / 100 : s.dano) + s.guincho;
+    var parado = s.dias * s.diaria;
+    var cargaDano = s.carga * s.avariaPct / 100;
+    var carga = s.rctr ? cargaDano * s.franquiaCargaPct / 100 : cargaDano;
+    var proc = s.prob / 100 * s.indeniz;
+    var rep = s.reputacao;
+    var total = reparo + parado + carga + proc + rep;
+    var seguradora = (s.casco ? s.dano - s.dano * s.franquiaPct / 100 : 0) + (s.rctr ? cargaDano - carga : 0);
+    var anual = total * s.acidentes;
+    var frotaMes = s.frota * s.camera;
+    return {
+      parts: [
+        { k: "reparo", name: "Franquia, reparo e guincho", v: reparo, note: s.casco ? "Franquia do casco mais guincho e perícia" : "Sem casco: o reparo inteiro é da empresa" },
+        { k: "parado", name: "Veículo e motorista parados", v: parado, note: num(s.dias, 0) + " dias × " + money(s.diaria) + " por dia" },
+        { k: "carga", name: "Carga e embarcador", v: carga, note: s.rctr ? "Franquia do RCTR-C sobre a carga avariada" : "Sem RCTR-C: a carga avariada é da empresa" },
+        { k: "proc", name: "Processos trabalhista e cível", v: proc, note: "Custo esperado: " + num(s.prob, 0) + "% de chance × " + money(s.indeniz) },
+        { k: "rep", name: "Reputação e contrato em risco", v: rep, note: rep > 0 ? "Valor informado por você" : "Intangível: informe uma estimativa para incluir" }
+      ],
+      total: total, anual: anual, seguradora: seguradora, frotaMes: frotaMes,
+      economiaMin: anual * SAVE_MIN, economiaMax: anual * SAVE_MAX,
+      mesesAcidente: frotaMes > 0 ? total / frotaMes : 0,
+      mesesAnual: frotaMes > 0 ? anual / frotaMes : 0
+    };
+  }
+
+  function validCNPJ(raw) {
+    var c = raw.replace(/\D/g, "");
+    if (c.length !== 14 || /^(\d)\1+$/.test(c)) return false;
+    function dv(len) {
+      var sum = 0, pos = len - 7;
+      for (var k = len; k >= 1; k--) { sum += parseInt(c.charAt(len - k), 10) * pos--; if (pos < 2) pos = 9; }
+      return sum % 11 < 2 ? 0 : 11 - (sum % 11);
+    }
+    return dv(12) === parseInt(c.charAt(12), 10) && dv(13) === parseInt(c.charAt(13), 10);
+  }
+  function maskCNPJ(v) {
+    v = v.replace(/\D/g, "").slice(0, 14);
+    return v.replace(/^(\d{2})(\d)/, "$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d)/, ".$1/$2").replace(/(\d{4})(\d)/, "$1-$2");
+  }
+  function maskTel(v) {
+    v = v.replace(/\D/g, "").slice(0, 11);
+    if (v.length > 6) return v.replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3");
+    if (v.length > 2) return v.replace(/^(\d{2})(\d+)/, "($1) $2");
+    return v;
+  }
+
+  var Q = [
+    { id: "ident", kind: "text", title: function () { return "Vamos calcular o custo de um acidente na sua operação. Como podemos te chamar?"; },
+      fields: [
+        { id: "nome", label: "Seu nome", ac: "name", check: function (v) { return v.trim().length < 2 ? "Informe seu nome." : ""; } },
+        { id: "empresa", label: "Nome da empresa", ac: "organization", check: function (v) { return v.trim().length < 2 ? "Informe o nome da empresa." : ""; } }
+      ], next: "Continuar" },
+    { id: "tipo", kind: "single", title: function () { return first() + ", qual veículo mais roda na frota da " + S.empresa.trim() + "?"; },
+      options: function () { return SEGMENT.types.map(function (t) { return { l: t.label, d: t.desc, v: t.key }; }); },
+      set: function (o) { S.type = o.v; applyType(); }, get: function () { return S.type; } },
+    { id: "cargaTipo", kind: "single", title: function () { return "O que a frota transporta com mais frequência?"; },
+      options: function () { return SEGMENT.cargas.map(function (c) { return { l: c, v: c }; }); },
+      set: function (o) { S.cargaTipo = o.v; }, get: function () { return S.cargaTipo; } },
+    { id: "frota", kind: "single", title: function () { return "Quantos veículos a " + S.empresa.trim() + " opera?"; },
+      options: function () { return FROTAS.map(function (o) { return { l: o.l, v: o.v }; }); },
+      set: function (o) { S.frota = o.v; S.frotaL = o.l; }, get: function () { return S.frotaL; }, key: "l" },
+    { id: "regiao", kind: "single", title: function () { return "Onde a frota opera?"; },
+      options: function () { return SEGMENT.regioes.map(function (c) { return { l: c, v: c }; }); },
+      set: function (o) { S.regiao = o.v; }, get: function () { return S.regiao; } },
+    { id: "valor", kind: "single", title: function () { return "Qual o valor médio da carga em uma viagem?"; },
+      options: function () { return VALORES.map(function (o) { return { l: o.l, v: o.v }; }); },
+      set: function (o) { S.carga = o.v; S.valorL = o.l; }, get: function () { return S.valorL; }, key: "l" },
+    { id: "acid", kind: "single", title: function () { return "Quantos acidentes a frota teve nos últimos 12 meses?"; },
+      sub: "Se nenhum, calculamos o cenário de um acidente por ano.",
+      options: function () { return ACIDS.map(function (o) { return { l: o.l, v: o.v }; }); },
+      set: function (o) { S.semAcidentes = o.v === 0; S.acidentes = o.v === 0 ? 1 : o.v; S.acidL = o.l; }, get: function () { return S.acidL; }, key: "l" },
+    { id: "seguros", kind: "multi", title: function () { return "Quais seguros a frota tem hoje?"; }, sub: "Marque todos que valem.",
+      options: [{ l: "Seguro do veículo (casco)", v: "casco" }, { l: "Seguro da carga (RCTR-C)", v: "rctr" }, { l: "Nenhum dos dois", v: "nenhum", exclusive: true }],
+      get: function () { return S.seguros; }, set: function (a) { S.seguros = a; S.casco = a.indexOf("casco") > -1; S.rctr = a.indexOf("rctr") > -1; } },
+    { id: "tech", kind: "multi", title: function () { return "O que a frota já usa de tecnologia?"; }, sub: "Marque todas que valem.",
+      options: [{ l: "Rastreador", v: "rastreador" }, { l: "Telemetria", v: "telemetria" }, { l: "Câmeras ou videotelemetria", v: "camera" }, { l: "Nada disso", v: "nada", exclusive: true }],
+      get: function () { return S.tech; }, set: function (a) { S.tech = a; } },
+    { id: "contato", kind: "text", title: function () { return first() + ", para onde enviamos o relatório da " + S.empresa.trim() + "?"; },
+      fields: [
+        { id: "cargo", label: "Seu cargo", select: ["Dono ou sócio", "Diretor", "Gerente de frota ou logística", "Coordenador ou analista", "Corretor, GR ou seguradora", "Outro"], check: function (v) { return v ? "" : "Escolha seu cargo."; } },
+        { id: "tel", label: "Telefone (WhatsApp)", ac: "tel", mask: maskTel, ph: "(51) 99999-9999", check: function (v) { return v.replace(/\D/g, "").length < 10 ? "Informe o telefone com DDD." : ""; } },
+        { id: "email", label: "E-mail", ac: "email", type: "email", check: function (v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim()) ? "" : "Informe um e-mail válido."; } },
+        { id: "cnpj", label: "CNPJ", mask: maskCNPJ, ph: "00.000.000/0000-00", check: function (v) { return validCNPJ(v) ? "" : "CNPJ inválido. Confira os 14 dígitos."; } }
+      ], next: "Ver o custo do acidente",
+      foot: "Usamos seus dados para enviar o relatório e para o time comercial da Ali Sat entrar em contato. Você pode pedir a exclusão a qualquer momento." }
+  ];
+
+  function setProg(p) {
+    $("progFill").style.width = Math.round(p * 100) + "%";
+    $("prog").setAttribute("aria-valuenow", String(Math.round(p * 100)));
+  }
+  function focusTitle() { var t = $("qbody").querySelector(".q-title"); if (t) t.focus({ preventScroll: true }); }
+
+  function renderQ(scroll) {
+    var q = Q[i], h = "";
+    $("qpanel").hidden = false; $("calcing").hidden = true; $("v-result").hidden = true;
+    $("back").hidden = i === 0;
+    setProg(i / Q.length);
+    push({ event: "Calc_Step_View", step: q.id, index: i });
+    h += '<h2 class="q-title" tabindex="-1">' + esc(q.title()) + "</h2>";
+    if (q.sub) h += '<p class="q-sub">' + esc(q.sub) + "</p>"; else h += '<div style="height:16px"></div>';
+    if (q.kind === "single") {
+      var cur = q.get(), opts = q.options(), key = q.key || "v";
+      h += '<div class="opts" id="opts">';
+      opts.forEach(function (o, n) {
+        var on = cur !== "" && cur !== undefined && (key === "l" ? o.l === cur : o.v === cur);
+        h += '<button type="button" class="opt" data-n="' + n + '" aria-pressed="' + on + '"><strong>' + esc(o.l) + "</strong>" + (o.d ? "<span>" + esc(o.d) + "</span>" : "") + "</button>";
+      });
+      h += "</div>";
+    } else if (q.kind === "multi") {
+      var sel = q.get();
+      h += '<div class="opts" id="opts">';
+      q.options.forEach(function (o, n) {
+        h += '<button type="button" class="opt" data-n="' + n + '" aria-pressed="' + (sel.indexOf(o.v) > -1) + '"><strong>' + esc(o.l) + "</strong></button>";
+      });
+      h += '</div><div class="actions"><button class="btn" type="button" id="mnext">Continuar</button><span class="note" id="mmsg"></span></div>';
+    } else {
+      h += '<form id="tform" novalidate><div class="grid">';
+      q.fields.forEach(function (f) {
+        h += '<div class="field' + (f.id === "email" ? " full" : "") + '"><label for="t-' + f.id + '">' + f.label + '</label><div class="inp">';
+        if (f.select) {
+          h += '<select id="t-' + f.id + '"><option value="">Selecione</option>' + f.select.map(function (s) { return '<option' + (S[f.id] === s ? " selected" : "") + ">" + esc(s) + "</option>"; }).join("") + "</select>";
+        } else {
+          h += '<input id="t-' + f.id + '" type="' + (f.type || "text") + '" value="' + esc(S[f.id] || "") + '"' + (f.ac ? ' autocomplete="' + f.ac + '"' : "") + (f.ph ? ' placeholder="' + f.ph + '"' : "") + (f.id === "tel" ? ' inputmode="tel"' : f.id === "cnpj" ? ' inputmode="numeric"' : "") + ">";
+        }
+        h += '</div><span class="msg"></span></div>';
+      });
+      h += '</div><div class="actions"><button class="btn" type="submit">' + q.next + "</button></div>" + (q.foot ? '<p class="lgpd">' + q.foot + "</p>" : "") + "</form>";
+    }
+    $("qbody").innerHTML = h;
+    bindQ(q);
+    if (scroll) { $("calc").scrollIntoView({ block: "start", behavior: "smooth" }); focusTitle(); }
+  }
+
+  function bindQ(q) {
+    if (q.kind === "single") {
+      $("opts").addEventListener("click", function (e) {
+        var b = e.target.closest(".opt"); if (!b) return;
+        q.set(q.options()[+b.getAttribute("data-n")]);
+        var all = $("opts").children; for (var k = 0; k < all.length; k++) all[k].setAttribute("aria-pressed", String(all[k] === b));
+        setTimeout(next, 220);
+      });
+    } else if (q.kind === "multi") {
+      $("opts").addEventListener("click", function (e) {
+        var b = e.target.closest(".opt"); if (!b) return;
+        var o = q.options[+b.getAttribute("data-n")], a = q.get().slice(), at = a.indexOf(o.v);
+        if (at > -1) a.splice(at, 1);
+        else {
+          if (o.exclusive) a = [o.v];
+          else a = a.filter(function (v) { return !q.options.some(function (x) { return x.exclusive && x.v === v; }); }).concat(o.v);
+        }
+        q.set(a);
+        var all = $("opts").children; for (var k = 0; k < all.length; k++) all[k].setAttribute("aria-pressed", String(a.indexOf(q.options[k].v) > -1));
+        $("mmsg").textContent = "";
+      });
+      $("mnext").addEventListener("click", function () {
+        if (!q.get().length) { $("mmsg").textContent = "Marque ao menos uma opção."; return; }
+        next();
+      });
+    } else {
+      q.fields.forEach(function (f) {
+        var el = $("t-" + f.id);
+        if (f.mask) el.addEventListener("input", function () { el.value = f.mask(el.value); });
+      });
+      $("tform").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var ok = true;
+        q.fields.forEach(function (f) {
+          var el = $("t-" + f.id), msg = f.check(el.value), fld = el.closest(".field");
+          fld.querySelector(".msg").textContent = msg;
+          if (msg) { fld.classList.add("err"); ok = false; } else { fld.classList.remove("err"); S[f.id] = el.value.trim(); }
+        });
+        if (ok) next();
+      });
+    }
+  }
+
+  function next() { if (i < Q.length - 1) { i++; renderQ(true); } else { runCalc(); } }
+  $("back").addEventListener("click", function () { if (i > 0) { i--; renderQ(true); } });
+
+  function runCalc() {
+    setProg(1);
+    $("qpanel").hidden = true; $("v-result").hidden = true; $("calcing").hidden = false; $("back").hidden = true;
+    $("calcing-t").textContent = "Calculando o custo de um acidente na " + S.empresa;
+    $("calc").scrollIntoView({ block: "start", behavior: "smooth" });
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var bar = $("calcBar"), dur = reduce ? 300 : 1500, t0 = Date.now();
+    sendLead();
+    var timer = setInterval(function () {
+      var p = Math.min(1, (Date.now() - t0) / dur);
+      bar.style.width = Math.round(p * 100) + "%";
+      if (p >= 1) { clearInterval(timer); showResult(); }
+    }, 40);
+  }
+
+  /* Lead + atribuição → /tracker (fbp/fbc/UTMs lidos no navegador, igual às outras LPs).
+     Dispara Meta CAPI + GA4 + Pipedrive no servidor; empresa/cnpj/segmento batem
+     com os campos que functions/outputs/pipedrive.js já espera para achar/criar a Org. */
+  function sendLead() {
+    var parts = S.nome.trim().split(/\s+/);
+    var r = calc(S);
+    var payload = {
+      event_name: "Lead",
+      event_id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
+      event_time: Math.floor(Date.now() / 1000),
+      event_source_url: window.location.href,
+      product: "calculadora-acidente",
+      segmento: SEGMENT.id,
+      empresa: S.empresa,
+      cargo: S.cargo,
+      cnpj: S.cnpj.replace(/\D/g, ""),
+      veiculos_faixa: S.frotaL,
+      tipo_veiculo: S.type,
+      carga_tipo: S.cargaTipo,
+      regiao: S.regiao,
+      valor_carga: S.valorL,
+      acidentes_12m: S.acidL,
+      seguros: S.seguros.join(", "),
+      tecnologia_atual: S.tech.join(", "),
+      custo_estimado: Math.round(r.total),
+      user_data: {
+        em: S.email,
+        fn: parts[0] || "",
+        ln: parts.slice(1).join(" ") || "",
+        ph: S.tel.replace(/\D/g, "")
+      },
+      utm_source: param("utm_source"),
+      utm_medium: param("utm_medium"),
+      utm_campaign: param("utm_campaign"),
+      utm_content: param("utm_content"),
+      utm_term: param("utm_term"),
+      fbclid: param("fbclid"),
+      gclid: param("gclid"),
+      fbp: cookie("_fbp"),
+      fbc: cookie("_fbc")
+    };
+    push({ event: "Lead_Calculadora", product: "calculadora-acidente", segmento: SEGMENT.id });
+    fetch("/tracker", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).catch(function (e) { console.error("tracker error", e); });
+  }
+
+  var PREM = [
+    { id: "frota", label: "Veículos na frota", step: 1 },
+    { id: "acidentes", label: "Acidentes por ano", step: 0.5 },
+    { id: "carga", label: "Valor médio da carga por viagem", pre: "R$", step: 10000 },
+    { id: "dano", label: "Dano material do sinistro", pre: "R$", step: 5000 },
+    { id: "franquiaPct", label: "Franquia do casco", suf: "% do dano", step: 1, bool: "casco" },
+    { id: "guincho", label: "Guincho, perícia e logística", pre: "R$", step: 500 },
+    { id: "dias", label: "Dias de veículo parado", suf: "dias", step: 1 },
+    { id: "diaria", label: "Custo por dia parado", pre: "R$", step: 50 },
+    { id: "avariaPct", label: "Carga perdida ou avariada", suf: "% da carga", step: 5 },
+    { id: "franquiaCargaPct", label: "Franquia do RCTR-C", suf: "% do dano", step: 1, bool: "rctr" },
+    { id: "prob", label: "Chance de ação trabalhista ou cível", suf: "%", step: 1 },
+    { id: "indeniz", label: "Indenização média por ação", pre: "R$", step: 10000 },
+    { id: "reputacao", label: "Reputação e contrato em risco (opcional)", pre: "R$", step: 5000 },
+    { id: "camera", label: "Referência mensal de videotelemetria por veículo", pre: "R$", step: 10 }
+  ];
+  function buildPrem() {
+    var h = "";
+    PREM.forEach(function (p) {
+      h += '<div class="prow" id="pr-' + p.id + '"><label for="p-' + p.id + '">' + p.label + '</label><div class="inp">' +
+        (p.pre ? '<span class="pre">' + p.pre + "</span>" : "") +
+        '<input id="p-' + p.id + '" type="number" inputmode="decimal" min="0" step="' + p.step + '">' +
+        (p.suf ? '<span class="suf">' + p.suf + "</span>" : "") + "</div></div>";
+    });
+    $("prem").innerHTML = h;
+    PREM.forEach(function (p) {
+      $("p-" + p.id).addEventListener("input", function (e) {
+        var v = parseFloat(e.target.value); S[p.id] = isNaN(v) || v < 0 ? 0 : v; renderResult();
+      });
+    });
+  }
+  function showResult() {
+    $("calcing").hidden = true; $("v-result").hidden = false; $("back").hidden = true;
+    $("premBox").open = !!(window.matchMedia && window.matchMedia("(min-width: 861px)").matches);
+    $("r-eyebrow").textContent = "Relatório para " + S.empresa;
+    renderResult();
+    $("cta-wa").href = "https://wa.me/555130342111?text=" + encodeURIComponent("Olá! Usei a calculadora de custo de acidente e quero falar sobre videotelemetria. Sou " + S.nome + ", da " + S.empresa + ".");
+    $("cta-wa").textContent = S.tech.indexOf("camera") > -1 ? "Comparar com a câmera atual da frota" : "Falar com especialista no WhatsApp";
+    push({ event: "Calc_Result_View", segmento: SEGMENT.id });
+    $("v-result").scrollIntoView({ block: "start", behavior: "smooth" });
+    $("r-title").focus({ preventScroll: true });
+  }
+  function renderResult() {
+    var r = calc(S);
+    PREM.forEach(function (p) {
+      var el = $("p-" + p.id);
+      if (document.activeElement !== el) el.value = S[p.id];
+      if (p.bool) $("pr-" + p.id).hidden = !S[p.bool];
+    });
+    $("r-title").textContent = first() + ", um acidente com caminhão " + typeObj().label.toLowerCase() + " na " + S.empresa + " custa cerca de " + money(r.total);
+    var chips = [S.cargaTipo, S.regiao, num(S.frota, 0) + " veículos", "carga de " + money(S.carga) + " por viagem"].filter(Boolean);
+    $("r-chips").innerHTML = chips.map(function (c) { return '<span class="chip">' + esc(c) + "</span>"; }).join("");
+    $("r-total").textContent = money(r.total);
+    $("r-sub").innerHTML = "Com <b>" + num(S.frota, 0) + "</b> veículos e <b>" + num(S.acidentes, 1) + "</b> acidente(s) por ano" + (S.semAcidentes ? " (cenário de um acidente)" : "") + ".";
+    $("r-anual").textContent = money(r.anual);
+    $("r-dias").textContent = num(S.dias, 0);
+    $("r-save").textContent = money(r.economiaMin) + " a " + money(r.economiaMax) + " por ano";
+    var max = 0; r.parts.forEach(function (p) { if (p.v > max) max = p.v; });
+    var h = "";
+    r.parts.forEach(function (p) {
+      var w = max > 0 ? Math.max(0, p.v / max * 100) : 0;
+      var pct = r.total > 0 ? Math.round(p.v / r.total * 100) : 0;
+      h += '<div class="bar-row"><div class="top2"><span>' + p.name + "</span><b>" + money(p.v) + " · " + pct + '%</b></div><div class="track"><div class="fill" style="width:' + w + '%"></div></div><small>' + p.note + "</small></div>";
+    });
+    $("bars").innerHTML = h;
+    $("r-ins").innerHTML = r.seguradora > 0 ? "A seguradora arca com cerca de <b>" + money(r.seguradora) + "</b> por acidente. Esse valor não entra no total, mas pesa no reajuste e na renovação da apólice." : "Sem cobertura de seguro nesse cenário, todo o prejuízo material fica com a empresa.";
+    if (r.frotaMes > 0) {
+      $("c-h").textContent = "Um acidente paga " + num(r.mesesAcidente, 1) + " meses de videotelemetria na frota inteira";
+      $("c-p").textContent = "Pela referência de " + money(S.camera) + " por veículo ao mês, a frota de " + num(S.frota, 0) + " veículos custaria " + money(r.frotaMes) + " por mês. O custo anual de acidentes da " + S.empresa + " equivale a " + num(r.mesesAnual, 1) + " meses desse investimento. A imagem do evento também ajuda a provar a dinâmica em processos e a negociar com a seguradora.";
+    }
+  }
+  $("redo").addEventListener("click", function () { i = 1; applyType(); renderQ(true); });
+
+  // ── Scroll depth (mesmo padrão das outras LPs) ──
+  var sdFired = new Set();
+  window.addEventListener("scroll", function () {
+    var pct = Math.round(window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100);
+    [25, 50, 75, 100].forEach(function (t) {
+      if (pct >= t && !sdFired.has(t)) { sdFired.add(t); push({ event: "Scroll_Depth", percent: t }); }
+    });
+  }, { passive: true });
+
+  applyType(); buildPrem(); renderQ(false);
+})();
+</script>
+</body>
+</html>
