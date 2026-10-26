@@ -560,11 +560,7 @@
                     <option>Distribuidora</option><option>Construção Civil</option>
                     <option>Mineração</option><option>Outro</option>
                   </select>
-                  <select id="h-veic" required class="inp inp-sel">
-                    <option value="" disabled selected>* Quantidade de Veículos</option>
-                    <option>20-50</option><option>51-100</option><option>101-200</option>
-                    <option>201-500</option><option>500+</option>
-                  </select>
+                  <input type="number" id="h-veic" min="1" placeholder="* Quantidade de Veículos" required class="inp">
                   <button type="button" onclick="heroSubmit()"
                           class="w-full text-white font-bold py-2.5 transition-all shadow-lg"
                           style="background:#00BE69; border-radius:8px; font-family:'Poppins',sans-serif; font-size:14px;"
@@ -1142,11 +1138,7 @@
                 </div>
                 <div>
                   <label for="f-veic" class="block text-gray-300 text-sm font-medium mb-1.5">Qtd. Veículos <span class="text-red-400">*</span></label>
-                  <select id="f-veic" required class="inp inp-sel">
-                    <option value="" disabled selected>Quantidade...</option>
-                    <option>20-50</option><option>51-100</option><option>101-200</option>
-                    <option>201-500</option><option>500+</option>
-                  </select>
+                  <input type="number" id="f-veic" min="1" placeholder="Quantidade..." required class="inp">
                 </div>
               </div>
               <!-- Hidden UTMs -->
@@ -1415,11 +1407,11 @@
     const empresa = $('h-empresa').value.trim();
     const cnpj    = $('h-cnpj').value.trim();
     const seg     = $('h-seg').value;
-    const veic    = $('h-veic').value;
+    const veic    = Number($('h-veic').value);
     if (!empresa)       { alert_('Por favor, informe o nome da empresa.'); return; }
     if (!isCNPJ(cnpj))  { alert_('Por favor, informe um CNPJ válido (14 dígitos).'); return; }
     if (!seg)           { alert_('Por favor, selecione o segmento de atuação.'); return; }
-    if (!veic)          { alert_('Por favor, selecione a quantidade de veículos.'); return; }
+    if (!veic || veic < 1) { alert_('Por favor, informe a quantidade de veículos.'); return; }
 
     push({ event:'Lead_Qualificado', form_step:2, segmento:seg, quantidade_veiculos:veic });
     if (heroS1.eid) {
@@ -1448,7 +1440,7 @@
     const empresa = $('f-empresa').value.trim();
     const cnpj    = $('f-cnpj').value.trim();
     const seg     = $('f-seg').value;
-    const veic    = $('f-veic').value;
+    const veic    = Number($('f-veic').value);
 
     if (!nome)           { alert_('Por favor, informe seu nome.'); return; }
     if (!isEmail(email)) { alert_('Por favor, informe um e-mail válido.'); return; }
@@ -1456,7 +1448,7 @@
     if (!empresa)        { alert_('Por favor, informe o nome da empresa.'); return; }
     if (!isCNPJ(cnpj))   { alert_('Por favor, informe um CNPJ válido.'); return; }
     if (!seg)            { alert_('Por favor, selecione o segmento de atuação.'); return; }
-    if (!veic)           { alert_('Por favor, selecione a quantidade de veículos.'); return; }
+    if (!veic || veic < 1) { alert_('Por favor, informe a quantidade de veículos.'); return; }
 
     push({ event:'Lead_Qualificado', form_step:2, segmento:seg, quantidade_veiculos:veic });
     postLead({ nome, email, tel, empresa, cnpj, segmento:seg, quantidade_veiculos:veic }, 'final-form-wrap');

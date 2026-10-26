@@ -692,11 +692,7 @@
                 <option>Distribuidora</option><option>Construção Civil</option>
                 <option>Mineração</option><option>Agronegócio</option><option>Outro</option>
               </select>
-              <select id="h-veic" required class="inp inp-sel">
-                <option value="" disabled selected>* Quantidade de Veículos</option>
-                <option>20-50</option><option>51-100</option><option>101-200</option>
-                <option>201-500</option><option>500+</option>
-              </select>
+              <input type="number" id="h-veic" min="1" placeholder="* Quantidade de Veículos" required class="inp">
               <button type="button" class="btn-f" onclick="heroSubmit()">
                 Confirmar e agendar →
               </button>
@@ -1109,11 +1105,7 @@
           </div>
           <div>
             <label class="f-lbl" for="f-veic">Quantidade de veículos<span class="f-req">*</span></label>
-            <select id="f-veic" required class="inp inp-sel">
-              <option value="" disabled selected>Selecione</option>
-              <option>20-50</option><option>51-100</option><option>101-200</option>
-              <option>201-500</option><option>500+</option>
-            </select>
+            <input type="number" id="f-veic" min="1" placeholder="Quantidade" required class="inp">
           </div>
           <!-- UTM hidden -->
           <input type="hidden" id="f-utm_source"><input type="hidden" id="f-utm_medium">
@@ -1325,11 +1317,11 @@ function heroAdvance() {
 // ── Hero form: step 2 ────────────────────────────────────────
 function heroSubmit() {
   const empresa = $('h-empresa').value.trim(), cnpj = $('h-cnpj').value.trim();
-  const seg = $('h-seg').value, veic = $('h-veic').value;
+  const seg = $('h-seg').value, veic = Number($('h-veic').value);
   if (!empresa)      return alert_('Por favor, informe o nome da empresa.');
   if (!isCNPJ(cnpj)) return alert_('Por favor, informe um CNPJ válido (14 dígitos).');
   if (!seg)          return alert_('Por favor, selecione o segmento de atuação.');
-  if (!veic)         return alert_('Por favor, selecione a quantidade de veículos.');
+  if (!veic || veic < 1) return alert_('Por favor, informe a quantidade de veículos.');
 
   push({ event:'Lead_Qualificado', form_step:2, segmento:seg, quantidade_veiculos:veic });
   if (heroS1.eid) {
@@ -1343,7 +1335,7 @@ function heroSubmit() {
 function finalSubmit() {
   const nome = $('f-nome').value.trim(), email = $('f-email').value.trim();
   const tel = $('f-tel').value.trim(), empresa = $('f-empresa').value.trim();
-  const cnpj = $('f-cnpj').value.trim(), seg = $('f-seg').value, veic = $('f-veic').value;
+  const cnpj = $('f-cnpj').value.trim(), seg = $('f-seg').value, veic = Number($('f-veic').value);
   const lgpd = $('f-lgpd')?.checked;
   if (!nome)           return alert_('Por favor, informe seu nome.');
   if (!isEmail(email)) return alert_('Por favor, informe um e-mail válido.');
@@ -1351,7 +1343,7 @@ function finalSubmit() {
   if (!empresa)        return alert_('Por favor, informe o nome da empresa.');
   if (!isCNPJ(cnpj))   return alert_('Por favor, informe um CNPJ válido.');
   if (!seg)            return alert_('Por favor, selecione o segmento.');
-  if (!veic)           return alert_('Por favor, selecione a quantidade de veículos.');
+  if (!veic || veic < 1) return alert_('Por favor, informe a quantidade de veículos.');
   if (!lgpd)           return alert_('Por favor, aceite a Política de Privacidade.');
   push({ event:'Lead_Qualificado', form_step:2, segmento:seg, quantidade_veiculos:veic });
   postLead({ nome, email, tel, empresa, cnpj, segmento:seg, quantidade_veiculos:veic }, 'final-form-wrap');
