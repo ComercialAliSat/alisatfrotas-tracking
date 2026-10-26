@@ -320,9 +320,8 @@
           <label class="text-xs font-semibold text-[color:var(--dim)]">Mapeamento de campos</label>
           <button id="int-mapping-add" type="button" class="text-xs underline text-[color:var(--accent-blue)]">+ adicionar campo</button>
         </div>
-        <div class="text-[11px] text-[color:var(--muted)] mt-1 mb-2">Campo de origem (ex.: em, fn, ln, ph, empresa, cnpj, utm_source, value) → nome enviado ao destino. Sem nenhum campo aqui, manda o payload inteiro.</div>
+        <div class="text-[11px] text-[color:var(--muted)] mt-1 mb-2">Escolha o campo de origem na lista (ou "Campo personalizado…" para digitar um nome técnico) → nome enviado ao destino. Sem nenhum campo aqui, manda o payload inteiro.</div>
         <div id="int-mapping-rows" class="space-y-2"></div>
-        <datalist id="int-field-suggestions"></datalist>
       </div>
       <div class="border border-[color:var(--border)] rounded-lg p-3 space-y-3">
         <div class="text-xs font-semibold text-[color:var(--dim)]">Autenticar com uma API (ex.: um CRM) — opcional</div>
@@ -808,18 +807,32 @@
   // -------- Integrações --------
   let ALLOWED_EVENTS = ['Lead', 'LeadUpdate', 'Purchase', 'InitiateCheckout', 'PageView'];
   const EVENT_LABELS = { Lead: 'Lead', LeadUpdate: 'Lead atualizado', Purchase: 'Venda', InitiateCheckout: 'Início de checkout', PageView: 'Visualização de página' };
-  // Cobre todo campo que já sai de algum formulário de Lead no site.
-  // "Quantidade de veículos" é padronizado como quantidade_veiculos em
-  // todas as páginas (gpt, calculadora, videotelemetria_topo/_fundo).
-  const FIELD_SUGGESTIONS = [
-    'em', 'fn', 'ln', 'ph', 'empresa', 'cargo', 'cnpj', 'segmento', 'product',
-    'quantidade_veiculos',
-    'tipo_veiculo', 'carga_tipo', 'regiao', 'valor_carga', 'acidentes_12m',
-    'seguros', 'tecnologia_atual', 'custo_estimado',
-    'value', 'currency', 'transaction_id', 'product_id', 'product_name', 'platform', 'trk',
-    'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
-    'fbclid', 'gclid', 'event_source_url', 'event_time', 'country', 'city', 'region',
+  // Campo de origem — rótulos amigáveis (mesmos nomes da exportação de
+  // Leads) em vez dos nomes técnicos crus. value = nome técnico que
+  // buildIntegrationData() em functions/tracker.js realmente envia.
+  const SOURCE_FIELD_GROUPS = [
+    { label: 'Dados do lead', options: [
+      ['nome', 'Nome'], ['ph', 'Telefone'], ['empresa', 'Empresa'], ['cnpj', 'CNPJ'],
+      ['em', 'E-mail'], ['quantidade_veiculos', 'Qtd. Veículos'], ['cargo', 'Cargo'],
+      ['segmento', 'Segmento'], ['consent_status', 'Política de Privacidade'],
+    ]},
+    { label: 'Localização', options: [
+      ['localizacao', 'Localização'], ['city', 'Cidade'], ['region', 'Estado'],
+    ]},
+    { label: 'Campanha e atribuição', options: [
+      ['utm_source', 'UTM'], ['utm_campaign', 'UTM Campaign'], ['utm_content', 'UTM Content'],
+      ['utm_medium', 'UTM Medium'], ['utm_term', 'UTM Term'],
+      ['fbclid', 'fbclid'], ['gclid', 'gclid'], ['referrer', 'Referrer'],
+    ]},
+    { label: 'Outros', options: [
+      ['event_time', 'Data'], ['product', 'Página de origem'],
+    ]},
+    { label: 'Venda (eventos de Venda)', options: [
+      ['value', 'Valor'], ['currency', 'Moeda'], ['transaction_id', 'ID da transação'],
+      ['product_id', 'ID do produto'], ['product_name', 'Nome do produto'], ['platform', 'Plataforma de venda'],
+    ]},
   ];
+  const SOURCE_FIELD_LABELS = Object.fromEntries(SOURCE_FIELD_GROUPS.flatMap(g => g.options));
   let integrations = [];
   let editingIntegrationId = null;
 
@@ -878,24 +891,49 @@
     `).join('');
   }
 
+  function sourceFieldOptionsHtml() {
+    return '<option value="">Selecione o campo…</option>' +
+      SOURCE_FIELD_GROUPS.map(g => `<optgroup label="${escapeHtml(g.label)}">` +
+        g.options.map(([v, l]) => `<option value="${escapeHtml(v)}">${escapeHtml(l)}</option>`).join('') +
+        '</optgroup>'
+      ).join('') +
+      '<option value="__custom__">Campo personalizado…</option>';
+  }
+
   function addMappingRow(source, target) {
     const row = document.createElement('div');
     row.className = 'flex items-center gap-2';
     row.innerHTML = `
-      <input type="text" placeholder="campo de origem" list="int-field-suggestions" class="flex-1 border border-[color:var(--border)] rounded-lg px-2 py-1.5 text-sm mono int-map-source" value="${escapeHtml(source || '')}">
+      <select class="flex-1 border border-[color:var(--border)] rounded-lg px-2 py-1.5 text-sm int-map-source-select">${sourceFieldOptionsHtml()}</select>
+      <input type="text" placeholder="nome_do_campo" class="flex-1 border border-[color:var(--border)] rounded-lg px-2 py-1.5 text-sm mono int-map-source-custom" style="display:none">
       <span class="text-[color:var(--muted)] text-xs">→</span>
       <input type="text" placeholder="nome no destino" class="flex-1 border border-[color:var(--border)] rounded-lg px-2 py-1.5 text-sm mono int-map-target" value="${escapeHtml(target || '')}">
       <button type="button" class="text-[color:var(--muted)] hover:text-[color:var(--accent-red)] text-lg leading-none px-1" aria-label="Remover">&times;</button>
     `;
+    const sel = row.querySelector('.int-map-source-select');
+    const custom = row.querySelector('.int-map-source-custom');
+    if (source && SOURCE_FIELD_LABELS[source] !== undefined) {
+      sel.value = source;
+    } else if (source) {
+      sel.value = '__custom__';
+      custom.style.display = '';
+      custom.value = source;
+    }
+    sel.addEventListener('change', () => {
+      const isCustom = sel.value === '__custom__';
+      custom.style.display = isCustom ? '' : 'none';
+      if (isCustom) custom.focus(); else custom.value = '';
+    });
     row.querySelector('button').addEventListener('click', () => row.remove());
     qs('#int-mapping-rows').appendChild(row);
   }
 
   function collectMappingRows() {
-    return Array.from(qsa('#int-mapping-rows > div')).map(row => ({
-      source: row.querySelector('.int-map-source').value.trim(),
-      target: row.querySelector('.int-map-target').value.trim(),
-    })).filter(m => m.source);
+    return Array.from(qsa('#int-mapping-rows > div')).map(row => {
+      const sel = row.querySelector('.int-map-source-select').value;
+      const source = sel === '__custom__' ? row.querySelector('.int-map-source-custom').value.trim() : sel;
+      return { source, target: row.querySelector('.int-map-target').value.trim() };
+    }).filter(m => m.source);
   }
 
   function openIntegrationModal(integration) {
@@ -915,9 +953,6 @@
       integration.field_mappings.forEach(m => addMappingRow(m.source, m.target));
     } else {
       addMappingRow('em', 'email');
-    }
-    if (!qs('#int-field-suggestions').children.length) {
-      qs('#int-field-suggestions').innerHTML = FIELD_SUGGESTIONS.map(f => `<option value="${escapeHtml(f)}">`).join('');
     }
     qs('#int-delete-btn').classList.toggle('hidden', !integration);
     qs('#int-test-result').classList.add('hidden');

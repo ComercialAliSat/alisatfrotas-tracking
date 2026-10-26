@@ -141,7 +141,10 @@ export async function onRequestPost(context) {
         dispatchIntegrations({
           env,
           eventName: body.event_name,
-          data: buildIntegrationData(body, userData, sessionData, { country, city, region, consent_status: consentStatus }),
+          data: buildIntegrationData(body, userData, sessionData, {
+            country, city, region, consent_status: consentStatus,
+            localizacao: [city, region, country].filter(Boolean).join(', '),
+          }),
         })
       );
     }
@@ -673,11 +676,13 @@ function buildIntegrationData(body, userData, sessionData, extra) {
   if (userData.fn) flat.fn = userData.fn;
   if (userData.ln) flat.ln = userData.ln;
   if (userData.ph) flat.ph = userData.ph;
+  flat.nome = [userData.fn, userData.ln].filter(Boolean).join(' ').trim();
   flat.utm_source   = flat.utm_source   || sessionData.utm_source   || '';
   flat.utm_medium   = flat.utm_medium   || sessionData.utm_medium   || '';
   flat.utm_campaign = flat.utm_campaign || sessionData.utm_campaign || '';
   flat.utm_content  = flat.utm_content  || sessionData.utm_content  || '';
   flat.utm_term     = flat.utm_term     || sessionData.utm_term     || '';
+  flat.referrer     = sessionData.referrer || '';
   return { ...flat, ...extra };
 }
 

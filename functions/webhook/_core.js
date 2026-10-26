@@ -79,6 +79,7 @@ export async function processPurchase({ parsed, env, context }) {
         em: parsed.email || '',
         fn: nameParts.fn,
         ln: nameParts.ln,
+        nome: parsed.name || '',
         ph: parsed.phone || '',
         value: parsed.value,
         currency: parsed.currency,
