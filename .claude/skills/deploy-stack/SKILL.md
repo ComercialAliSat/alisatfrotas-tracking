@@ -87,7 +87,7 @@ Three values don't come from any external service — you generate them locally 
 DASH_KEY=$(openssl rand -hex 32)
 ```
 
-`DASH_KEY` gates `/dash` and the read-only `/api/*` endpoints. Tell the recipient to save it in a password manager — it's the only way to open the dashboard.
+`DASH_KEY` gates `/plataforma` and the read-only `/api/*` endpoints. Tell the recipient to save it in a password manager — it's the only way to log into the dashboard.
 
 **Sales-platform webhook slug** — ask: "Which sales platform will you use, if any?"
 
@@ -199,7 +199,7 @@ If the recipient doesn't have a developer token yet, tell them it takes a few da
 - `ENCHARGE_API_KEY` 🔒 — from Encharge → Apps → HTTP API
 - `MANYCHAT_KEY` 🔒 — from ManyChat → Settings → API → Your API Key
 
-*Meta Ads spend sync* (so `/dash` shows Meta spend, CPA, ROAS):
+*Meta Ads spend sync* (so `/plataforma`'s Rastreamento tab shows Meta spend, CPL, CAC):
 - `SYNC_SECRET` 🔒 — generate with `openssl rand -hex 32`
 - `META_ADS_ACCESS_TOKEN` 🔒 — Meta Marketing API token (system-user recommended; see `docs/ad-spend-sync.md`)
 - `META_ADS_ACCOUNT_ID` — ad account ID, digits only, no `act_` prefix
@@ -236,8 +236,8 @@ Show the recipient a summary:
 ✓ D1:           ${PROJECT_NAME}-db (migrations applied, bound as DB)
 ✓ Env vars set: <list the ones they configured, not the values>
 
-Dashboard: https://${PROJECT_NAME}.pages.dev/dash/?key=<DASH_KEY>
-           (Save DASH_KEY in a password manager — it's the only way in.)
+Dashboard: https://${PROJECT_NAME}.pages.dev/plataforma
+           (Log in with DASH_KEY — save it in a password manager, it's the only way in.)
 
 Next steps:
   1. Add your first page — say "add a lead page" or "add a sales page".
@@ -261,8 +261,8 @@ They probably created it manually earlier. Either delete it in GitHub (if empty 
 **`npm install -g wrangler` fails with a permission error.**
 Skip it — this skill uses `npx wrangler@latest` throughout, which doesn't need global install.
 
-**Pages deploys, but `/dash/?key=…` returns 401.**
-Most likely `DASH_KEY` was pasted with a trailing space or newline. Edit the env var in the dashboard and re-paste carefully.
+**Pages deploys, but logging into `/plataforma` returns 401.**
+Most likely `DASH_KEY` was pasted with a trailing space or newline. Edit the env var in the Cloudflare dashboard and re-paste carefully.
 
 **Pages deploys, but pages return blank / 404.**
 Likely the "Build output directory" was set to something other than `/`. Go to Pages project → Settings → Builds → Configure production deployments and set output to `/`.

@@ -13,7 +13,7 @@ export async function onRequest(context) {
     && !url.pathname.startsWith('/webhook/')
     && !url.pathname.startsWith('/checkout-session')
     && !url.pathname.startsWith('/api/')
-    && !url.pathname.startsWith('/dash');
+    && !url.pathname.startsWith('/plataforma');
 
   if (!isPageRequest) {
     return next();

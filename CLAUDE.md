@@ -8,7 +8,7 @@
 
 A Cloudflare Pages + D1 tracking stack that captures first-party attribution
 data, fires server-side conversion events to Meta CAPI / GA4 / Google Ads,
-and ships a built-in dashboard that shows revenue, products, UTMs, and
+and ships a built-in dashboard that shows attribution, leads, purchases, and
 tracking health. It replaces Stape + GTM Server-Side for creators running
 paid traffic to lead or sales pages.
 
@@ -24,10 +24,14 @@ to be unpacked into a blank folder and driven from Claude Code.
 2. **First-party attribution persistence** — every lead and every purchase
    stores its UTMs, `fbp`/`fbc`, `gclid`, and originating session, so the
    dashboard can show where each conversion came from.
-3. **A self-contained dashboard** at `/dash` with six sections: revenue,
-   product sales, paid-traffic attribution with Meta spend/CPA/ROAS, UTM
-   breakdown, recent leads with UTMs, and tracking health (ITP recovery,
-   adblock recovery, bot filters).
+3. **The operator dashboard at `/plataforma`** — a tabbed SPA. Its "Leads"
+   tab lists leads with UTMs, lead score, and funnel stage, and its
+   "Rastreamento" tab covers paid-traffic attribution (CPL/CAC), recent
+   purchases with a Meta/GA4/Google Ads payload inspector, and tracking
+   health (ITP recovery, adblock recovery, bot filters). Each lead's detail
+   panel also shows its page-view journey. `api/revenue.js`, `api/products.js`,
+   and `api/utm-breakdown.js` have no UI consumer anywhere in the repo — they
+   predate `/dash` and were never wired into any page, not just the deleted one.
 
 ## Triage: what to do when a recipient starts a conversation
 
@@ -69,8 +73,8 @@ Hop-by-hop debugging bible: `docs/data-flow.md`.
 
 `functions/lib/integrations-dispatch.js` + `functions/api/integrations/*`
 let the operator plug in a webhook (a spreadsheet via a Google Apps Script
-Web App, a CRM, anything that accepts a POST) from `/dash`'s "Integrações"
-section — no code change or redeploy. Each row in the `integrations` table
+Web App, a CRM, anything that accepts a POST) from `/plataforma`'s "Integrações"
+tab — no code change or redeploy. Each row in the `integrations` table
 (migration 0028) subscribes to one or more event names and defines its own
 field mapping; `dispatchIntegrations()` fires fire-and-forget from
 `functions/tracker.js` (every `/tracker` event) and
@@ -111,7 +115,7 @@ for the full design.
   for 1000+ non-dev recipients. A missing `<PLATFORM>_WEBHOOK_SLUG` env var
   is a deploy-blocking 500 on the endpoint, not a silent accept.
 - **Dashboard and sync endpoints have separate secrets.** `DASH_KEY` gates
-  `/dash` and `/api/*` reads. `SYNC_SECRET` gates `/api/sync/*` writes from
+  `/plataforma` and `/api/*` reads. `SYNC_SECRET` gates `/api/sync/*` writes from
   external cron. Never reuse the same value for both.
 
 ## File map
@@ -120,7 +124,7 @@ for the full design.
 
 | Path | Purpose |
 |---|---|
-| `_middleware.js` | Runs on every page request. Generates `_krob_sid`, captures `fbclid`/`gclid`/`oppref`/UTMs, computes `SUB_DOMAIN_INDEX` from the Host header, sets 400-day cookies, upserts `sessions`. Also injects consent-gated pixel snippets (Meta, GA4, LinkedIn, ChatGPT Ads `oaiq`) into `<head>` when `alisat_lgpd=all`. Skips `/tracker`, `/webhook/*`, `/api/*`, `/dash`. |
+| `_middleware.js` | Runs on every page request. Generates `_krob_sid`, captures `fbclid`/`gclid`/`oppref`/UTMs, computes `SUB_DOMAIN_INDEX` from the Host header, sets 400-day cookies, upserts `sessions`. Also injects consent-gated pixel snippets (Meta, GA4, LinkedIn, ChatGPT Ads `oaiq`) into `<head>` when `alisat_lgpd=all`. Skips `/tracker`, `/webhook/*`, `/api/*`, `/plataforma`. |
 | `tracker.js` | `POST /tracker` — client events. Hashes PII, fires Meta CAPI + GA4 MP + LinkedIn CAPI + Google Ads (lead conversion) + ChatGPT Ads Conversions API (Lead only, `lead_created`), logs to `event_log` (PageView skipped). |
 | `checkout-session.js` | `POST /checkout-session` — persists `trk` + attribution when a sales-page loads or a checkout button fires. |
 | `scripts/[[path]].js` | First-party proxy for `gtag.js`. Example pages load GA4 via `/scripts/gtag.js?id=...`. |
@@ -128,7 +132,7 @@ for the full design.
 | `webhook/_utils.js` | `timingSafeEqual` + `guardSlug` helpers shared by adapters. |
 | `webhook/brevo/[slug].js` | Brevo adapter. Gates on `BREVO_WEBHOOK_SLUG`. Turns opened/click/unsubscribed/hard_bounce/soft_bounce events into `lead_score` points, keyed by `external_id` (falls back to email → `event_log` → `sessions` lookup). |
 | `lib/integrations-dispatch.js` | Generic outbound webhook dispatcher for operator-configured integrations — see "Integrations" above. |
-| `api/integrations/*.js` | CRUD for the `integrations` table + delivery log, gated by `DASH_KEY`. Backs the "Integrações" section of `/dash`. |
+| `api/integrations/*.js` | CRUD for the `integrations` table + delivery log, gated by `DASH_KEY`. Backs the "Integrações" tab of `/plataforma`. |
 | `api/revenue.js` | Dashboard: gross revenue, sales, AOV, daily time series from `purchase_log`. |
 | `api/products.js` | Dashboard: per-product breakdown + time series from `purchase_items`. |
 | `api/utm-breakdown.js` | Dashboard: tabbed UTM drill-down from `purchase_log` with cascading filters. |
@@ -146,7 +150,7 @@ for the full design.
 |---|---|
 | `migrations/` | D1 schema, numbered 0001-0028 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users` (with `role`: `admin`/`member`, added 0027), `page_views`, `lead_score`, `integrations`/`integration_log` (0028). |
 | `config/products.js` | Per-product integration config: Encharge tag, ManyChat tag ID, Google Ads conversion action. Keyed by `platform → productId`. Tracked in git; no secrets. |
-| `dash/index.html` | Self-contained dashboard. Tailwind + Chart.js via CDN, no build step. Auth via `DASH_KEY` query param. Click any Lead or Purchase row to inspect the exact payload sent to Meta/GA4/Google Ads and the response. |
+| `plataforma/index.html` | Operator dashboard — tabbed SPA, no build step. Auth via `/api/auth/login` (returns `DASH_KEY` as `key`). Tabs: Páginas, Leads (score/stage, journey, payload inspector in the detail panel), Rastreamento (attribution, purchases, tracking health), Integrações, Configurações. Replaced the old single-scroll `/dash` page. |
 | `examples/lead-form-page/index.html` | Lead form starter (email-only by default; add phone/name per `docs/page-types/lead-form-page.md`). Demonstrates the full pixel+CAPI dedup pattern. |
 | `examples/sales-page/index.html` | Sales page starter. Demonstrates `trk` generation, `checkout-session` persistence, platform-switchable checkout URL rewriting. Ships with `assets/hero.webp` placeholder. |
 | `docs/` | Reference — architecture, data flow, schema, per-page-type recipes, per-platform notes, ad-spend sync setup. |

@@ -39,7 +39,7 @@ Ask:
 
 Rules:
 
-- Must not start with `/api/`, `/webhook/`, `/dash`, or `/tracker` —
+- Must not start with `/api/`, `/webhook/`, `/plataforma`, or `/tracker` —
   those bypass middleware and break attribution. If the recipient
   suggests one of those, explain why and ask for another.
 - Should be a short, memorable path that fits in a Meta ad URL.
@@ -157,7 +157,7 @@ Then run the smoke test that matches the page type.
    wrangler d1 execute <db-name> --remote --command \
      "SELECT event_name, raw_email, timestamp FROM event_log WHERE raw_email = 'claude-test@example.com' ORDER BY id DESC LIMIT 1"
    ```
-6. Open `https://<pages-domain>/dash?key=<DASH_KEY>`, go to the Leads
+6. Open `https://<pages-domain>/plataforma`, log in, go to the Leads
    tab, confirm the test row shows `utm_source = test_claude`.
 
 If any step fails, go to [docs/data-flow.md](../../../docs/data-flow.md)

@@ -12,7 +12,7 @@ if the funnel needs them.
 Every lead form page has the same five responsibilities:
 
 1. **Let the middleware run.** Don't put the page under `/api/*`,
-   `/webhook/*`, or `/dash` — those paths bypass middleware and you won't
+   `/webhook/*`, or `/plataforma` — those paths bypass middleware and you won't
    get a `_krob_sid` cookie, which means no session row, which means no
    attribution. Any other path is fine.
 2. **Load the GA4 first-party script**:
@@ -172,7 +172,7 @@ back navigation.
    wrangler d1 execute <db> --remote --command "SELECT event_name, raw_email, timestamp FROM event_log ORDER BY id DESC LIMIT 3"
    ```
    The test submission should be the top row.
-7. Open `/dash?key=<DASH_KEY>`, go to the Leads tab, confirm the row shows
+7. Open `/plataforma`, log in, go to the Leads tab, confirm the row shows
    `utm_source = test`.
 
 If any step breaks, walk [docs/data-flow.md](../data-flow.md) starting at

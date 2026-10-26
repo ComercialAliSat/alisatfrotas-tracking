@@ -431,7 +431,7 @@
     </div>
 
     <!-- ══ RASTREAMENTO ══ -->
-    <div id="sec-rastreamento" style="position:absolute;inset:0;left:256px;flex-direction:column">
+    <div id="sec-rastreamento" style="display:none;flex-direction:column;min-height:100%">
       <div style="min-height:52px;background:var(--card);border-bottom:1px solid var(--border);
         display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;flex-wrap:wrap">
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
@@ -455,8 +455,63 @@
           </div>
         </div>
       </div>
-      <iframe id="dash-iframe" src="about:blank"
-        style="flex:1;width:100%;border:none;display:block;height:calc(100vh - 52px)"></iframe>
+      <div style="padding:28px 40px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;flex:1">
+        <div class="kcard" style="padding:22px">
+          <div style="font-weight:700;margin-bottom:4px">Investimento por canal</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Visitas, leads e vendas classificados pela origem da sessão, no período selecionado.</div>
+          <div style="overflow-x:auto">
+            <table class="ltable">
+              <thead><tr>
+                <th>Canal</th>
+                <th style="text-align:right">Investimento</th>
+                <th style="text-align:right">Impressões</th>
+                <th style="text-align:right">Cliques</th>
+                <th style="text-align:right">Visitas</th>
+                <th style="text-align:right">Leads</th>
+                <th style="text-align:right">Vendas</th>
+                <th style="text-align:right">CPL</th>
+                <th style="text-align:right">CAC</th>
+              </tr></thead>
+              <tbody id="trk-channel-tbody"></tbody>
+            </table>
+          </div>
+          <div id="trk-channel-note" style="font-size:11px;color:var(--muted);margin-top:10px"></div>
+        </div>
+
+        <div class="kcard" style="padding:22px">
+          <div style="font-weight:700;margin-bottom:4px">Compras recentes</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Clique em uma linha para ver o payload enviado ao Meta, GA4 e Google Ads.</div>
+          <div style="overflow-x:auto">
+            <table class="ltable">
+              <thead><tr>
+                <th>Quando</th>
+                <th>E-mail</th>
+                <th>Produto</th>
+                <th style="text-align:right">Valor</th>
+                <th style="text-align:center">Meta</th>
+                <th style="text-align:center">GA4</th>
+                <th style="text-align:center">Google Ads</th>
+              </tr></thead>
+              <tbody id="trk-purchases-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="kcard" style="padding:22px">
+          <div style="font-weight:700;margin-bottom:4px">Saúde do rastreamento</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Captura de eventos: first-party (servidor) vs. pixel (navegador).</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+            <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)">Eventos reais</div><div id="trk-health-real" style="font-size:24px;font-weight:700;margin-top:4px">—</div></div>
+            <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)">Recuperados via ITP</div><div id="trk-health-itp" style="font-size:24px;font-weight:700;margin-top:4px;color:var(--navy)">—</div></div>
+            <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)">Recuperados via Adblock</div><div id="trk-health-adblock" style="font-size:24px;font-weight:700;margin-top:4px;color:var(--green)">—</div></div>
+            <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)">Bots filtrados</div><div id="trk-health-bots" style="font-size:24px;font-weight:700;margin-top:4px;color:var(--red)">—</div></div>
+          </div>
+          <div style="margin-top:16px">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px">Origem do fbp</div>
+            <div id="trk-health-fbp" style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ══ INTEGRAÇÕES ══ -->
@@ -509,10 +564,6 @@
         </div>
 
         <div class="kcard">
-          <div style="font-size:16px;font-weight:700;margin-bottom:18px">Acesso Rápido</div>
-          <div id="cfg-links" style="display:flex;flex-direction:column;gap:12px"></div>
-        </div>
-        <div class="kcard">
           <div style="font-size:16px;font-weight:700;margin-bottom:14px">Sobre</div>
           <div style="font-size:14px;color:var(--dim);display:flex;flex-direction:column;gap:6px">
             <p style="margin:0;font-weight:600;color:var(--text);font-size:15px">Ali Sat Plataforma — v1.0</p>
@@ -563,8 +614,7 @@
 let KEY = '';
 let ROLE = '';
 let SESSION_TOKEN = '';
-let iframeSet = false;
-const loaded = { paginas: false, leads: false, config: false, integracoes: false };
+const loaded = { paginas: false, leads: false, rastreamento: false, config: false, integracoes: false };
 let allPages = [];
 let leadsData = [];
 
@@ -637,7 +687,6 @@ function boot() {
   g('app').style.display = 'flex';
   const sec = location.hash.replace('#','') || 'paginas';
   nav(sec);
-  buildCfgLinks();
   g('btn-logout').onclick = () => {
     sessionStorage.removeItem('dash_key');
     sessionStorage.removeItem('dash_role');
@@ -813,7 +862,7 @@ function nav(sec) {
 
   if (sec === 'paginas'      && !loaded.paginas) loadPaginas();
   if (sec === 'leads'        && !loaded.leads)   loadLeads();
-  if (sec === 'rastreamento' && !iframeSet)       setIframe();
+  if (sec === 'rastreamento' && !loaded.rastreamento) { loaded.rastreamento = true; loadRastreamentoNative(); }
   if (sec === 'config'       && !loaded.config)  { loaded.config = true; renderUsersCard(); }
   if (sec === 'integracoes'  && !loaded.integracoes) loadIntegracoes();
 }
@@ -1093,6 +1142,15 @@ async function loadLeads() {
   loaded.leads = true;
 }
 
+function scoreBadge(score) {
+  if (score == null) return '';
+  const n = Number(score);
+  const color = n >= 60 ? 'var(--green)' : n >= 20 ? 'var(--amber)' : 'var(--red)';
+  return ` <span style="font-size:11px;font-weight:700;color:${color}" title="Pontuação do lead">●${n}</span>`;
+}
+
+const FUNNEL_STAGE_LABELS = { topo: 'Topo', meio: 'Meio', fundo: 'Fundo' };
+
 function renderLeadsTable(leads) {
   const count = leads.length;
   g('l-total').textContent = count ? '(' + count.toLocaleString('pt-BR') + ')' : '';
@@ -1121,7 +1179,7 @@ function renderLeadsTable(leads) {
         <span style="color:var(--muted);margin-left:4px">${time}</span>
       </td>
       <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500">
-        ${esc(email)}
+        <span>${esc(email)}</span>${scoreBadge(r.score)}
         ${locLine ? `<div style="font-size:12px;color:var(--muted);font-weight:400;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(locLine)}</div>` : ''}
       </td>
       <td>
@@ -1190,13 +1248,6 @@ function openDetail(idx) {
   };
   const privacyLabel = privacyMap[r.consent_status] || r.consent_status || 'Não informado';
 
-  const metaBadge = r.meta_response_ok
-    ? `<span class="badge badge-pub">Enviado</span>`
-    : `<span class="badge" style="background:#fee2e2;color:#b91c1c;border:1px solid #fecaca">Falhou</span>`;
-  const ga4Badge = r.ga4_response_ok
-    ? `<span class="badge badge-pub">Enviado</span>`
-    : `<span class="badge badge-det">—</span>`;
-
   const utmFields = [
     ['UTM Source',   r.utm_source],
     ['UTM Medium',   r.utm_medium],
@@ -1220,6 +1271,9 @@ function openDetail(idx) {
     ${drow('Navegador / SO', esc(browser))}
     ${locStr ? drow('Localização', esc(locStr)) : ''}
     ${drow('Política de Privacidade', `<span style="color:${r.consent_status==='all'?'var(--green)':'var(--muted)'}">${esc(privacyLabel)}</span>`)}
+    ${r.score != null ? drow('Pontuação', `<strong style="color:${Number(r.score)>=60?'var(--green)':Number(r.score)>=20?'var(--amber)':'var(--red)'}">${esc(String(r.score))}</strong>`) : ''}
+    ${r.funnel_stage ? drow('Estágio do funil', esc(FUNNEL_STAGE_LABELS[r.funnel_stage] || r.funnel_stage)) : ''}
+    ${r.last_event_type ? drow('Último evento', esc(r.last_event_type) + (r.last_event_at ? ' · ' + fmtTs(r.last_event_at, true) : '')) : ''}
 
     <div class="dsec">Página de Origem</div>
     ${r.landing_url
@@ -1240,13 +1294,52 @@ function openDetail(idx) {
     ${r.event_id ? drow('ID do Evento', `<span style="font-family:monospace;font-size:11.5px;color:var(--dim)">${esc(r.event_id)}</span>`) : ''}
 
     <div class="dsec">Tracking</div>
-    ${drow('Meta CAPI', metaBadge)}
-    ${drow('GA4', ga4Badge)}
     ${drow('Session ID', `<span style="font-family:monospace;font-size:12px;color:var(--dim)">${esc(r.session_id||'—')}</span>`)}
+    ${renderPayloadRows('Meta CAPI', r.meta_status_code, r.meta_response_ok, r.meta_payload_sent, r.meta_response_body)}
+    ${renderPayloadRows('GA4', r.ga4_status_code, r.ga4_response_ok, r.ga4_payload_sent, r.ga4_response_body)}
+
+    <div class="dsec">Jornada</div>
+    <div id="dp-journey" style="font-size:13px;color:var(--muted)">Carregando jornada…</div>
   `;
 
   g('dp-overlay').classList.add('open');
   g('dp-panel').classList.add('open');
+  loadJourneyIntoPanel(r.raw_email);
+}
+
+async function loadJourneyIntoPanel(email) {
+  const el = g('dp-journey');
+  if (!el) return;
+  if (!email) { el.textContent = 'Sem e-mail para montar a jornada.'; return; }
+  try {
+    const res = await fetch('/api/journey?key=' + enc(KEY) + '&email=' + enc(email));
+    if (res.status === 401) { authFail(); return; }
+    if (!res.ok) { el.textContent = 'Erro ao carregar jornada.'; return; }
+    const data = await res.json();
+    const pvs = (data.page_views || []).map(p => ({ kind: 'pv', ...p }));
+    const leadEvents = (data.lead_events || []).map(l => ({ kind: 'lead', ...l }));
+    const timeline = [...pvs, ...leadEvents].sort((a, b) => a.timestamp - b.timestamp);
+    if (!timeline.length) { el.innerHTML = '<div>Sem navegação registrada para este lead.</div>'; return; }
+    el.innerHTML = timeline.map(item => {
+      const ts = fmtTs(item.timestamp, true);
+      if (item.kind === 'lead') {
+        return `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-l)">
+          <span style="color:var(--green);font-weight:700">●</span>
+          <div><div style="font-weight:600;color:var(--green)">Converteu como Lead</div>
+          <div style="color:var(--muted);font-size:11.5px">${esc(ts)}</div></div></div>`;
+      }
+      let path = item.url || '';
+      try { const u = new URL(path); path = u.pathname + (u.search || ''); } catch {}
+      return `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-l)">
+        <span style="color:var(--muted)">●</span>
+        <div style="min-width:0;flex:1">
+          <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(item.url||'')}">${esc(item.title || path || '—')}</div>
+          <div style="color:var(--muted);font-size:11.5px">${esc(ts)}${item.utm_source ? ' · ' + esc(item.utm_source) : ''}</div>
+        </div></div>`;
+    }).join('');
+  } catch (e) {
+    el.textContent = 'Erro de conexão ao carregar jornada.';
+  }
 }
 
 function closeDetail() {
@@ -1345,8 +1438,7 @@ g('trk-range').addEventListener('click', e => {
   const t = todayStr();
   if (g('trk-from')) { g('trk-from').value = daysAgoStr(n === 365 ? 730 : n); }
   if (g('trk-to'))   { g('trk-to').value   = t; }
-  iframeSet = false;
-  setIframe();
+  loadTrkChannels();
 });
 
 ['trk-from','trk-to'].forEach(id => {
@@ -1354,45 +1446,154 @@ g('trk-range').addEventListener('click', e => {
   el.addEventListener('change', () => {
     if (g('trk-from').value && g('trk-to').value) {
       document.querySelectorAll('#trk-range .rbtn').forEach(x => x.classList.remove('active'));
-      iframeSet = false;
-      setIframe();
+      loadTrkChannels();
     }
   });
 });
 
-function setIframe() {
-  const base = KEY ? '/dash?key=' + enc(KEY) : '/dash';
-  const from = (g('trk-from')||{value:''}).value;
-  const to   = (g('trk-to')  ||{value:''}).value;
-  const range = from && to ? '&from=' + enc(from) + '&to=' + enc(to) : '';
-  g('dash-iframe').src = base + range;
-  iframeSet = true;
+function loadRastreamentoNative() {
+  loadTrkChannels();
+  loadTrkPurchases();
+  loadTrkHealth();
+}
+
+function money(n, cur) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: cur || 'BRL', maximumFractionDigits: 0 }).format(Number(n || 0));
+}
+function fmtInt(n) { return new Intl.NumberFormat('pt-BR').format(Number(n || 0)); }
+function fmtTs(ts, withYear) {
+  if (!ts) return '—';
+  return new Date(Number(ts) * 1000).toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: withYear ? 'numeric' : undefined,
+    hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo',
+  });
+}
+
+async function loadTrkChannels() {
+  const from = (g('trk-from') || {value:''}).value;
+  const to   = (g('trk-to')   || {value:''}).value;
+  const qs   = from && to ? '&from=' + enc(from) + '&to=' + enc(to) : '';
+  const res = await fetch('/api/attribution?key=' + enc(KEY) + qs);
+  if (res.status === 401) { authFail(); return; }
+  const data = await res.json();
+  const labels = { meta: 'Meta', google: 'Google', linkedin: 'LinkedIn', chatgpt: 'ChatGPT', organic: 'Orgânico' };
+  const groups = data.groups || {};
+  g('trk-channel-tbody').innerHTML = Object.keys(labels).map(ch => {
+    const gd = groups[ch] || {};
+    const hasSpend = ch !== 'organic';
+    const investCell = !hasSpend ? '—' : (gd.sync_configured ? money(gd.investimento) : '<span style="color:var(--muted)">não configurado</span>');
+    return `<tr>
+      <td style="font-weight:600">${esc(labels[ch])}</td>
+      <td style="text-align:right">${investCell}</td>
+      <td style="text-align:right">${hasSpend ? fmtInt(gd.impressoes) : '—'}</td>
+      <td style="text-align:right">${hasSpend ? fmtInt(gd.cliques) : '—'}</td>
+      <td style="text-align:right">${fmtInt(gd.visitas)}</td>
+      <td style="text-align:right">${fmtInt(gd.leads)}</td>
+      <td style="text-align:right">${fmtInt(gd.vendas)}</td>
+      <td style="text-align:right">${gd.cpl != null ? money(gd.cpl) : '—'}</td>
+      <td style="text-align:right">${gd.cac != null ? money(gd.cac) : '—'}</td>
+    </tr>`;
+  }).join('');
+  const syncNotes = ['meta','chatgpt','google'].map(ch => {
+    const gd = groups[ch];
+    return gd && gd.last_synced_at ? labels[ch] + ': ' + fmtTs(gd.last_synced_at, true) : null;
+  }).filter(Boolean);
+  g('trk-channel-note').textContent = syncNotes.length
+    ? 'Último sync de investimento — ' + syncNotes.join(' · ')
+    : 'Nenhum sync de investimento configurado ainda.';
+}
+
+let trkPurchasesData = [];
+async function loadTrkPurchases() {
+  const res = await fetch('/api/purchases?key=' + enc(KEY) + '&limit=50');
+  if (res.status === 401) { authFail(); return; }
+  const data = await res.json();
+  trkPurchasesData = data.rows || data.purchases || [];
+  if (!trkPurchasesData.length) {
+    g('trk-purchases-tbody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Nenhuma compra ainda.</td></tr>';
+    return;
+  }
+  g('trk-purchases-tbody').innerHTML = trkPurchasesData.map((p, i) => `
+    <tr style="cursor:pointer" onclick="openPurchaseDetail(${i})">
+      <td style="white-space:nowrap;color:var(--dim)">${fmtTs(p.created_at)}</td>
+      <td>${esc(p.raw_email || p.email || '—')}</td>
+      <td>${esc(p.product_name || p.product_id || '—')}</td>
+      <td style="text-align:right;color:var(--amber);font-weight:600">${money(p.value, p.currency || 'BRL')}</td>
+      <td style="text-align:center">${trkStatusDot(p.meta_response_ok, p.meta_response_body)}</td>
+      <td style="text-align:center">${trkStatusDot(p.ga4_response_ok, p.ga4_response_body)}</td>
+      <td style="text-align:center">${trkStatusDot(p.google_ads_response_ok, p.google_ads_response_body)}</td>
+    </tr>`).join('');
+}
+
+function trkStatusDot(ok, body) {
+  if (ok) return '<span style="color:var(--green)">✓</span>';
+  if (typeof body === 'string' && body.startsWith('skipped:')) return '<span style="color:var(--muted)">—</span>';
+  if (body == null) return '<span style="color:var(--muted)">—</span>';
+  return '<span style="color:var(--red)">✕</span>';
+}
+
+function openPurchaseDetail(idx) {
+  const p = trkPurchasesData[idx];
+  if (!p) return;
+  g('dp-title').textContent = 'Compra';
+  g('dp-date').textContent = 'Data: ' + fmtTs(p.created_at, true);
+  g('dp-body').innerHTML = `
+    <div class="dsec">Dados da compra</div>
+    ${drow('E-mail', esc(p.raw_email || p.email || '—'))}
+    ${drow('Produto', esc(p.product_name || p.product_id || '—'))}
+    ${drow('Valor', money(p.value, p.currency || 'BRL'))}
+    ${drow('ID da transação', '<span style="font-family:monospace;font-size:12px">' + esc(p.transaction_id || '—') + '</span>')}
+    <div class="dsec">Tracking</div>
+    ${renderPayloadRows('Meta CAPI', p.meta_status_code, p.meta_response_ok, p.meta_payload_sent, p.meta_response_body)}
+    ${renderPayloadRows('GA4', p.ga4_status_code, p.ga4_response_ok, p.ga4_payload_sent, p.ga4_response_body)}
+    ${renderPayloadRows('Google Ads', p.google_ads_status_code, p.google_ads_response_ok, p.google_ads_payload_sent, p.google_ads_response_body)}
+  `;
+  g('dp-overlay').classList.add('open');
+  g('dp-panel').classList.add('open');
+}
+
+function renderPayloadRows(title, statusCode, ok, payloadSent, responseBody) {
+  const nothingSent = payloadSent == null && (responseBody == null || responseBody === '');
+  let badge;
+  if (nothingSent) badge = '<span style="color:var(--muted)">não disparado</span>';
+  else if (typeof responseBody === 'string' && responseBody.startsWith('skipped:')) badge = '<span style="color:var(--muted)">' + esc(responseBody) + '</span>';
+  else if (ok) badge = '<span style="color:var(--green)">✓ aceito' + (statusCode ? ' (HTTP ' + statusCode + ')' : '') + '</span>';
+  else badge = '<span style="color:var(--red)">✕ falhou' + (statusCode ? ' (HTTP ' + statusCode + ')' : '') + '</span>';
+  return `
+    <details style="margin-bottom:8px">
+      <summary style="cursor:pointer;font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;align-items:center;list-style:none">
+        <span>${esc(title)}</span>
+        <span style="font-size:12px;font-family:monospace">${badge}</span>
+      </summary>
+      <div style="margin-top:8px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:4px">Payload enviado</div>
+        <pre style="font-size:11px;font-family:monospace;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;overflow-x:auto;white-space:pre-wrap;margin:0 0 8px">${esc(formatJsonP(payloadSent) || '—')}</pre>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:4px">Resposta</div>
+        <pre style="font-size:11px;font-family:monospace;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;overflow-x:auto;white-space:pre-wrap;margin:0">${esc(formatJsonP(responseBody) || '—')}</pre>
+      </div>
+    </details>`;
+}
+
+async function loadTrkHealth() {
+  const res = await fetch('/api/events?key=' + enc(KEY) + '&limit=1');
+  if (res.status === 401) { authFail(); return; }
+  const data = await res.json();
+  const rec = data.recovery || {};
+  txt('trk-health-real', fmtInt(rec.real_events));
+  txt('trk-health-itp', fmtInt(rec.itp_recovered));
+  txt('trk-health-adblock', fmtInt(rec.adblock_recovered));
+  txt('trk-health-bots', fmtInt((rec.total_events || 0) - (rec.real_events || 0)));
+  g('trk-health-fbp').innerHTML = [
+    ['Pixel (navegador)', rec.fbp_from_pixel, 'var(--blue)'],
+    ['Middleware (servidor)', rec.fbp_from_middleware, 'var(--green)'],
+    ['Tracker (servidor)', rec.fbp_from_session, 'var(--amber)'],
+    ['Nenhum', rec.fbp_none, 'var(--red)'],
+  ].map(([label, val, color]) => `<span style="border:1px solid var(--border);border-radius:8px;padding:4px 8px">
+    <span style="font-weight:700;color:${color}">${fmtInt(val)}</span>
+    <span style="color:var(--muted)">${esc(label)}</span></span>`).join('');
 }
 
 // ══ CONFIGURAÇÕES ══════════════════════════════════════════════════════════
-function buildCfgLinks() {
-  const links = [
-    { label:'Páginas e Funis',        href:'/plataforma', desc:'Gerencie funis e acompanhe conversões em tempo real' },
-    { label:'Rastreamento Dashboard', href:'/dash',       desc:'Analytics, UTMs, receita, saúde do tracking' },
-    { label:'Leads — Visitas',        href:'/dash/leads', desc:'Visitas por dia, fontes, leads recentes' },
-  ];
-  g('cfg-links').innerHTML = links.map(l => {
-    const href = l.href + (KEY ? '?key=' + enc(KEY) : '');
-    return `<a href="${href}" style="display:flex;align-items:center;justify-content:space-between;
-      padding:16px 18px;background:var(--bg);border:1px solid var(--border);border-radius:10px;
-      text-decoration:none;transition:border-color .15s,background .12s"
-      onmouseover="this.style.borderColor='#d1d5db';this.style.background='#f3f4f6'"
-      onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg)'">
-      <div>
-        <div style="font-size:15px;font-weight:600;color:var(--text)">${esc(l.label)}</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:3px">${esc(l.desc)}</div>
-      </div>
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
-        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-        <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-    </a>`;
-  }).join('');
-}
 
 // ══ INTEGRAÇÕES ══════════════════════════════════════════════════════════
 let ALLOWED_EVENTS_P = ['Lead', 'LeadUpdate', 'Purchase', 'InitiateCheckout', 'PageView'];

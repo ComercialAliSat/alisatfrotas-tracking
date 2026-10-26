@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 // Generic outbound integrations dispatcher — the "socket" the operator plugs
 // webhooks (a spreadsheet via Google Apps Script Web App, Zapier, a future
-// CRM, anything that accepts an HTTP POST) into from the /dash UI.
+// CRM, anything that accepts an HTTP POST) into from the /plataforma UI.
 //
 // Unlike functions/outputs/*.js (one hardcoded destination each, env-var
 // gated), integrations are rows in D1 the operator manages themselves — no
@@ -47,7 +47,7 @@ export async function dispatchIntegrations({ env, eventName, data }) {
   );
 }
 
-// Sends a one-off test delivery for the "Testar envio" button in /dash —
+// Sends a one-off test delivery for the "Testar envio" button in /plataforma —
 // same delivery/logging path as a real event, so a green test is a real
 // signal the destination is reachable and parsing the payload correctly.
 export async function testIntegration({ env, integration, data }) {

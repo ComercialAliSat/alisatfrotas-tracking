@@ -245,7 +245,7 @@ report engagement for contacts that predate this integration.
 ## `integrations` / `integration_log`
 
 Added in migration 0028. The generic outbound webhook layer the operator
-manages themselves from `/dash` — see `docs/architecture.md`'s
+manages themselves from `/plataforma` — see `docs/architecture.md`'s
 `functions/lib/integrations-dispatch.js` section for the full design.
 `integrations` holds one row per configured destination
 (name, target URL, subscribed event names, field mappings, optional HMAC

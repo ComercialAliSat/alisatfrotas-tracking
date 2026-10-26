@@ -62,7 +62,7 @@ updated_at:   1729600000
 **Failure modes**:
 
 - **No `sessions` row at all** → middleware didn't run. Check the path —
-  `/api/*`, `/webhook/*`, `/dash` and static assets are deliberately
+  `/api/*`, `/webhook/*`, `/plataforma` and static assets are deliberately
   excluded. If your lead/sales page is under one of those prefixes,
   rename it.
 - **`utm_source` empty but URL has `utm_source=…`** → the visitor landed

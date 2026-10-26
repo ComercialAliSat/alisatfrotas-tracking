@@ -12,7 +12,7 @@ Starter lives at `examples/sales-page/index.html`.
 Every sales page has six responsibilities beyond the lead-form list:
 
 1. **Let the middleware run** (same rule — avoid `/api/*`, `/webhook/*`,
-   `/dash`).
+   `/plataforma`).
 2. **Load GA4 + Meta Pixel** (same as the lead recipe).
 3. **Generate a `trk` UUID** on page load and persist it in
    `sessionStorage` so refreshes within the tab reuse it:

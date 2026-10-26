@@ -81,7 +81,7 @@ which ad they came from.
 
 ### `functions/_middleware.js`
 Runs on every HTML page request (static assets, API calls, and
-`/webhook/*` / `/api/*` / `/dash` are excluded). Responsibilities:
+`/webhook/*` / `/api/*` / `/plataforma` are excluded). Responsibilities:
 
 - Read cookies; generate `_krob_sid` and `_krob_eid` UUIDs if missing.
 - Parse `fbclid` / `gclid` / `msclkid` from the raw query string (not
@@ -159,17 +159,21 @@ call per hour pulls yesterday + today from the Meta Marketing API and
 UPSERTs into `ad_spend`. The dashboard reads `ad_spend` directly; there's
 no real-time Meta API call in the request path.
 
-### `dash/index.html`
-Self-contained HTML served at `/dash`. Tailwind + Chart.js via CDN, no
-build step. Query parameter `?key=<DASH_KEY>` is the only auth. Most of the
-dashboard is read-only; the "Integrações" section is the one write surface
-(CRUD against `/api/integrations/*`), gated by the same `DASH_KEY`.
+### `plataforma/index.html`
+Operator dashboard — a tabbed SPA served at `/plataforma`, no build step.
+Logs in via `/api/auth/login`, which hands back the same underlying
+`DASH_KEY` value used by every `/api/*` read endpoint. Tabs: Páginas, Leads
+(score, funnel stage, and a per-lead detail panel with a page-view journey
+and Meta/GA4 payload inspector), Rastreamento (attribution, recent
+purchases, tracking health), Integrações, Configurações. The "Integrações"
+tab is the one write surface (CRUD against `/api/integrations/*`), gated by
+the same `DASH_KEY`. Replaced the older single-scroll `/dash` page.
 
 ### `functions/lib/integrations-dispatch.js` + `functions/api/integrations/*`
 The generic outbound integration layer — the operator's own "socket" for
 plugging in a webhook (a spreadsheet via a Google Apps Script Web App,
 Zapier, a CRM, anything that accepts a POST), configured entirely from
-`/dash` with no code change or redeploy. Rows in the `integrations` table
+`/plataforma` with no code change or redeploy. Rows in the `integrations` table
 (migration 0028) each subscribe to one or more event names and define their
 own field mapping (source field → output key); `dispatchIntegrations()` is
 called, fire-and-forget via `waitUntil`, from both `functions/tracker.js`

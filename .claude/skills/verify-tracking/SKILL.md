@@ -34,7 +34,7 @@ wrangler d1 execute ${DB_NAME} --remote --command \
 **PASS** — you see at least one row with a non-empty `session_id` and a populated `fbp` starting with `fb.1.` or `fb.2.`.
 
 **FAIL modes**:
-- **Zero rows at all.** Middleware isn't running. Likely causes: D1 binding name is wrong (check `wrangler.toml` has `binding = "DB"`), or the page being visited is in a path the middleware skips (`/api/*`, `/webhook/*`, `/dash`, `/scripts/*`, or a static asset). Ask the recipient what URL they visited — if it was `/dash` or similar, tell them to visit the lead form or sales page example instead.
+- **Zero rows at all.** Middleware isn't running. Likely causes: D1 binding name is wrong (check `wrangler.toml` has `binding = "DB"`), or the page being visited is in a path the middleware skips (`/api/*`, `/webhook/*`, `/plataforma`, `/scripts/*`, or a static asset). Ask the recipient what URL they visited — if it was `/plataforma` or similar, tell them to visit the lead form or sales page example instead.
 - **Rows exist but `fbp` is empty.** Middleware ran but the Host header logic didn't compute a valid sub_domain_index. This is almost never a bug; check if the recipient visited the site via a raw `*.pages.dev` URL (which works) vs a freshly-configured custom domain that hasn't propagated.
 - **`utm_source` etc. are empty.** Not a bug — they're only populated when the URL has `?utm_source=...&...` query params. Ask the recipient to visit the page once with some UTMs (e.g. `${SITE_URL}/?utm_source=test&utm_medium=verify`) and re-run the check.
 

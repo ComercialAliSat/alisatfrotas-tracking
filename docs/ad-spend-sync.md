@@ -158,10 +158,10 @@ Same pattern: schedule a POST request with the `x-sync-secret` header set.
 
 ### 6. Check the dashboard
 
-Open `/dash` in your deployment. The paid-traffic attribution card should
-now show Meta spend, CPA, and ROAS alongside the attribution counts. The
-"last sync" timestamp under the section header should update within an
-hour of scheduling the cron.
+Open `/plataforma` in your deployment, go to the "Rastreamento" tab. The
+"Investimento por canal" table should now show Meta spend, CPL, and CAC
+alongside the attribution counts. The "último sync" note under the table
+should update within an hour of scheduling the cron.
 
 ---
 
@@ -290,7 +290,7 @@ Same providers and pattern as the Meta section above — just point at
 
 ### 5. Check the dashboard
 
-Open `/dash`. The "Investimento por canal" table has a row for ChatGPT with
+Open `/plataforma`, "Rastreamento" tab. The "Investimento por canal" table has a row for ChatGPT with
 Investimento/Impressões/Cliques (from this sync) and Visitas/Leads/Vendas/
 CPL/CAC (classified via the `oppref` click identifier captured on the
 originating session — see `docs/schema.md`, `sessions.oppref` /
