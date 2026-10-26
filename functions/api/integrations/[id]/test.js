@@ -22,6 +22,8 @@ const SAMPLE_DATA = {
   ln: 'Exemplo',
   ph: '5551999998888',
   veiculos_faixa: '6 a 20 veículos',
+  veiculos: '12',
+  qtd_veiculos: '12',
   tipo_veiculo: 'pesado',
   custo_estimado: 123456,
   value: 1990,

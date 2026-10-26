@@ -1398,9 +1398,16 @@ function buildCfgLinks() {
 // ══ INTEGRAÇÕES ══════════════════════════════════════════════════════════
 let ALLOWED_EVENTS_P = ['Lead', 'LeadUpdate', 'Purchase', 'InitiateCheckout', 'PageView'];
 const EVENT_LABELS_P = { Lead: 'Lead', LeadUpdate: 'Lead atualizado', Purchase: 'Venda', InitiateCheckout: 'Início de checkout', PageView: 'Visualização de página' };
+// Cobre todo campo que já sai de algum formulário de Lead no site — como
+// páginas diferentes nomeiam "quantidade de veículos" de três jeitos
+// (gpt.js usa veiculos, videotelemetria_topo/_fundo usam qtd_veiculos,
+// a calculadora usa veiculos_faixa), inclui as três variantes; quem mapear
+// pode adicionar uma linha para cada uma apontando pro mesmo campo de
+// destino, já que o /tracker só manda o nome que aquela página específica usa.
 const FIELD_SUGGESTIONS_P = [
   'em', 'fn', 'ln', 'ph', 'empresa', 'cargo', 'cnpj', 'segmento', 'product',
-  'veiculos_faixa', 'tipo_veiculo', 'carga_tipo', 'regiao', 'valor_carga', 'acidentes_12m',
+  'veiculos', 'veiculos_faixa', 'qtd_veiculos',
+  'tipo_veiculo', 'carga_tipo', 'regiao', 'valor_carga', 'acidentes_12m',
   'seguros', 'tecnologia_atual', 'custo_estimado',
   'value', 'currency', 'transaction_id', 'product_id', 'product_name', 'platform', 'trk',
   'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
