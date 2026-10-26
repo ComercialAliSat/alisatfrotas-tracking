@@ -1331,11 +1331,11 @@ function heroSubmit() {
   if (!seg)          return alert_('Por favor, selecione o segmento de atuação.');
   if (!veic)         return alert_('Por favor, selecione a quantidade de veículos.');
 
-  push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
+  push({ event:'Lead_Qualificado', form_step:2, segmento:seg, quantidade_veiculos:veic });
   if (heroS1.eid) {
-    postLeadUpdate({ update_for:heroS1.eid, user_data:{ em:heroS1.email, fn:(heroS1.nome.split(/\s+/)[0])||'', ln:(heroS1.nome.split(/\s+/).slice(1).join(' '))||'', ph:(heroS1.tel||'').replace(/\D/g,'') }, empresa, cnpj, segmento:seg, qtd_veiculos:veic }, 'hero-form-wrap');
+    postLeadUpdate({ update_for:heroS1.eid, user_data:{ em:heroS1.email, fn:(heroS1.nome.split(/\s+/)[0])||'', ln:(heroS1.nome.split(/\s+/).slice(1).join(' '))||'', ph:(heroS1.tel||'').replace(/\D/g,'') }, empresa, cnpj, segmento:seg, quantidade_veiculos:veic }, 'hero-form-wrap');
   } else {
-    postLead({ nome:heroS1.nome, email:heroS1.email, tel:heroS1.tel, empresa, cnpj, segmento:seg, qtd_veiculos:veic }, 'hero-form-wrap');
+    postLead({ nome:heroS1.nome, email:heroS1.email, tel:heroS1.tel, empresa, cnpj, segmento:seg, quantidade_veiculos:veic }, 'hero-form-wrap');
   }
 }
 
@@ -1353,8 +1353,8 @@ function finalSubmit() {
   if (!seg)            return alert_('Por favor, selecione o segmento.');
   if (!veic)           return alert_('Por favor, selecione a quantidade de veículos.');
   if (!lgpd)           return alert_('Por favor, aceite a Política de Privacidade.');
-  push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
-  postLead({ nome, email, tel, empresa, cnpj, segmento:seg, qtd_veiculos:veic }, 'final-form-wrap');
+  push({ event:'Lead_Qualificado', form_step:2, segmento:seg, quantidade_veiculos:veic });
+  postLead({ nome, email, tel, empresa, cnpj, segmento:seg, quantidade_veiculos:veic }, 'final-form-wrap');
 }
 
 // ── Core POST ────────────────────────────────────────────────
@@ -1368,7 +1368,7 @@ async function postLead(data, wrapId) {
     event_source_url:window.location.href,
     product:'videotelemetria_fundo', consent_status:'all',
     user_data:{ em:data.email||'', fn:parts[0]||'', ln:parts.slice(1).join(' ')||'', ph:(data.tel||'').replace(/\D/g,'') },
-    empresa:data.empresa||'', cnpj:data.cnpj||'', segmento:data.segmento||'', qtd_veiculos:data.qtd_veiculos||'',
+    empresa:data.empresa||'', cnpj:data.cnpj||'', segmento:data.segmento||'', quantidade_veiculos:data.quantidade_veiculos||'',
     utm_source:param('utm_source'), utm_medium:param('utm_medium'),
     utm_campaign:param('utm_campaign'), utm_content:param('utm_content'),
     utm_term:param('utm_term'), fbclid:param('fbclid'), gclid:param('gclid'),
@@ -1395,7 +1395,7 @@ async function postLeadUpdate(data, wrapId) {
   try {
     const res = await fetch('/tracker', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ event_name:'LeadUpdate', update_for:data.update_for, user_data:data.user_data, empresa:data.empresa||'', cnpj:data.cnpj||'', segmento:data.segmento||'', qtd_veiculos:data.qtd_veiculos||'' }),
+      body:JSON.stringify({ event_name:'LeadUpdate', update_for:data.update_for, user_data:data.user_data, empresa:data.empresa||'', cnpj:data.cnpj||'', segmento:data.segmento||'', quantidade_veiculos:data.quantidade_veiculos||'' }),
     });
     if (res.ok) {
       ['hero-form-wrap','final-form-wrap'].forEach(id => { const w = $(id); if (w) w.classList.add('done'); });

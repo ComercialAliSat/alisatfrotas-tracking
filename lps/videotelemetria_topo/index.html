@@ -1421,7 +1421,7 @@
     if (!seg)           { alert_('Por favor, selecione o segmento de atuação.'); return; }
     if (!veic)          { alert_('Por favor, selecione a quantidade de veículos.'); return; }
 
-    push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
+    push({ event:'Lead_Qualificado', form_step:2, segmento:seg, quantidade_veiculos:veic });
     if (heroS1.eid) {
       postLeadUpdate({
         update_for: heroS1.eid,
@@ -1431,12 +1431,12 @@
           ln: (heroS1.nome.split(/\s+/).slice(1).join(' ')) || '',
           ph: (heroS1.tel || '').replace(/\D/g,''),
         },
-        empresa, cnpj, segmento:seg, qtd_veiculos:veic,
+        empresa, cnpj, segmento:seg, quantidade_veiculos:veic,
       }, 'hero-form-wrap');
     } else {
       postLead({
         nome: heroS1.nome, email: heroS1.email, tel: heroS1.tel,
-        empresa, cnpj, segmento:seg, qtd_veiculos:veic,
+        empresa, cnpj, segmento:seg, quantidade_veiculos:veic,
       }, 'hero-form-wrap');
     }
   }
@@ -1458,8 +1458,8 @@
     if (!seg)            { alert_('Por favor, selecione o segmento de atuação.'); return; }
     if (!veic)           { alert_('Por favor, selecione a quantidade de veículos.'); return; }
 
-    push({ event:'Lead_Qualificado', form_step:2, segmento:seg, qtd_veiculos:veic });
-    postLead({ nome, email, tel, empresa, cnpj, segmento:seg, qtd_veiculos:veic }, 'final-form-wrap');
+    push({ event:'Lead_Qualificado', form_step:2, segmento:seg, quantidade_veiculos:veic });
+    postLead({ nome, email, tel, empresa, cnpj, segmento:seg, quantidade_veiculos:veic }, 'final-form-wrap');
   }
 
   // ── Core POST ────────────────────────────────────────────────
@@ -1483,7 +1483,7 @@
       empresa:      data.empresa      || '',
       cnpj:         data.cnpj         || '',
       segmento:     data.segmento     || '',
-      qtd_veiculos: data.qtd_veiculos || '',
+      quantidade_veiculos: data.quantidade_veiculos || '',
       utm_source:   param('utm_source'),
       utm_medium:   param('utm_medium'),
       utm_campaign: param('utm_campaign'),
@@ -1538,7 +1538,7 @@
           empresa:      data.empresa      || '',
           cnpj:         data.cnpj         || '',
           segmento:     data.segmento     || '',
-          qtd_veiculos: data.qtd_veiculos || '',
+          quantidade_veiculos: data.quantidade_veiculos || '',
         }),
       });
       if (res.ok) {
