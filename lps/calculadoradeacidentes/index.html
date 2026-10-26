@@ -522,8 +522,8 @@ footer { border-top: 1px solid var(--line); padding-block: 22px 40px; font-size:
   }
 
   /* Lead + atribuição → /tracker (fbp/fbc/UTMs lidos no navegador, igual às outras LPs).
-     Dispara Meta CAPI + GA4 + Pipedrive no servidor; empresa/cnpj/segmento batem
-     com os campos que functions/outputs/pipedrive.js já espera para achar/criar a Org. */
+     Dispara Meta CAPI + GA4 no servidor, mais qualquer integração configurada
+     em /dash (webhook, planilha, CRM) que esteja escutando o evento "Lead". */
   function sendLead() {
     var parts = S.nome.trim().split(/\s+/);
     var r = calc(S);

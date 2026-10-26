@@ -1,6 +1,5 @@
 // -----------------------------------------------------------------------------
-// Brevo (Sendinblue) contact sync — mirrors functions/outputs/pipedrive.js and
-// functions/outputs/linkedin.js.
+// Brevo (Sendinblue) contact sync — mirrors functions/outputs/linkedin.js.
 //
 // Called from functions/tracker.js's Lead event fan-out. Creates or updates
 // the Brevo contact by email and stamps sessions.external_id as the

@@ -16,12 +16,6 @@
 //     LEFT JOIN through checkout_sessions -> sessions for li_fat_id (the
 //     only place LinkedIn's identifier lives — purchase_log/checkout_sessions
 //     never capture it directly)
-//
-// KNOWN GAP: Pipedrive-Won purchases (functions/webhook/pipedrive/[slug].js)
-// write fbc/gclid/gbraid/wbraid to purchase_log but NOT oppref (that file is
-// intentionally untouched right now — CRM migration pending), so a
-// ChatGPT-Ads-attributed sale closed via Pipedrive currently falls through
-// to 'organic' here. Not a bug in this file — a known upstream omission.
 import { parseDateRange } from './_range.js';
 
 const CHANNELS = ['meta', 'google', 'linkedin', 'chatgpt'];

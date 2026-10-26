@@ -1,0 +1,11 @@
+-- Drops the Pipedrive-specific CRM bridge table. functions/outputs/pipedrive.js
+-- and functions/webhook/pipedrive/[slug].js (the only writers/readers of this
+-- table) have been removed as part of dropping Pipedrive — see the generic
+-- operator-configured integrations layer (migration 0028) as the replacement.
+--
+-- NOT applied automatically. This permanently deletes any rows currently in
+-- crm_deals (Pipedrive deal_id/person_id/org_id linkage, internal deal value,
+-- lifecycle timestamps) with no way to recover them afterward. Run this
+-- yourself with `wrangler d1 migrations apply <db> --remote` only once you're
+-- sure you don't need that history.
+DROP TABLE IF EXISTS crm_deals;

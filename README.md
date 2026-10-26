@@ -13,7 +13,8 @@ and sales pages.
   and Google Ads API — no loss from ad-blockers, no dependence on the pixel.
 - **Full attribution persistence** (UTMs, `fbp`/`fbc`, `gclid`) captured at
   the edge and threaded through to each lead and each purchase.
-- **Sales platform webhooks** for Eduzz, Hotmart, and Kiwify out of the box.
+- **A platform-agnostic sales-webhook core** — add your sales platform's
+  adapter in a guided 15-minute procedure (`add-sales-platform` skill).
 - **A built-in dashboard** showing leads and purchases with their original
   UTMs so you can see where conversions actually came from.
 - **Runs entirely in your own Cloudflare account.** No external services, no
@@ -31,9 +32,9 @@ This is **not** for you if:
 - You don't run your own ad accounts.
 - You need a hosted SaaS product — this runs in *your* Cloudflare account, not
   ours.
-- Your sales platform isn't Eduzz, Hotmart, or Kiwify and you're not willing
-  to let Claude Code help you add a new one (it's a guided 15-minute procedure
-  — see `docs/platforms/_template.md`).
+- You're not willing to let Claude Code help you wire your sales platform's
+  webhook (it's a guided 15-minute procedure — the `add-sales-platform`
+  skill — since no platform ships pre-wired).
 
 ## What you need before you start
 
@@ -50,9 +51,8 @@ This is **not** for you if:
   Protocol API secret. Skip if you don't plan to use GA4.
 - **Google Ads (optional)**: developer token, OAuth credentials, and at least
   one conversion action ID. Skip this if you don't run Google Ads.
-- **A sales platform account** if you're building a sales page (Eduzz,
-  Hotmart, or Kiwify). Each needs a way to generate a webhook secret in its
-  own dashboard.
+- **A sales platform account** if you're building a sales page. It needs a
+  way to generate a webhook URL/secret in its own dashboard.
 
 ## How to set up
 

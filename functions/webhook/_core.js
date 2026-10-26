@@ -36,6 +36,7 @@
 
 import PRODUCTS_CONFIG from '../../config/products.js';
 import { sendToLinkedIn } from '../outputs/linkedin.js';
+import { dispatchIntegrations } from '../lib/integrations-dispatch.js';
 
 // Module-scope OAuth2 access token cache for Google Ads API.
 // Reused across warm worker invocations to skip the refresh round-trip.
@@ -64,6 +65,35 @@ export async function processPurchase({ parsed, env, context }) {
   const enriched = { ...parsed, productConfig, checkoutData };
   const eventId = crypto.randomUUID();
   const eventTime = Math.floor(Date.now() / 1000);
+
+  // Generic operator-configured integrations (webhooks/planilhas) — raw,
+  // unhashed fields, same as the Lead path in functions/tracker.js.
+  const nameParts = splitName(parsed.name);
+  context.waitUntil(
+    dispatchIntegrations({
+      env,
+      eventName: 'Purchase',
+      data: {
+        platform: parsed.platform,
+        trk: parsed.trk || '',
+        em: parsed.email || '',
+        fn: nameParts.fn,
+        ln: nameParts.ln,
+        ph: parsed.phone || '',
+        value: parsed.value,
+        currency: parsed.currency,
+        transaction_id: parsed.transactionId,
+        product_id: parsed.productId,
+        product_name: parsed.productName,
+        event_source_url: checkoutData.event_source_url || '',
+        utm_source:   parsed.platformUtm?.utm_source   || checkoutData.utm_source   || '',
+        utm_medium:   parsed.platformUtm?.utm_medium   || checkoutData.utm_medium   || '',
+        utm_campaign: parsed.platformUtm?.utm_campaign || checkoutData.utm_campaign || '',
+        utm_content:  parsed.platformUtm?.utm_content  || checkoutData.utm_content  || '',
+        utm_term:     parsed.platformUtm?.utm_term     || checkoutData.utm_term     || '',
+      },
+    })
+  );
 
   // Fan out to handlers. Each wraps its own errors so one failing handler
   // never blocks the others.

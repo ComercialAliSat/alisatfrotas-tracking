@@ -11,9 +11,10 @@
 // that fan out on each purchase: Encharge tag, ManyChat tag ID, and the
 // per-product Google Ads conversion action.
 //
-// Example (Eduzz product):
+// Example (key the top level by whatever string your webhook adapter sets as
+// `platform` — see docs/platforms/_template.md when you add one):
 //
-//   eduzz: {
+//   myplatform: {
 //     '123456': {
 //       name: 'Your product name — for your own reference',
 //       enchargeTag: 'your-encharge-tag-slug',
@@ -23,16 +24,11 @@
 //   },
 //
 // Leave any integration field empty string / 0 / null to skip that fan-out for
-// that product. Leave an entire platform as {} if you don't use it — the
-// corresponding webhook endpoint still works, it just won't trigger
-// Encharge/ManyChat/per-product Google Ads for those sales.
+// that product. No platform needs to be listed here until you've wired up its
+// webhook adapter (see the add-sales-platform skill).
 //
 // This file is committed to git. Product IDs and tag IDs are not secrets.
 // Secrets (API keys) live in Cloudflare environment variables.
 // -----------------------------------------------------------------------------
 
-export default {
-  eduzz: {},
-  hotmart: {},
-  kiwify: {},
-};
+export default {};

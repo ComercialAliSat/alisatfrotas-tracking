@@ -173,6 +173,81 @@
   </div>
 </div>
 
+<!-- ── INTEGRAÇÃO (CRIAR/EDITAR) MODAL ── -->
+<div id="int-modal" class="overlay" style="display:none">
+  <div class="kcard" style="width:560px;max-width:92vw;max-height:88vh;overflow-y:auto;padding:28px">
+    <div id="int-modal-title" style="font-size:16px;font-weight:700;margin-bottom:20px">Nova integração</div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div>
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+          color:var(--dim);display:block;margin-bottom:6px">Nome</label>
+        <input id="int-name" type="text" placeholder="Ex.: ALISALES — leads" class="inp">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+          color:var(--dim);display:block;margin-bottom:6px">URL de destino</label>
+        <input id="int-url" type="url" placeholder="https://.../leads" class="inp" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+          color:var(--dim);display:block;margin-bottom:6px">Eventos</label>
+        <div id="int-events" style="display:flex;flex-wrap:wrap;gap:12px;font-size:13.5px"></div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--dim)">Mapeamento de campos</label>
+          <button id="int-mapping-add" type="button" style="background:none;border:none;color:var(--navy);
+            font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline">+ adicionar campo</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--muted);margin-bottom:8px">Campo de origem (ex.: em, fn, ln, ph, empresa, cnpj, utm_source, value) → nome enviado ao destino. Sem nenhum campo aqui, manda o payload inteiro.</div>
+        <div id="int-mapping-rows" style="display:flex;flex-direction:column;gap:8px"></div>
+        <datalist id="int-field-suggestions"></datalist>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12.5px;font-weight:700;color:var(--dim)">Autenticar com uma API (ex.: um CRM) — opcional</div>
+        <div style="font-size:11.5px;color:var(--muted)">Para chamar uma API autenticada (não apenas um webhook que recebe de nós). A chave fica só no Cloudflare — aqui você só aponta o nome da variável, nunca digita a chave.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <label style="font-size:11px;color:var(--dim);display:block;margin-bottom:4px">Nome do header</label>
+            <input id="int-auth-header" type="text" placeholder="x-api-key" class="inp" style="padding:7px 10px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--dim);display:block;margin-bottom:4px">Prefixo (opcional)</label>
+            <input id="int-auth-prefix" type="text" placeholder="Bearer " class="inp" style="padding:7px 10px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">
+          </div>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--dim);display:block;margin-bottom:4px">Variável de ambiente no Cloudflare (com a chave)</label>
+          <input id="int-auth-envvar" type="text" placeholder="CRM" class="inp" style="padding:7px 10px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Precisa já existir em Pages → Settings → Environment variables.</div>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+          color:var(--dim);display:block;margin-bottom:6px">Secret HMAC (opcional)</label>
+        <input id="int-secret" type="password" placeholder="Assina o corpo enviado, header X-Ali-Signature" class="inp" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Para um receptor que é seu (Apps Script, n8n) verificar que a chamada veio daqui — diferente da autenticação de API acima.</div>
+        <div id="int-secret-note" style="font-size:11px;color:var(--muted);margin-top:4px;display:none">Já existe um secret salvo — deixe em branco para mantê-lo.</div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;cursor:pointer">
+        <input id="int-active" type="checkbox" checked>
+        Ativa
+      </label>
+      <div id="int-test-result" style="display:none;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+        background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;overflow-x:auto;white-space:pre-wrap"></div>
+      <div id="int-error" style="color:var(--red);font-size:12px;display:none"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border)">
+        <button id="int-test-btn" type="button" class="btn btn-outline">Testar envio</button>
+        <div style="display:flex;gap:10px">
+          <button id="int-delete-btn" type="button" class="btn btn-outline" style="display:none;color:var(--red);border-color:var(--red)">Excluir</button>
+          <button id="int-cancel-btn" type="button" class="btn btn-s">Cancelar</button>
+          <button id="int-save-btn" type="button" class="btn btn-dark">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── APP ── -->
 <div id="app" style="display:none;height:100vh;overflow:hidden">
 <div style="display:flex;height:100%">
@@ -211,6 +286,12 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Rastreamento
+      </button>
+      <button class="nav-item" data-sec="integracoes">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="9" width="6" height="6" rx="1"/><rect x="16" y="9" width="6" height="6" rx="1"/>
+          <path d="M8 12h8"/></svg>
+        Integrações
       </button>
       <button class="nav-item" data-sec="config">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -379,6 +460,41 @@
         style="flex:1;width:100%;border:none;display:block;height:calc(100vh - 52px)"></iframe>
     </div>
 
+    <!-- ══ INTEGRAÇÕES ══ -->
+    <div id="sec-integracoes" style="display:none;padding:40px 44px;min-height:100%">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;
+        margin-bottom:24px;flex-wrap:wrap;gap:14px">
+        <div>
+          <h1 style="font-size:26px;font-weight:700;margin:0;line-height:1.3">Integrações</h1>
+          <p style="color:var(--dim);margin:4px 0 0;font-size:14px">
+            Plugue uma planilha, um CRM ou qualquer endpoint que aceite POST — escolha os eventos e o que cada um recebe.
+          </p>
+        </div>
+        <button id="btn-int-novo" class="btn btn-dark">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova integração
+        </button>
+      </div>
+
+      <div class="kcard" style="overflow:hidden;padding:0">
+        <div style="overflow-x:auto">
+          <table class="ltable">
+            <thead><tr>
+              <th>Nome</th>
+              <th>Eventos</th>
+              <th>Destino</th>
+              <th style="width:90px">Autenticação</th>
+              <th style="width:70px">Ativa</th>
+              <th style="width:160px">Última entrega</th>
+              <th style="width:70px"></th>
+            </tr></thead>
+            <tbody id="int-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- ══ CONFIGURAÇÕES ══ -->
     <div id="sec-config" style="display:none;padding:40px 44px;min-height:100%">
       <div style="margin-bottom:28px">
@@ -449,7 +565,7 @@ let KEY = '';
 let ROLE = '';
 let SESSION_TOKEN = '';
 let iframeSet = false;
-const loaded = { paginas: false, leads: false, config: false };
+const loaded = { paginas: false, leads: false, config: false, integracoes: false };
 let allPages = [];
 let leadsData = [];
 
@@ -681,7 +797,7 @@ g('nav').addEventListener('click', e => {
 });
 
 function nav(sec) {
-  const secs = ['paginas','leads','rastreamento','config'];
+  const secs = ['paginas','leads','rastreamento','config','integracoes'];
   if (!secs.includes(sec)) sec = 'paginas';
 
   document.querySelectorAll('[data-sec]').forEach(b =>
@@ -700,6 +816,7 @@ function nav(sec) {
   if (sec === 'leads'        && !loaded.leads)   loadLeads();
   if (sec === 'rastreamento' && !iframeSet)       setIframe();
   if (sec === 'config'       && !loaded.config)  { loaded.config = true; renderUsersCard(); }
+  if (sec === 'integracoes'  && !loaded.integracoes) loadIntegracoes();
 }
 
 // ══ PÁGINAS ══════════════════════════════════════════════════════════════
@@ -1277,6 +1394,260 @@ function buildCfgLinks() {
     </a>`;
   }).join('');
 }
+
+// ══ INTEGRAÇÕES ══════════════════════════════════════════════════════════
+let ALLOWED_EVENTS_P = ['Lead', 'LeadUpdate', 'Purchase', 'InitiateCheckout', 'PageView'];
+const EVENT_LABELS_P = { Lead: 'Lead', LeadUpdate: 'Lead atualizado', Purchase: 'Venda', InitiateCheckout: 'Início de checkout', PageView: 'Visualização de página' };
+const FIELD_SUGGESTIONS_P = [
+  'em', 'fn', 'ln', 'ph', 'empresa', 'cargo', 'cnpj', 'segmento', 'product',
+  'veiculos_faixa', 'tipo_veiculo', 'carga_tipo', 'regiao', 'valor_carga', 'acidentes_12m',
+  'seguros', 'tecnologia_atual', 'custo_estimado',
+  'value', 'currency', 'transaction_id', 'product_id', 'product_name', 'platform', 'trk',
+  'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+  'fbclid', 'gclid', 'event_source_url', 'event_time', 'country', 'city', 'region',
+];
+let integracoesList = [];
+let editingIntegracaoId = null;
+
+async function intFetch(path) {
+  const res = await fetch(path + (path.includes('?') ? '&' : '?') + 'key=' + enc(KEY));
+  if (res.status === 401) { authFail(); throw new Error('Unauthorized'); }
+  return res.json();
+}
+async function intMutate(path, method, body) {
+  const res = await fetch(path + (path.includes('?') ? '&' : '?') + 'key=' + enc(KEY), {
+    method,
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (res.status === 401) { authFail(); throw new Error('Unauthorized'); }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+  return data;
+}
+
+async function loadIntegracoes() {
+  g('int-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Carregando…</td></tr>`;
+  try {
+    const data = await intFetch('/api/integrations');
+    integracoesList = data.integrations || [];
+    if (data.allowed_events && data.allowed_events.length) ALLOWED_EVENTS_P = data.allowed_events;
+    loaded.integracoes = true;
+    renderIntegracoesTable();
+  } catch (err) {
+    g('int-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--red)">${esc(err.message)}</td></tr>`;
+  }
+}
+
+function fmtDateShortP(ts) {
+  if (!ts) return '—';
+  return new Date(Number(ts) * 1000).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' });
+}
+
+function renderIntegracoesTable() {
+  const tbody = g('int-tbody');
+  if (!integracoesList.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Nenhuma integração cadastrada ainda.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = integracoesList.map((i, idx) => {
+    const lastCell = i.last_at == null
+      ? '<span style="color:var(--muted)">— nunca</span>'
+      : i.last_ok
+        ? `<span style="color:var(--green)">✓ ${fmtDateShortP(i.last_at)}</span>`
+        : `<span style="color:var(--red)">✕ ${fmtDateShortP(i.last_at)} (HTTP ${i.last_status || 0})</span>`;
+    const authCell = i.auth_header_name ? '<span class="badge badge-det">API key</span>' : '<span style="color:var(--muted)">—</span>';
+    return `
+      <tr>
+        <td style="font-weight:600">${esc(i.name)}</td>
+        <td style="font-size:12.5px">${i.events.map(e => esc(EVENT_LABELS_P[e] || e)).join(', ')}</td>
+        <td style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--dim)" title="${esc(i.target_url)}">${esc(i.target_url)}</td>
+        <td>${authCell}</td>
+        <td>${i.active ? '<span style="color:var(--green)">●</span>' : '<span style="color:var(--muted)">●</span>'}</td>
+        <td style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;cursor:${i.delivery_count > 0 ? 'pointer' : 'default'}" data-logs-idx="${idx}">${lastCell}</td>
+        <td style="text-align:right">
+          <button data-edit-idx="${idx}" style="background:none;border:none;color:var(--navy);font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline">editar</button>
+        </td>
+      </tr>`;
+  }).join('');
+  tbody.querySelectorAll('[data-edit-idx]').forEach(el => {
+    el.addEventListener('click', () => openIntegracaoModal(integracoesList[parseInt(el.getAttribute('data-edit-idx'), 10)]));
+  });
+  tbody.querySelectorAll('[data-logs-idx]').forEach(el => {
+    el.addEventListener('click', () => {
+      const i = integracoesList[parseInt(el.getAttribute('data-logs-idx'), 10)];
+      if (i.delivery_count > 0) openIntegracaoLogs(i.id, i.name);
+    });
+  });
+}
+
+function renderEventCheckboxesP(selected) {
+  g('int-events').innerHTML = ALLOWED_EVENTS_P.map(ev => `
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+      <input type="checkbox" value="${esc(ev)}" ${selected.includes(ev) ? 'checked' : ''}>
+      ${esc(EVENT_LABELS_P[ev] || ev)}
+    </label>
+  `).join('');
+}
+
+function addMappingRowP(source, target) {
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:8px';
+  row.innerHTML = `
+    <input type="text" placeholder="campo de origem" list="int-field-suggestions" class="inp int-map-source"
+      style="flex:1;padding:7px 10px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace" value="${esc(source || '')}">
+    <span style="color:var(--muted);font-size:12px">→</span>
+    <input type="text" placeholder="nome no destino" class="inp int-map-target"
+      style="flex:1;padding:7px 10px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace" value="${esc(target || '')}">
+    <button type="button" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:0 4px" aria-label="Remover">&times;</button>
+  `;
+  row.querySelector('button').addEventListener('click', () => row.remove());
+  g('int-mapping-rows').appendChild(row);
+}
+
+function collectMappingRowsP() {
+  return Array.from(g('int-mapping-rows').children).map(row => ({
+    source: row.querySelector('.int-map-source').value.trim(),
+    target: row.querySelector('.int-map-target').value.trim(),
+  })).filter(m => m.source);
+}
+
+function openIntegracaoModal(integration) {
+  editingIntegracaoId = integration ? integration.id : null;
+  g('int-modal-title').textContent = integration ? `Editar — ${integration.name}` : 'Nova integração';
+  g('int-name').value = integration ? integration.name : '';
+  g('int-url').value = integration ? integration.target_url : '';
+  g('int-secret').value = '';
+  g('int-secret-note').style.display = (integration && integration.has_secret) ? 'block' : 'none';
+  g('int-auth-header').value = integration ? (integration.auth_header_name || '') : '';
+  g('int-auth-prefix').value = integration ? (integration.auth_header_prefix || '') : '';
+  g('int-auth-envvar').value = integration ? (integration.auth_env_var || '') : '';
+  g('int-active').checked = integration ? integration.active : true;
+  renderEventCheckboxesP(integration ? integration.events : ['Lead']);
+  g('int-mapping-rows').innerHTML = '';
+  if (integration && integration.field_mappings.length) {
+    integration.field_mappings.forEach(m => addMappingRowP(m.source, m.target));
+  } else {
+    addMappingRowP('em', 'email');
+  }
+  if (!g('int-field-suggestions').children.length) {
+    g('int-field-suggestions').innerHTML = FIELD_SUGGESTIONS_P.map(f => `<option value="${esc(f)}">`).join('');
+  }
+  g('int-delete-btn').style.display = integration ? 'inline-flex' : 'none';
+  g('int-test-result').style.display = 'none';
+  g('int-error').style.display = 'none';
+  showEl('int-modal');
+}
+
+function closeIntegracaoModal() { hideEl('int-modal'); }
+
+function collectIntegracaoForm() {
+  return {
+    name: g('int-name').value.trim(),
+    target_url: g('int-url').value.trim(),
+    events: Array.from(g('int-events').querySelectorAll('input[type=checkbox]:checked')).map(c => c.value),
+    field_mappings: collectMappingRowsP(),
+    secret: g('int-secret').value,
+    auth_header_name: g('int-auth-header').value.trim(),
+    auth_header_prefix: g('int-auth-prefix').value,
+    auth_env_var: g('int-auth-envvar').value.trim(),
+    active: g('int-active').checked,
+  };
+}
+
+async function saveIntegracao() {
+  const payload = collectIntegracaoForm();
+  const errEl = g('int-error');
+  errEl.style.display = 'none';
+  try {
+    if (editingIntegracaoId) {
+      await intMutate('/api/integrations/' + editingIntegracaoId, 'PUT', payload);
+    } else {
+      await intMutate('/api/integrations', 'POST', payload);
+    }
+    closeIntegracaoModal();
+    await loadIntegracoes();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+async function deleteIntegracaoHandler() {
+  if (!editingIntegracaoId) return;
+  if (!confirm('Excluir esta integração? O histórico de entregas também será apagado.')) return;
+  try {
+    await intMutate('/api/integrations/' + editingIntegracaoId, 'DELETE');
+    closeIntegracaoModal();
+    await loadIntegracoes();
+  } catch (err) {
+    const errEl = g('int-error');
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+async function testIntegracaoHandler() {
+  const resultEl = g('int-test-result');
+  if (!editingIntegracaoId) {
+    resultEl.textContent = 'Salve a integração antes de testar.';
+    resultEl.style.display = 'block';
+    return;
+  }
+  resultEl.textContent = 'Enviando…';
+  resultEl.style.display = 'block';
+  try {
+    const result = await intMutate('/api/integrations/' + editingIntegracaoId + '/test', 'POST');
+    const badge = result.ok ? `✓ HTTP ${result.statusCode}` : `✕ HTTP ${result.statusCode || 0}${result.error ? ' — ' + result.error : ''}`;
+    resultEl.textContent = `${badge}\n\nPayload enviado:\n${JSON.stringify(result.payloadSent, null, 2)}\n\nResposta:\n${result.responseBody || '—'}`;
+  } catch (err) {
+    resultEl.textContent = 'Erro: ' + err.message;
+  }
+}
+
+async function openIntegracaoLogs(id, name) {
+  g('dp-title').textContent = 'Entregas — ' + name;
+  g('dp-date').textContent = '';
+  const body = g('dp-body');
+  body.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px">Carregando…</div>`;
+  g('dp-overlay').classList.add('open');
+  g('dp-panel').classList.add('open');
+  try {
+    const data = await intFetch('/api/integrations/' + id + '/logs?limit=30');
+    const logs = data.logs || [];
+    if (!logs.length) {
+      body.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px">Nenhuma entrega ainda.</div>`;
+      return;
+    }
+    body.innerHTML = logs.map(l => `
+      <div style="border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;
+          font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin-bottom:8px">
+          <span>${esc(l.event_name)} · ${fmtDateShortP(l.created_at)}</span>
+          <span style="color:${l.ok ? 'var(--green)' : 'var(--red)'}">${l.ok ? '✓' : '✕'} HTTP ${l.status_code}${l.error ? ' — ' + esc(l.error) : ''}</span>
+        </div>
+        <pre style="font-size:11.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--bg);
+          border:1px solid var(--border);border-radius:8px;padding:10px;overflow-x:auto;white-space:pre-wrap;margin:0">${esc(formatJsonP(l.payload_sent) || '—')}</pre>
+        <div style="font-size:11px;color:var(--dim);margin-top:6px">Resposta: ${esc((l.response_body || '—').slice(0, 500))}</div>
+      </div>
+    `).join('');
+  } catch (err) {
+    body.innerHTML = `<div style="text-align:center;color:var(--red);font-size:13px;padding:24px">${esc(err.message)}</div>`;
+  }
+}
+
+function formatJsonP(raw) {
+  if (raw == null || raw === '') return '';
+  if (typeof raw === 'object') return JSON.stringify(raw, null, 2);
+  try { return JSON.stringify(JSON.parse(raw), null, 2); } catch { return String(raw); }
+}
+
+g('btn-int-novo').addEventListener('click', () => openIntegracaoModal(null));
+g('int-cancel-btn').addEventListener('click', closeIntegracaoModal);
+g('int-mapping-add').addEventListener('click', () => addMappingRowP('', ''));
+g('int-save-btn').addEventListener('click', saveIntegracao);
+g('int-delete-btn').addEventListener('click', deleteIntegracaoHandler);
+g('int-test-btn').addEventListener('click', testIntegracaoHandler);
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 function authFail() {

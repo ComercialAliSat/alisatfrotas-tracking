@@ -89,17 +89,15 @@ DASH_KEY=$(openssl rand -hex 32)
 
 `DASH_KEY` gates `/dash` and the read-only `/api/*` endpoints. Tell the recipient to save it in a password manager — it's the only way to open the dashboard.
 
-**Sales-platform webhook slugs** — ask: "Which sales platforms will you use — Eduzz, Hotmart, Kiwify, none of those, or not sure yet?"
+**Sales-platform webhook slug** — ask: "Which sales platform will you use, if any?"
 
-For each YES, generate a UUID:
+If they name one, generate a UUID for it:
 
 ```bash
-EDUZZ_SLUG=$(uuidgen | tr '[:upper:]' '[:lower:]')
-HOTMART_SLUG=$(uuidgen | tr '[:upper:]' '[:lower:]')
-KIWIFY_SLUG=$(uuidgen | tr '[:upper:]' '[:lower:]')
+<PLATFORM>_SLUG=$(uuidgen | tr '[:upper:]' '[:lower:]')
 ```
 
-These are the only thing standing between a public URL and arbitrary purchase injection, so treat them like secrets. The recipient will paste the corresponding full webhook URL into each platform's dashboard later.
+This is the only thing standing between a public URL and arbitrary purchase injection, so treat it like a secret. The recipient will paste the corresponding full webhook URL into the platform's dashboard later, once its adapter exists — see `add-sales-platform`.
 
 If the recipient has no sales page and no sales platform yet, skip slug generation entirely — they can come back with `add-sales-platform` when they need one.
 
@@ -208,15 +206,13 @@ If the recipient doesn't have a developer token yet, tell them it takes a few da
 
 If they set these, remind them they still need to schedule an external cron to hit `/api/sync/meta-ads` hourly. See `docs/ad-spend-sync.md` for three cron-provider walkthroughs.
 
-**Webhook slugs** — add ONLY for the platforms they said they'd use in Step 6. Hand over the full webhook URLs — these are what they paste into each platform's dashboard webhook config.
+**Webhook slug** — add ONLY if the recipient named a sales platform in Step 6.
 
-| Platform | Env var | Value | Webhook URL to paste into the platform dashboard |
-|---|---|---|---|
-| Eduzz | `EDUZZ_WEBHOOK_SLUG` 🔒 | `<generated UUID>` | `https://${PROJECT_NAME}.pages.dev/webhook/eduzz/<slug>` |
-| Hotmart | `HOTMART_WEBHOOK_SLUG` 🔒 | `<generated UUID>` | `https://${PROJECT_NAME}.pages.dev/webhook/hotmart/<slug>` |
-| Kiwify | `KIWIFY_WEBHOOK_SLUG` 🔒 | `<generated UUID>` | `https://${PROJECT_NAME}.pages.dev/webhook/kiwify/<slug>` |
+| Env var | Value | Webhook URL to paste into the platform dashboard |
+|---|---|---|
+| `<PLATFORM>_WEBHOOK_SLUG` 🔒 | `<generated UUID>` | `https://${PROJECT_NAME}.pages.dev/webhook/<platform>/<slug>` |
 
-Tell the recipient: "These URLs are how each sales platform reaches your stack. Save them in a password manager — if anyone else gets a URL, they can inject fake purchases into your reporting."
+Tell the recipient: "This URL is how your sales platform reaches your stack. Save it in a password manager — if anyone else gets it, they can inject fake purchases into your reporting."
 
 Wait for confirmation that all variables are saved before moving on.
 

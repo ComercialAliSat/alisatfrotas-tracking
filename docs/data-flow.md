@@ -108,8 +108,10 @@ handler.
    leading-zero for phone, lowercase+strip punctuation for names.
 4. SHA-256 hash each normalized value.
 5. Bot-check the User-Agent.
-6. Fire Meta CAPI + GA4 MP + LinkedIn CAPI + Google Ads + Pipedrive + Brevo
-   in parallel (`Promise.allSettled`).
+6. Fire Meta CAPI + GA4 MP + LinkedIn CAPI + Google Ads + Brevo in parallel
+   (`Promise.allSettled`), plus any operator-configured integrations
+   (`functions/lib/integrations-dispatch.js`) whose events include this
+   event name — fire-and-forget via `waitUntil`, raw/unhashed fields.
 7. Insert into `event_log` (skipping PageView).
 
 Brevo sync (`functions/outputs/brevo.js`, fired only for `event_name: "Lead"`):
@@ -241,15 +243,16 @@ created_at:       1729600500
 
 1. Fire `InitiateCheckout` via `sendBeacon('/tracker', …)` — fires Meta
    CAPI + GA4 even if the page unloads immediately.
-2. Look up the URL parameter name for this platform:
-   `{eduzz: 'trk', hotmart: 'xcod', kiwify: 'sck'}`.
+2. Look up the URL parameter name your sales platform expects `trk` under
+   (set per-platform in the adapter — see the `add-sales-platform` skill
+   when you add one).
 3. Append `?<paramName>=<trk>` to the checkout URL.
 4. `setTimeout` 80ms to flush the beacon queue.
 5. `window.location.href = destination`.
 
 **Example destination URL**:
 ```
-https://sun.eduzz.com/1234567?trk=f2d1a9c0-3e8b-4a2e-9c1d-3e7b8f4a2c6d
+https://checkout.example.com/product/1234567?trk=f2d1a9c0-3e8b-4a2e-9c1d-3e7b8f4a2c6d
 ```
 
 **Failure modes**:
@@ -267,28 +270,30 @@ https://sun.eduzz.com/1234567?trk=f2d1a9c0-3e8b-4a2e-9c1d-3e7b8f4a2c6d
 **Trigger**: platform POSTs its webhook to `/webhook/<platform>/<slug>`
 after the buyer completes payment.
 
-**What happens** (e.g. `functions/webhook/eduzz/[slug].js`):
+**What happens** (e.g. `functions/webhook/<platform>/[slug].js` — no adapter
+is wired up out of the box; add one with the `add-sales-platform` skill
+when you pick a sales platform):
 
-1. Compare `context.params.slug` to `env.EDUZZ_WEBHOOK_SLUG` via
+1. Compare `context.params.slug` to `env.<PLATFORM>_WEBHOOK_SLUG` via
    `guardSlug()`. Mismatch → 404; env missing → 500; no DB touch in
    either case.
 2. Read the raw body.
-3. Unwrap if needed (Eduzz nests under `data`, Kiwify under `order`).
-4. Filter to paid sales (status = 'paid' for Eduzz; equivalents elsewhere).
+3. Unwrap if needed (platform-specific nesting).
+4. Filter to paid sales (the platform's own "paid"/"approved" status).
 5. Build the normalized purchase object.
 6. Call `processPurchase({ parsed, env, context })`.
 
-**Normalized purchase object (shared shape)**:
+**Normalized purchase object (shared shape, platform-agnostic)**:
 ```json
 {
-  "platform": "eduzz",
+  "platform": "<your-platform>",
   "trk": "f2d1a9c0-3e8b-4a2e-9c1d-3e7b8f4a2c6d",
   "email": "alice@example.com",
   "name": "Alice Silva",
   "phone": "+55 11 98765-4321",
   "value": 97.00,
   "currency": "BRL",
-  "transactionId": "eduzz-sale-1234567",
+  "transactionId": "sale-1234567",
   "productId": "1234567",
   "productName": "My Product",
   "items": [{"productId": "1234567", "name": "My Product", "price": {"value": 97, "currency": "BRL"}}],
@@ -298,14 +303,17 @@ after the buyer completes payment.
 
 **In `_core.js`**:
 
-1. SELECT `checkout_sessions` by `trk`.
-2. Call `handleTracking` (Meta/GA4/Google Ads) only if the lookup
+1. Dispatch to any operator-configured integration subscribed to
+   `Purchase` (`functions/lib/integrations-dispatch.js`) — fire-and-forget,
+   runs regardless of the `checkout_sessions` lookup below.
+2. SELECT `checkout_sessions` by `trk`.
+3. Call `handleTracking` (Meta/GA4/Google Ads) only if the lookup
    succeeded — no lookup = no server-side conversion fire (the sale still
    logs, but attribution is missing).
-3. Call `handleEncharge` if `config/products.js` has a tag for this
+4. Call `handleEncharge` if `config/products.js` has a tag for this
    product.
-4. Call `handleManyChat` if there's a `manychatTagId`.
-5. Insert `purchase_log` in `waitUntil`. Insert `purchase_items` as a
+5. Call `handleManyChat` if there's a `manychatTagId`.
+6. Insert `purchase_log` in `waitUntil`. Insert `purchase_items` as a
    batch; roll back `purchase_log` if items fail.
 
 **Failure modes**:
@@ -396,150 +404,6 @@ lead in the Jornada / lead-score tabs.
   cookie** → deliberately ignored. Recovery only fires when there's no
   existing external_id to protect, so a returning visitor's own identity is
   never overwritten by a stray `leadid` in a forwarded/shared link.
-
----
-
-## Hop 8 — Pipedrive Deal lifecycle → `crm_deals` → ad platforms
-
-**Trigger A (outbound)**: a `Lead` event on `/tracker` reaches
-`functions/outputs/pipedrive.js`.
-
-**Trigger B (inbound)**: Pipedrive POSTs `updated.deal` to
-`/webhook/pipedrive/<slug>` whenever a Deal's status, stage, or value
-changes.
-
-**What happens** (Trigger A — see `functions/outputs/pipedrive.js`):
-
-1. Resolve/create the Person (e-mail first — normalized with
-   `.trim().toLowerCase()` before both the search and the create call, so
-   `"JOAO@X.COM"` and `"joao@x.com"` resolve to the same Person — normalized
-   phone as fallback, never by name alone).
-2. If the Person was just created, skip straight to creating a Deal (a
-   brand-new Person cannot already have one).
-3. Otherwise, look up `crm_deals` by `person_id`. If no local row exists
-   (Deal predates this table, or was created manually), ask Pipedrive
-   directly (`GET persons/:id/deals`) and backfill `crm_deals` from
-   whatever is found, instead of assuming "no Deal".
-4. Branch on the resolved status:
-   - none → create Deal, insert `crm_deals` (`open`).
-   - `open` → add a note, no new Deal.
-   - `lost` → reopen the same Deal (`PUT /deals/:id`, moved to the first
-     stage of "Pré Vendas"), add a note, update `crm_deals`.
-   - `won` → add a note only; never reopened or duplicated.
-
-**What happens** (Trigger B — see `functions/webhook/pipedrive/[slug].js`):
-
-1. Guard the URL slug, parse `current`/`previous`/`meta` from the payload.
-   `meta.timestamp_micro` (fallback: `meta.timestamp * 1_000_000`) — a
-   documented field in Pipedrive's v1 webhook envelope, see
-   [pipedrive.readme.io/docs/guide-for-webhooks](https://pipedrive.readme.io/docs/guide-for-webhooks)
-   — is extracted once, up front, as `incomingTs`.
-2. `open → won`: claim the transition with a conditional upsert
-   (`ON CONFLICT DO UPDATE ... WHERE status != 'won' AND (incomingTs IS
-   NULL OR crm_deals.pipedrive_updated_at IS NULL OR incomingTs >
-   crm_deals.pipedrive_updated_at)`); if the claim affects 0 rows, this is
-   either a duplicate delivery OR an out-of-order one describing an older
-   change — either way, stop, nothing is sent twice or incorrectly.
-   Otherwise fetch the Person's e-mail, recover the originating `sessions`
-   row (same email → `event_log` → `sessions` join the old won-only
-   handler used), and fire Meta CAPI + Google Ads `uploadClickConversions`
-   — **without** `value`/`currency`. The real value is stored in
-   `crm_deals.value` and `purchase_log.value` only.
-3. `* → lost`: same conditional-claim pattern (status + timestamp),
-   `crm_deals` only — `lost_reason`/`lost_at` recorded, nothing sent to ad
-   platforms.
-4. `lost → open` **or** `won → open` inside Pipedrive directly (not via
-   Trigger A) — a rep reopening the Deal, including a previously-Won one:
-   bookkeeping only, same handler, `reopened_at` recorded. `won_at` is
-   never cleared — we keep remembering the Deal was won at some point even
-   though it's open again.
-5. Anything else (stage move, value edit with no status change):
-   bookkeeping only — `pipeline_id`/`stage_id`/`value`/`currency`/
-   `pipedrive_updated_at` refreshed (still gated on the timestamp check, so
-   a stale delivery can't overwrite newer data), never a lifecycle side
-   effect.
-
-**Out-of-order example this closes**: Deal goes `open→won` (event A), then
-seconds later a rep corrects it to `won→lost` (event B). If B is delivered
-before A (Pipedrive does not guarantee delivery order), our `status` is
-`'lost'` with `pipedrive_updated_at` = B's timestamp. When the late A
-arrives, its target status (`'won'`) differs from the current one — the
-status-only check alone would have accepted it and incorrectly re-fired a
-conversion — but A's timestamp is *older* than what's stored, so the
-timestamp half of the guard rejects it. `status` stays `'lost'`, and
-neither Meta nor Google is called for the stale A.
-
-**Known tech debt — "External conversion delivery retry"**: the claim
-above happens *before* we know whether the Meta/Google calls actually
-succeed. If both fail on the one attempt a Won gets, `crm_deals.status` is
-already `'won'`, so a Pipedrive redelivery of that same webhook is treated
-as an already-processed duplicate and will not retry the external send.
-This stack has no retry queue by design (see `docs/architecture.md`) —
-noted here as a gap to revisit later, not fixed in Fase 1.
-
-**Example `crm_deals` row after a Won**:
-```
-deal_id:     4821
-person_id:   9142
-external_id: 4c2d8a91-6f5b-4a2e-9c1d-3e7b8f4a2c6d
-status:      won
-value:       4500.00        -- internal only, never sent to Meta/Google
-currency:    BRL
-won_at:      1729601000
-pipedrive_updated_at: 1729601000384700   -- from meta.timestamp_micro
-```
-
-**Meta CAPI payload for the same Won** — notice there is no `value` or
-`currency` key under `custom_data`:
-```json
-{
-  "data": [{
-    "event_name": "Purchase",
-    "event_time": 1729601000,
-    "event_id": "e1a2…",
-    "action_source": "website",
-    "user_data": { "em": ["b0c2…"], "external_id": ["4f2e…"] },
-    "custom_data": { "content_type": "product", "content_ids": ["4821"], "num_items": 1 }
-  }]
-}
-```
-
-**Failure modes**:
-
-- **Two Deals exist for the same Person in Pipedrive** (e.g. one created by
-  a rep manually before this migration, one from an old bug) → the backfill
-  in step 3 of Trigger A picks one deterministically (open > won > lost,
-  most recently updated within a tier) and adopts it into `crm_deals`; the
-  other is left alone in Pipedrive. This is a one-time reconciliation
-  concern, not something the webhook re-checks on every request.
-- **Won webhook delivered twice** (Pipedrive's own retry-on-failure
-  behavior) → the second delivery's claim UPDATE affects 0 rows
-  (`crm_deals.status` is already `'won'`); the handler returns
-  `{ skipped: 'won already processed' }` without calling Meta or Google
-  again.
-- **`crm_deals` row missing entirely when a Won webhook arrives** (a Deal
-  that was never touched by Trigger A after this migration, e.g. created
-  and won entirely by a rep) → the claim's `INSERT` branch creates the row
-  fresh from the webhook payload itself; the flow continues exactly as if
-  the row had already existed.
-- **`sessionData` lookup fails** (no `event_log` row with that e-mail, or —
-  historically — a SQL error from selecting `sessions.gbraid`/`wbraid`,
-  columns that table has never had; fixed as part of this Hop) → Meta still
-  fires with whatever identifiers are available (e-mail hash at minimum);
-  Google Ads is skipped (`{ skipped: 'no click id in session' }`) since it
-  requires a `gclid`.
-- **A webhook is delivered out of order** (an older change arrives after a
-  newer one already moved the status) → rejected by the
-  `pipedrive_updated_at` comparison in the claim's `WHERE` clause; see the
-  worked example above. Reported the same way as a plain duplicate
-  (`{ skipped: '<status> already processed' }`) — the response doesn't
-  distinguish "duplicate" from "stale/out-of-order" since both are a
-  correct no-op.
-- **Neither `meta.timestamp` nor `meta.timestamp_micro` is present** (a
-  malformed or hand-crafted test payload — a real Pipedrive delivery always
-  includes them) → the timestamp half of the guard is skipped entirely;
-  the pre-existing status-only check is the sole protection for that one
-  delivery.
 
 ---
 

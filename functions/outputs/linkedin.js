@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
 // LinkedIn Conversions API output handler.
 //
-// Exports sendToLinkedIn() so any adapter (_core.js, the Pipedrive adapter,
-// or future adapters) can fan out to LinkedIn without duplicating logic.
+// Exports sendToLinkedIn() so any adapter (_core.js, tracker.js, or future
+// adapters) can fan out to LinkedIn without duplicating logic.
 //
 // Usage:
 //   import { sendToLinkedIn } from '../../outputs/linkedin.js';
@@ -31,7 +31,7 @@
 //     the LinkedIn Insight Tag — passed as-is, not hashed.
 //   - conversionHappenedAt is epoch MILLISECONDS (multiply eventTime by 1000).
 //   - conversionValue.amount must be a string decimal ("99.90", not 99.9).
-//   - eventId deduplicates across Pipedrive/webhook retries.
+//   - eventId deduplicates across webhook retries.
 //   - Both user identifiers are optional individually; at least one is required.
 // -----------------------------------------------------------------------------
 

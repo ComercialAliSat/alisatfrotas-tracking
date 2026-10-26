@@ -24,9 +24,8 @@
           ↓ (generates `trk` UUID, POSTs to /checkout-session with `trk`
           ↓  plus fallback body fields → D1 `checkout_sessions` row)
         checkout button click
-          ↓ (appends `trk` to the checkout URL as the sales platform's
-          ↓  custom field — `trk` for Eduzz, `xcod` for Hotmart,
-          ↓  `sck` for Kiwify)
+          ↓ (appends `trk` to the checkout URL under whatever custom-field
+          ↓  name your sales platform forwards into its webhook payload)
         buyer completes payment on the sales platform
           ↓
         sales platform webhook
@@ -42,8 +41,9 @@
                              <script> blocks below — the stack will skip
                              GA4 cleanly when env vars are unset.
       - CHECKOUT_URL       → your sales platform's real checkout URL
-      - CHECKOUT_PLATFORM  → 'eduzz' | 'hotmart' | 'kiwify' (determines
-                             which URL param carries `trk`)
+      - CHECKOUT_PLATFORM / TRK_FIELD_BY_PLATFORM → the key your platform
+                             uses for its custom tracking field (see the
+                             add-sales-platform skill when you wire one up)
       - The <h1> / copy / price / modules / testimonials / FAQ — make
         the page yours.
       - assets/hero.webp   → replace with your own hero image (same
@@ -809,29 +809,25 @@
 
     // Where the "Quero me inscrever" button takes the buyer. This is the
     // URL your sales platform gave you when you created the product.
-    const CHECKOUT_URL = 'https://sun.eduzz.com/YOUR_PRODUCT_ID';
+    const CHECKOUT_URL = 'https://checkout.example.com/YOUR_PRODUCT_ID';
 
-    // Which sales platform runs your checkout. Determines which URL
-    // parameter name carries `trk` into the platform's webhook payload:
-    //   'eduzz'   → ?trk=<value>       (Eduzz custom tracker field 'code1')
-    //   'hotmart' → ?xcod=<value>      (Hotmart custom source code)
-    //   'kiwify'  → ?sck=<value>       (Kiwify source code param)
-    //
-    // UTM forwarding also varies by platform. Eduzz and Kiwify echo
-    // `utm_*` URL params through to their webhook JSON; Hotmart does NOT,
-    // so for Hotmart we pack the UTMs into the `sck` slot as a pipe-
-    // joined, URL-encoded bundle that the adapter unpacks server-side.
-    const CHECKOUT_PLATFORM = 'eduzz';
+    // Which sales platform runs your checkout — a free-form key you choose,
+    // matching whatever you name the adapter folder under functions/webhook/
+    // when you wire one up with the add-sales-platform skill.
+    const CHECKOUT_PLATFORM = 'myplatform';
 
     // =====================================================================
     // Below here is the attribution wiring. You generally shouldn't need
     // to change any of this unless you know what you're doing.
     // =====================================================================
 
+    // The URL parameter name your platform forwards into its webhook
+    // payload as the custom tracking field. Check your platform's docs —
+    // some platforms also don't forward utm_* params at all and need the
+    // click handler below adjusted to pack them into whatever field does
+    // come through (see the add-sales-platform skill for that case).
     const TRK_FIELD_BY_PLATFORM = {
-      eduzz:   'trk',
-      hotmart: 'xcod',
-      kiwify:  'sck',
+      myplatform: 'trk',
     };
 
     // Generate a new `trk` per page visit, or reuse one from a previous
@@ -920,29 +916,16 @@
         const params = new URLSearchParams();
         params.set(paramName, trk);
 
-        if (CHECKOUT_PLATFORM === 'hotmart') {
-          // Hotmart does NOT forward URL `utm_*` params into its webhook
-          // payload — only `origin.xcod` (our trk) and `origin.sck` come
-          // through. Pack the UTMs into sck as a pipe-joined, URL-encoded
-          // bundle so the webhook adapter can recover them.
-          // Skipped entirely when no UTMs are present so Hotmart's default
-          // traffic-source enum (e.g. "HOTMART_PRODUCT_PAGE") keeps flowing.
-          const anyUtm = utmSource || utmMedium || utmCampaign || utmContent || utmTerm;
-          if (anyUtm) {
-            const sckBundle = [utmSource, utmMedium, utmCampaign, utmContent, utmTerm]
-              .map(encodeURIComponent)
-              .join('|');
-            params.set('sck', sckBundle);
-          }
-        } else {
-          // Eduzz + Kiwify forward `utm_*` query params through to their
-          // webhook JSON, so append them verbatim for server-side attribution.
-          if (utmSource)   params.set('utm_source',   utmSource);
-          if (utmMedium)   params.set('utm_medium',   utmMedium);
-          if (utmCampaign) params.set('utm_campaign', utmCampaign);
-          if (utmContent)  params.set('utm_content',  utmContent);
-          if (utmTerm)     params.set('utm_term',     utmTerm);
-        }
+        // Most platforms forward utm_* query params through to their
+        // webhook JSON verbatim, so append them for server-side attribution.
+        // If your platform doesn't (check its docs), pack them into
+        // whatever custom field it does forward instead — see the
+        // add-sales-platform skill for that case.
+        if (utmSource)   params.set('utm_source',   utmSource);
+        if (utmMedium)   params.set('utm_medium',   utmMedium);
+        if (utmCampaign) params.set('utm_campaign', utmCampaign);
+        if (utmContent)  params.set('utm_content',  utmContent);
+        if (utmTerm)     params.set('utm_term',     utmTerm);
 
         const separator = CHECKOUT_URL.includes('?') ? '&' : '?';
         const destination = `${CHECKOUT_URL}${separator}${params.toString()}`;

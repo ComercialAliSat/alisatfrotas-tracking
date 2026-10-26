@@ -55,13 +55,8 @@ database_id = "__REPLACE_ME_DB_ID__"
 #   LINKEDIN_ACCESS_TOKEN              OAuth Bearer token for the Conversions API.
 #   LINKEDIN_CONVERSION_ID_PAGEVIEW    Conversion rule ID for PageView events.
 #   LINKEDIN_CONVERSION_ID_LEAD        Conversion rule ID for Lead events.
-#   LINKEDIN_CONVERSION_ID_PURCHASE    Conversion rule ID for Purchase events (Pipedrive webhook).
+#   LINKEDIN_CONVERSION_ID_PURCHASE    Conversion rule ID for Purchase events.
 #   LINKEDIN_CONVERSION_ID             Fallback rule ID if no event-specific var is set.
-#
-# Pipedrive (webhook):
-#   PIPEDRIVE_WEBHOOK_SLUG             UUID slug gating /webhook/pipedrive/<slug>
-#   PIPEDRIVE_API_TOKEN                Personal API token for Persons email lookup
-#   PIPEDRIVE_GOOGLE_ADS_CONVERSION_ACTION_ID  Google Ads conversion action for won deals
 #
 # Brevo (email marketing):
 #   BREVO_API_KEY                      API v3 key (Settings → SMTP & API → API Keys).

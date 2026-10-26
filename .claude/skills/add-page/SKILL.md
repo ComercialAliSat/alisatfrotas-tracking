@@ -23,9 +23,8 @@ If they're not sure, read them the short version:
 - **Lead form** = the visitor gives you their contact details and you get
   nothing else. Example: "free ebook download". Fires a `Lead` event.
 - **Sales page** = the visitor clicks a CTA that takes them to a
-  sales-platform checkout (Eduzz / Hotmart / Kiwify) where they pay.
-  Fires `InitiateCheckout` on click and (later) a `Purchase` event from
-  the webhook handler.
+  sales-platform checkout where they pay. Fires `InitiateCheckout` on
+  click and (later) a `Purchase` event from the webhook handler.
 
 If they want both on the same page (capture leads AND sell), pick sales
 page — it's the more capable recipe. Hint that you can add a lead form
@@ -71,14 +70,13 @@ established pattern:
 
 - Lead form: read [docs/page-types/lead-form-page.md](../../../docs/page-types/lead-form-page.md).
 - Sales page: read [docs/page-types/sales-page.md](../../../docs/page-types/sales-page.md)
-  AND the target platform doc:
-  - Eduzz → [docs/platforms/eduzz.md](../../../docs/platforms/eduzz.md)
-  - Hotmart → [docs/platforms/hotmart.md](../../../docs/platforms/hotmart.md)
-  - Kiwify → [docs/platforms/kiwify.md](../../../docs/platforms/kiwify.md)
+  AND check whether `functions/webhook/<platform>/[slug].js` already
+  exists for the recipient's sales platform (and its doc at
+  `docs/platforms/<platform>.md`, if one was written).
 
-If the recipient uses a platform NOT in Eduzz/Hotmart/Kiwify, pause and
-tell them to run the `add-sales-platform` skill first — then come back
-to this one.
+No sales platform ships pre-wired in this stack. If the adapter doesn't
+exist yet for the recipient's platform, pause and tell them to run the
+`add-sales-platform` skill first — then come back to this one.
 
 ## Step 5 — Apply the minimum per-page configuration
 
@@ -95,8 +93,8 @@ Open `<path>/index.html` and edit the values the recipient must set
 **Sales page** — ask for the lead-form values PLUS:
 - Checkout URL (from the sales platform's product settings) → replace
   `CHECKOUT_URL` near the top of the `<script>` block at the bottom
-- Which platform drives checkout → set `CHECKOUT_PLATFORM` to `'eduzz'`,
-  `'hotmart'`, or `'kiwify'`
+- Which platform drives checkout → set `CHECKOUT_PLATFORM` to match the
+  key used in `TRK_FIELD_BY_PLATFORM` for the adapter that's wired up
 - The placeholder `assets/hero.webp` image — tell the recipient to
   swap in their own image at the same filename, or edit the two
   `assets/hero.webp` references (the `<link rel="preload">` and the
@@ -181,9 +179,9 @@ Hop 1 and walk forward until you find the break.
    final-section CTAs are scroll-to-`#preco` anchors and intentionally
    do NOT fire `InitiateCheckout` or rewrite the URL; only the price
    card is wired to the checkout flow. The destination URL after the
-   click should contain `?<paramName>=<uuid>` where `<paramName>`
-   matches the platform (`trk` for Eduzz, `xcod` for Hotmart, `sck`
-   for Kiwify) and `<uuid>` matches the `trk` value from step 4.
+   click should contain `?<paramName>=<uuid>` where `<paramName>` matches
+   the platform's entry in `TRK_FIELD_BY_PLATFORM` and `<uuid>` matches
+   the `trk` value from step 4.
 6. Tell the recipient to run one real test purchase (ideally via a
    100%-off coupon) to confirm the webhook chain. After the purchase,
    re-query:

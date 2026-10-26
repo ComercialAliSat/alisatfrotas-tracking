@@ -130,7 +130,7 @@ deleted to keep the invariant `SUM(items) = header`.
 ### `functions/webhook/<platform>/[slug].js`
 Each adapter is ~80 lines: gate on URL slug, parse payload, delegate.
 They never import from each other and never branch on platform — if you
-find yourself adding `if (platform === 'hotmart')` in `_core.js`, push
+find yourself adding `if (platform === '<name>')` in `_core.js`, push
 the logic back into the adapter instead.
 
 The `[slug]` path segment is Cloudflare Pages dynamic routing — the
@@ -161,9 +161,25 @@ no real-time Meta API call in the request path.
 
 ### `dash/index.html`
 Self-contained HTML served at `/dash`. Tailwind + Chart.js via CDN, no
-build step. Query parameter `?key=<DASH_KEY>` is the only auth — it's a
-read-only dashboard with no write paths, so key rotation is the full
-control surface.
+build step. Query parameter `?key=<DASH_KEY>` is the only auth. Most of the
+dashboard is read-only; the "Integrações" section is the one write surface
+(CRUD against `/api/integrations/*`), gated by the same `DASH_KEY`.
+
+### `functions/lib/integrations-dispatch.js` + `functions/api/integrations/*`
+The generic outbound integration layer — the operator's own "socket" for
+plugging in a webhook (a spreadsheet via a Google Apps Script Web App,
+Zapier, a CRM, anything that accepts a POST), configured entirely from
+`/dash` with no code change or redeploy. Rows in the `integrations` table
+(migration 0028) each subscribe to one or more event names and define their
+own field mapping (source field → output key); `dispatchIntegrations()` is
+called, fire-and-forget via `waitUntil`, from both `functions/tracker.js`
+(every event reaching `/tracker` — Lead, LeadUpdate, InitiateCheckout,
+PageView) and `functions/webhook/_core.js` (Purchase). Every delivery
+attempt — real or a manual "Testar envio" — is logged to `integration_log`
+for the dashboard's per-integration health view. Like the rest of the
+stack, there's no retry queue: a failed delivery is logged, not retried.
+Raw, unhashed fields go out here (unlike the ad-platform fan-out above) —
+this exists to feed a CRM/spreadsheet, not an ad platform.
 
 ## Why Cloudflare Pages + D1 specifically
 
@@ -196,9 +212,10 @@ control surface.
   endpoints are public and unauthenticated by design (the browser fires
   them). If you get DDoSed, enable Cloudflare rate-limiting rules at the
   dashboard level — not in the worker code.
-- **No platform-native signature verification** (HMAC-SHA256 for Eduzz,
-  `hottok` for Hotmart, HMAC-SHA1 for Kiwify). Webhook endpoints are
-  gated only by an unguessable per-recipient URL slug. This is the same
+- **No platform-native signature verification** on sales-webhook adapters
+  (each platform has its own scheme — HMAC, a shared-secret header, etc.).
+  Webhook endpoints are gated only by an unguessable per-recipient URL slug.
+  This is the same
   pattern n8n / Zapier / GitHub / Stripe use for webhook endpoints. The
   post-launch `harden-tracking` skill layers real HMAC verification on
   top for recipients who want defense-in-depth.

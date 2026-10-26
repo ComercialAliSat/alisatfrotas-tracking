@@ -18,7 +18,7 @@ Confirm with the recipient before starting:
 3. **The database name** (usually `${PROJECT_NAME}-db`). Call it `DB_NAME`.
 4. **They have at least one example page deployed** — a lead form, sales page, or both. If the stack has never received real traffic, you can't verify anything. Ask them to visit their live page in a normal browser tab once before continuing.
 
-If the recipient is running sales-page checkpoints (3 through 6), ask which sales platform they're using (`eduzz`, `hotmart`, or `kiwify`) and call it `PLATFORM`.
+If the recipient is running sales-page checkpoints (3 through 6), ask which sales platform they're using and call it `PLATFORM`.
 
 ## Checkpoint 1 — Edge middleware generates `_krob_sid` and writes to `sessions`
 
@@ -81,12 +81,12 @@ wrangler d1 execute ${DB_NAME} --remote --command \
 
 **Skip if no sales page.** Report `SKIPPED`.
 
-**What to check**: when a buyer completes a purchase on `${PLATFORM}`, the platform POSTs a webhook to `/webhook/${PLATFORM}`. That payload should contain the `trk` value in the platform's custom-field slot (`tracker.code1` for Eduzz, `xcod` for Hotmart, `sck` for Kiwify).
+**What to check**: when a buyer completes a purchase on `${PLATFORM}`, the platform POSTs a webhook to `/webhook/${PLATFORM}`. That payload should contain the `trk` value in whatever custom-field slot that platform forwards it under.
 
 **How to verify**: this is the hardest checkpoint because it requires a real test purchase. Walk the recipient through it:
 
 1. Open `${SITE_URL}/<their sales page>` in a fresh browser window.
-2. Click the checkout button and copy the destination URL — it should contain `?trk=<uuid>` (for Eduzz), `?xcod=<uuid>` (Hotmart), or `?sck=<uuid>` (Kiwify).
+2. Click the checkout button and copy the destination URL — it should contain the platform's tracking parameter set to a UUID (check `TRK_FIELD_BY_PLATFORM` in the sales page's HTML for the exact param name).
 3. If the URL doesn't contain the parameter, stop here — FAIL. Check the sales page HTML and confirm `CHECKOUT_PLATFORM` is set correctly at the top of the file.
 4. Complete a test purchase on the sales platform. Most platforms have a sandbox / test-card option; if not, a real R$1 refundable purchase works.
 5. After the purchase completes, check if the webhook arrived:
@@ -100,7 +100,7 @@ wrangler d1 execute ${DB_NAME} --remote --command \
 
 **FAIL modes**:
 - **No row at all.** The webhook never reached the endpoint. Confirm the recipient configured their webhook URL in the sales platform dashboard to point at `${SITE_URL}/webhook/${PLATFORM}`. Also confirm the webhook secret is set (`${PLATFORM.toUpperCase()}_WEBHOOK_SECRET`) — a missing secret causes the endpoint to return 401, which some platforms silently drop.
-- **Row exists but `trk` is empty.** The webhook fired but the sales platform didn't forward the custom-field. Each platform has its own gotcha: Eduzz requires the field to be `tracker.code1` specifically, Hotmart uses `xcod` at top-level or inside `offer.xcod`, Kiwify uses `sck`. Check `docs/platforms/${PLATFORM}.md` for the exact spot in the payload.
+- **Row exists but `trk` is empty.** The webhook fired but the sales platform didn't forward the custom-field. Each platform has its own gotcha for where that field lands in the payload — check the adapter at `functions/webhook/${PLATFORM}/[slug].js` for the exact spot it reads from.
 - **Row exists, `trk` is populated, but `meta_response_ok = 0`.** That's Checkpoint 6's concern, not this one. Continue to 5.
 
 ## Checkpoint 5 — Webhook finds the `checkout_sessions` row and enriches the conversion

@@ -62,60 +62,26 @@ purchase with its original attribution.
 sales page visit → persisted to `checkout_sessions` with all attribution →
 passed to the sales platform as a custom field → returned in the webhook
 payload → looked up to enrich the Meta/GA4/Google Ads/LinkedIn conversion.
-Pipedrive (CRM flow) bypasses `trk` entirely: on deal-won, the adapter
-fetches the contact email from Pipedrive, then recovers the earliest
-matching session from D1 by email for attribution enrichment.
 
-Hop-by-hop debugging bible: `docs/data-flow.md` (includes Hop 8 — the
-Pipedrive Deal lifecycle below).
+Hop-by-hop debugging bible: `docs/data-flow.md`.
 
-## Pipedrive Deal lifecycle (dedup rule)
+## Integrations (operator-configured outbound webhooks)
 
-A contact must never generate more than one Deal by resubmitting a form.
-`crm_deals` (migration 0023) bridges `external_id` ↔ Pipedrive
-`person_id`/`deal_id` and tracks `status`. On every `Lead` event,
-`functions/outputs/pipedrive.js` finds-or-creates the Person — e-mail
-first (normalized with `.trim().toLowerCase()` before both the search and
-the create call, so `"JOAO@X.COM"` and `"joao@x.com"` resolve to the same
-Person), normalized phone as fallback — **never** by name alone. It then
-branches on the existing Deal's status instead of always creating a new one:
-
-| Existing Deal | Action |
-|---|---|
-| None | Create Deal, insert `crm_deals` (`status='open'`). |
-| `open` | Reuse it — add a note describing the new conversion, no new Deal. |
-| `lost` | Reopen the *same* Deal (moved to the first stage of "Pré Vendas"), add a note, `crm_deals.status` back to `open`. History/notes are never deleted. |
-| `won` | Add a note only. Never reopened, never duplicated — creating a new opportunity for an existing customer (upsell/cross-sell) is deferred to a future phase with its own rule. |
-
-`functions/webhook/pipedrive/[slug].js` mirrors this from the Pipedrive
-side: only an `open → won` transition fires Meta CAPI + Google Ads, and
-**never with the real deal value** — those platforms only learn that a
-sale occurred. The real value is stored internally in `crm_deals.value`
-and `purchase_log.value`. A `won → open` (a rep manually reopening a Won
-deal) is bookkeeping-only, same handler as `lost → open` — `won_at` is
-never cleared, nothing is sent to Meta/Google.
-
-Every transition is claimed with a conditional
-`INSERT ... ON CONFLICT DO UPDATE ... WHERE status != 'X'`, so a Pipedrive
-webhook retry never double-fires a conversion. That claim is ALSO gated on
-`crm_deals.pipedrive_updated_at` (migration 0025) against the incoming
-webhook's `meta.timestamp_micro` — a documented field in Pipedrive's v1
-webhook envelope — so a late, out-of-order delivery describing an OLDER
-change than one already applied is ignored instead of regressing the
-status. See Hop 8 in `docs/data-flow.md` for the full mechanics and the
-"External conversion delivery retry" known tech-debt note.
+`functions/lib/integrations-dispatch.js` + `functions/api/integrations/*`
+let the operator plug in a webhook (a spreadsheet via a Google Apps Script
+Web App, a CRM, anything that accepts a POST) from `/dash`'s "Integrações"
+section — no code change or redeploy. Each row in the `integrations` table
+(migration 0028) subscribes to one or more event names and defines its own
+field mapping; `dispatchIntegrations()` fires fire-and-forget from
+`functions/tracker.js` (every `/tracker` event) and
+`functions/webhook/_core.js` (`Purchase`). Raw, unhashed fields — this
+feeds a CRM/spreadsheet, not an ad platform. Every delivery is logged to
+`integration_log` for the dashboard's per-integration health view. No
+retry queue, same as the rest of this stack. See `docs/architecture.md`
+for the full design.
 
 ## Hard rules (do not violate)
 
-- **Never create a second Pipedrive Deal for a contact that already has
-  one.** Check `crm_deals` (falling back to a live Pipedrive lookup if no
-  local row exists yet) before calling `POST /deals` — see "Pipedrive Deal
-  lifecycle" below. This is the core invariant of the CRM bridge; violating
-  it is exactly the bug Fase 1 of `ARCHITECTURE_V2_PLAN.md` fixed.
-- **Never send the real Deal value to Meta or Google Ads on Won.** They
-  only learn that a sale occurred (no `value`/`currency` in the outbound
-  payload). The real value stays internal, in `crm_deals.value` and
-  `purchase_log.value`.
 - **Never log PageView events to `event_log`.** PageView still fires to
   Meta/GA4 — it just doesn't write to D1. This keeps per-instance D1 write
   volume sustainable forever. Enforced by `shouldLogEvent` in `functions/tracker.js`.
@@ -128,19 +94,19 @@ status. See Hop 8 in `docs/data-flow.md` for the full mechanics and the
   hashed after lowercase-and-trim normalization (phone additionally strips
   non-digits and leading zeros). Raw PII persists in D1 for debugging only
   and never leaves the recipient's own infrastructure.
-- **Per-platform webhook adapter pattern.** Each sales platform has its own
-  file at `functions/webhook/<platform>/[slug].js` that gates on the URL
-  slug, then parses the platform's payload into the normalized shape. The
-  shared lookup/enrichment/fan-out lives in `functions/webhook/_core.js`.
-  When adding a new platform, copy an existing adapter as a structural
-  reference — do not add platform branching to `_core.js`.
+- **Per-platform webhook adapter pattern.** No sales platform ships
+  pre-wired — each sales platform gets its own file at
+  `functions/webhook/<platform>/[slug].js` that gates on the URL slug,
+  then parses the platform's payload into the normalized shape (see
+  `add-sales-platform`). The shared lookup/enrichment/fan-out lives in
+  `functions/webhook/_core.js` — do not add platform branching there.
 - **Webhook endpoints are gated by an obscure URL.** Every platform has a
   per-recipient UUID v4 slug stored as `env.<PLATFORM>_WEBHOOK_SLUG`. The
   adapter's full path is `/webhook/<platform>/<slug>`; wrong slug returns
   404 (indistinguishable from a missing route). `deploy-stack` generates
-  the UUIDs automatically and prints the full URLs for the recipient to
-  paste into each platform's dashboard. Platform-native signature
-  verification (HMAC/hottok) is deliberately deferred to the post-launch
+  the UUID automatically and prints the full URL for the recipient to
+  paste into the platform's dashboard. Platform-native signature
+  verification is deliberately deferred to the post-launch
   `harden-tracking` skill — adding it pre-launch was judged too high-friction
   for 1000+ non-dev recipients. A missing `<PLATFORM>_WEBHOOK_SLUG` env var
   is a deploy-blocking 500 on the endpoint, not a silent accept.
@@ -160,9 +126,9 @@ status. See Hop 8 in `docs/data-flow.md` for the full mechanics and the
 | `scripts/[[path]].js` | First-party proxy for `gtag.js`. Example pages load GA4 via `/scripts/gtag.js?id=...`. |
 | `webhook/_core.js` | Platform-agnostic brain: lookup `trk` → enrich → fan out to Meta/GA4/Google Ads/LinkedIn/Encharge/ManyChat → persist `purchase_log` + `purchase_items`. |
 | `webhook/_utils.js` | `timingSafeEqual` + `guardSlug` helpers shared by adapters. |
-| `webhook/pipedrive/[slug].js` | Pipedrive adapter. Gates on `PIPEDRIVE_WEBHOOK_SLUG`. Handles the full Deal lifecycle (open→won, *→lost, lost→open, stage/value bookkeeping) against `crm_deals` — see "Pipedrive Deal lifecycle" below. Only an open→won transition fires Meta CAPI + Google Ads, and never with the real deal value. |
-| `outputs/pipedrive.js` | Fires on every `Lead` event from `/tracker`. Finds-or-creates the Person (e-mail first, phone fallback), then reuses/reopens/notes the existing Deal per `crm_deals` instead of always creating a new one — see "Pipedrive Deal lifecycle" below. |
-| `webhook/brevo/[slug].js` | Brevo adapter. Gates on `BREVO_WEBHOOK_SLUG`. Turns opened/click/unsubscribed/hard_bounce/soft_bounce events into `lead_score` points, keyed by `external_id` (falls back to email → `event_log` → `sessions` lookup, same pattern as the Pipedrive adapter). |
+| `webhook/brevo/[slug].js` | Brevo adapter. Gates on `BREVO_WEBHOOK_SLUG`. Turns opened/click/unsubscribed/hard_bounce/soft_bounce events into `lead_score` points, keyed by `external_id` (falls back to email → `event_log` → `sessions` lookup). |
+| `lib/integrations-dispatch.js` | Generic outbound webhook dispatcher for operator-configured integrations — see "Integrations" above. |
+| `api/integrations/*.js` | CRUD for the `integrations` table + delivery log, gated by `DASH_KEY`. Backs the "Integrações" section of `/dash`. |
 | `api/revenue.js` | Dashboard: gross revenue, sales, AOV, daily time series from `purchase_log`. |
 | `api/products.js` | Dashboard: per-product breakdown + time series from `purchase_items`. |
 | `api/utm-breakdown.js` | Dashboard: tabbed UTM drill-down from `purchase_log` with cascading filters. |
@@ -178,7 +144,7 @@ status. See Hop 8 in `docs/data-flow.md` for the full mechanics and the
 
 | Path | Purpose |
 |---|---|
-| `migrations/` | D1 schema, numbered 0001-0027 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users` (with `role`: `admin`/`member`, added 0027), `page_views`, `lead_score`, `crm_deals`. |
+| `migrations/` | D1 schema, numbered 0001-0028 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users` (with `role`: `admin`/`member`, added 0027), `page_views`, `lead_score`, `integrations`/`integration_log` (0028). |
 | `config/products.js` | Per-product integration config: Encharge tag, ManyChat tag ID, Google Ads conversion action. Keyed by `platform → productId`. Tracked in git; no secrets. |
 | `dash/index.html` | Self-contained dashboard. Tailwind + Chart.js via CDN, no build step. Auth via `DASH_KEY` query param. Click any Lead or Purchase row to inspect the exact payload sent to Meta/GA4/Google Ads and the response. |
 | `examples/lead-form-page/index.html` | Lead form starter (email-only by default; add phone/name per `docs/page-types/lead-form-page.md`). Demonstrates the full pixel+CAPI dedup pattern. |
@@ -206,8 +172,7 @@ live under `.claude/skills/<name>/SKILL.md`.
 | D1 schema, every table, every column | `docs/schema.md` |
 | Lead form recipe | `docs/page-types/lead-form-page.md` |
 | Sales page recipe | `docs/page-types/sales-page.md` |
-| Pipedrive-specific notes | `docs/platforms/pipedrive.md` |
-| Adding a new sales platform | `docs/platforms/_template.md` |
+| Adding a new sales platform | `add-sales-platform` skill |
 | Setting up Meta Ads spend sync via external cron | `docs/ad-spend-sync.md` |
 
 ## Decisions the recipient must make
@@ -220,7 +185,7 @@ These have sensible defaults. Change them only if you know why.
 | Timezone for Google Ads conversion timestamps | `-03:00` (São Paulo, DST-free since 2019) | Set `TIMEZONE_OFFSET` secret to any ISO offset (`+00:00`, `-05:00`, etc.) |
 | Default phone country code | `55` (Brazil) — prepended to local-format phone numbers before hashing for Meta CAPI / ManyChat, per Meta Advanced Matching spec (digits must include country code + area code) | Set `DEFAULT_COUNTRY_CODE` secret to the recipient's ISO calling code (`1` US/CA, `44` UK, `351` Portugal, etc.). Detection is length-based — if a lead already typed a number at a plausible international length it passes through untouched. |
 | PII retention window | Raw email/name/phone stored indefinitely | Manual: run a periodic `DELETE` via scheduled worker. Not enforced by default. |
-| Which sales platforms are active | Pipedrive built in | A platform goes live once its `<PLATFORM>_WEBHOOK_SLUG` env var is set. Configure the full `/webhook/<platform>/<slug>` URL in the platform's webhook settings; wrong slug = 404 |
+| Which sales platforms are active | None pre-wired | A platform goes live once its adapter exists (`add-sales-platform`) and its `<PLATFORM>_WEBHOOK_SLUG` env var is set. Configure the full `/webhook/<platform>/<slug>` URL in the platform's webhook settings; wrong slug = 404 |
 | Dashboard auth | Query param `?key=<DASH_KEY>` | Rotate by changing the env var; no code change |
 | Ad-spend sync | Off until recipient configures Meta/ChatGPT/Google Ads cron (see `docs/ad-spend-sync.md`) | Set `META_ADS_ACCESS_TOKEN`, `META_ADS_ACCOUNT_ID`, `SYNC_SECRET` and schedule an external cron to hit `/api/sync/meta-ads` hourly; set `CHATGPT_ADS_API_KEY` (reuses `SYNC_SECRET`) and hit `/api/sync/chatgpt-ads` hourly; `/api/sync/google-ads` reuses the existing `GOOGLE_ADS_*` conversion-upload credentials — just needs a valid (non-revoked) `GOOGLE_ADS_REFRESH_TOKEN` |
 | ChatGPT Ads pixel + conversions | Off until `CHATGPT_ADS_PIXEL_ID` is set | Set `CHATGPT_ADS_PIXEL_ID` (public, non-secret — the `pixelId` embedded in the injected `oaiq` snippet) to enable the browser pixel on every page (LGPD-gated, same as Meta/GA4/LinkedIn). Set `CHATGPT_ADS_API_CONVERSION_KEY` — a **separate key from `CHATGPT_ADS_API_KEY`**, scoped with `ads.third_party_events.write`, generated in Ads Manager's Conversions section — to enable the server-side fan-out in `tracker.js` for Lead events. Both must be set for full pixel+CAPI dedup, matching the Meta pattern. |

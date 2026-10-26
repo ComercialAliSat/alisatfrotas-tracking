@@ -1,21 +1,22 @@
 ---
 name: add-sales-platform
-description: Add support for a new sales platform beyond the built-in Eduzz/Hotmart/Kiwify adapters. Use when the recipient says "I use [some platform that isn't Eduzz/Hotmart/Kiwify]", "add support for X", "my checkout runs on Y", or asks how to wire a new sales platform into the webhook pipeline. Creates a new functions/webhook/<platform>/[slug].js adapter by copying an existing one, creates a matching docs/platforms/<platform>.md from the template, generates a fresh URL slug, and walks the recipient through capturing the platform's payload shape.
+description: Add support for a sales platform's webhook. Use when the recipient says "I use [sales platform]", "add support for X", "my checkout runs on Y", or asks how to wire a new sales platform into the webhook pipeline. Creates a new functions/webhook/<platform>/[slug].js adapter and a matching docs/platforms/<platform>.md doc, generates a fresh URL slug, and walks the recipient through capturing the platform's payload shape.
 ---
 
 # Skill: add-sales-platform
 
-The recipient's sales platform isn't in the built-in Eduzz/Hotmart/Kiwify
-set. This skill adds it as a new webhook adapter. The architecture is
-deliberately built to make this safe: `_core.js` never branches per
-platform, so all the new logic lives in exactly two new files — one
-adapter under `functions/webhook/<platform>/[slug].js` and one doc
-under `docs/platforms/<platform>.md` — plus one new env var holding the
+No sales platform ships pre-wired in this stack — every recipient adds the
+one they actually use. This skill adds it as a new webhook adapter. The
+architecture is deliberately built to make this safe: `_core.js` never
+branches per platform, so all the new logic lives in exactly two new
+files — one adapter under `functions/webhook/<platform>/[slug].js` and one
+doc under `docs/platforms/<platform>.md` — plus one new env var holding the
 URL slug.
 
 If the recipient isn't sure whether they need this skill, ask them what
-sales platform they use. If it's literally Eduzz, Hotmart, or Kiwify,
-send them to `add-page` instead.
+sales platform they use, then check whether `functions/webhook/<that
+platform>/[slug].js` already exists — if it does, they just need the
+webhook URL from `deploy-stack`, not this skill.
 
 ## Step 1 — Gather the platform info
 
@@ -76,37 +77,31 @@ variables → Add variable** — with:
 Wait for them to confirm it's saved before moving on. Capture the slug
 so you can print the full webhook URL back to the recipient in Step 8.
 
-## Step 3 — Pick the structural reference
+## Step 3 — Read the contract
 
-Read `functions/webhook/eduzz/[slug].js` into context. It's the cleanest
-structural base for a new adapter — small, clear payload unwrap, clear
-parser, clear delegation.
+Read the top-of-file comment in `functions/webhook/_core.js` — it documents
+the exact normalized purchase object every adapter must produce
+(`platform`, `trk`, `email`, `name`, `phone`, `value`, `currency`,
+`transactionId`, `productId`, `productName`, `items[]`, `platformUtm`).
+No reference adapter exists in this repo yet (no sales platform ships
+pre-wired) — this one you write is the first, built directly from the
+contract rather than copied from an example.
 
-## Step 4 — Read the platform template
+For the slug-guard wiring pattern specifically (gate on `params.slug`,
+return 404/500, delegate), `functions/webhook/brevo/[slug].js` is a working
+example of that shape, even though it isn't a purchase adapter.
 
-Read [docs/platforms/_template.md](../../../docs/platforms/_template.md)
-— it defines the shape of the per-platform doc and doubles as a
-checklist of what the adapter must handle. Every field in that
-template maps to something the adapter needs to parse, filter, or
-ignore.
+## Step 4 — Create the platform doc
 
-## Step 5 — Create the new doc first
-
-Create `docs/platforms/<platform>.md` by copying `_template.md`.
-Populate every section using the info gathered in Step 1. Writing the
-doc before the adapter forces the adapter's parser to match reality
-instead of drifting into assumptions.
-
-```bash
-cp docs/platforms/_template.md docs/platforms/<platform>.md
-```
-
-Then edit `docs/platforms/<platform>.md` to fill in:
+Create `docs/platforms/<platform>.md` (create the `docs/platforms/`
+directory if this is the first one). Populate it using the info gathered
+in Step 1. Writing the doc before the adapter forces the adapter's parser
+to match reality instead of drifting into assumptions. Cover:
 
 - Identity (name, endpoint `/webhook/<platform>/<slug>`, adapter file path,
   sandbox availability, dashboard URL)
-- Endpoint security — copy the obscure-URL section from an existing doc
-  (Eduzz's is the reference); note any platform-native signature scheme
+- Endpoint security — the obscure-URL pattern (UUID slug in the path, no
+  signature verification in v1); note any platform-native signature scheme
   for future `harden-tracking` work but don't implement it
 - The `trk` field (URL parameter name + webhook payload path)
 - **Payload shape** — paste the real sanitized JSON from Step 1, item 2
@@ -115,44 +110,41 @@ Then edit `docs/platforms/<platform>.md` to fill in:
 - Known gotchas (can be empty initially; fill in after first real test)
 - Verification test commands
 
-## Step 6 — Create the adapter
-
-Copy Eduzz's adapter as the base:
+## Step 5 — Create the adapter
 
 ```bash
 mkdir -p functions/webhook/<platform>
-cp functions/webhook/eduzz/[slug].js functions/webhook/<platform>/[slug].js
 ```
 
-Then edit `functions/webhook/<platform>/[slug].js`:
+Write `functions/webhook/<platform>/[slug].js` from scratch, following the
+`_core.js` contract from Step 3:
 
-1. **Update the file-top comment** to describe this platform's
-   specifics (URL shape, platform-specific payload notes).
-2. **Update the `guardSlug` call** to reference the new env var:
+1. **File-top comment** describing this platform's specifics (URL shape,
+   platform-specific payload notes).
+2. **Imports**:
+   ```js
+   import { processPurchase } from '../_core.js';
+   import { guardSlug } from '../_utils.js';
+   ```
+3. **Guard the slug**:
    ```js
    const slugFailure = guardSlug(params.slug, env.<PLATFORM_UPPER>_WEBHOOK_SLUG);
+   if (slugFailure) return slugFailure;
    ```
-3. **Change the `platform` string** in the normalized object from
-   `'eduzz'` to the new platform name.
-4. **Replace the payload unwrap and parser** with the new mapping from
-   the doc's table. Keep the `parsed` object's shape exactly — every
-   key in the normalized purchase object is required by `_core.js`.
-   If the platform doesn't provide a field, use `''` or `0`, never
-   omit the key.
-5. **Replace the paid-status filter** with the new platform's check.
-   Return `200 { ok: true, skipped: <reason> }` for non-paid events
-   so the platform stops retrying.
-
-The import block should already look like:
-```js
-import { processPurchase } from '../_core.js';
-import { guardSlug } from '../_utils.js';
-```
+4. **Unwrap and parse the payload** into the normalized purchase object
+   from the doc's mapping table. Set `platform` to this platform's name.
+   Keep the `parsed` object's shape exactly — every key in the normalized
+   purchase object is required by `_core.js`. If the platform doesn't
+   provide a field, use `''` or `0`, never omit the key.
+5. **Filter to paid sales** using the new platform's status check. Return
+   `200 { ok: true, skipped: <reason> }` for non-paid events so the
+   platform stops retrying.
+6. **Delegate**: `return processPurchase({ parsed, env, context });`
 
 Do NOT touch `_core.js` — if you feel the urge to add a platform
 branch there, push the logic back into the adapter instead.
 
-## Step 7 — Update the sales page routing
+## Step 6 — Update the sales page routing
 
 If the recipient already has sales pages using
 `examples/sales-page/index.html`, the `TRK_FIELD_BY_PLATFORM` lookup
@@ -166,7 +158,7 @@ New sales pages created via the `add-page` skill will automatically
 pick it up if you also update the starter — for v1, instruct the
 recipient to edit their existing pages.
 
-## Step 8 — Deploy and verify
+## Step 7 — Deploy and verify
 
 Commit the adapter + doc and push — Cloudflare Pages auto-deploys on
 every push to `main`:
@@ -200,11 +192,11 @@ Then run the verification test from
 
 If the first real webhook reveals the payload shape is different from
 what the recipient pasted in Step 1 (missing fields, different casing,
-different status string), go back to Step 5, update the doc, then
-Step 6 update the adapter, then redeploy. The doc is the source of
+different status string), go back to Step 4, update the doc, then
+Step 5 update the adapter, then redeploy. The doc is the source of
 truth; keep it synced with the adapter.
 
-## Step 9 — Update CLAUDE.md's file map (optional, recommended)
+## Step 8 — Update CLAUDE.md's file map (optional, recommended)
 
 If the new platform is going to be the recipient's primary checkout,
 add a one-line entry to the edge-runtime table in `CLAUDE.md`:

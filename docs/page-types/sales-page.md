@@ -36,20 +36,17 @@ Every sales page has six responsibilities beyond the lead-form list:
    `navigator.sendBeacon('/tracker', ...)` so the fire survives the
    navigation away from the page.
 6. **Append `trk` to the checkout URL in the platform's custom-field
-   parameter name**:
+   parameter name** — every sales platform has its own name for "custom
+   tracking field passed through to the webhook" (e.g. a generic `trk`
+   query param, or a platform-specific one like `xcod`/`sck`). Check your
+   platform's docs for the exact name and payload field, and record it when
+   you wire the adapter with the `add-sales-platform` skill.
 
-| Platform | URL parameter | Payload field the webhook reads |
-|---|---|---|
-| Eduzz | `trk` | `body.tracker.code1` |
-| Hotmart | `xcod` | `body.buyer.source` (see platform doc) |
-| Kiwify | `sck` | `body.TrackingParameters.sck` (see platform doc) |
-
-The starter handles this with a lookup table:
+The starter handles this with a lookup table, one entry per platform you've
+actually configured:
 ```js
 const TRK_FIELD_BY_PLATFORM = {
-  eduzz:   'trk',
-  hotmart: 'xcod',
-  kiwify:  'sck',
+  // myplatform: 'trk',
 };
 ```
 
@@ -88,11 +85,9 @@ sales-platform dashboard:
 1. **Set the webhook URL** to the full path `deploy-stack` printed,
    including the per-platform UUID slug. Shape:
    `https://<project>.pages.dev/webhook/<platform>/<slug>`.
-   Example: `https://mysite.pages.dev/webhook/eduzz/a1b2c3d4-5678-…`.
-2. **Enable the events that indicate a completed paid sale**:
-   - Eduzz → `sale.paid` (or equivalent; see [platforms/eduzz.md](../platforms/eduzz.md)).
-   - Hotmart → `PURCHASE_APPROVED`.
-   - Kiwify → `order_approved`.
+2. **Enable the event that indicates a completed paid sale** (every
+   platform names this differently — look for something like "order
+   approved" / "payment confirmed" in its webhook settings).
 3. **Fire a test webhook** from the platform dashboard if possible, then
    run `verify-tracking` skill checkpoint 5 to confirm the adapter got it.
 

@@ -1,6 +1,6 @@
 import { sendToLinkedIn } from './outputs/linkedin.js';
-import { sendToPipedrive } from './outputs/pipedrive.js';
 import { sendToBrevo } from './outputs/brevo.js';
+import { dispatchIntegrations } from './lib/integrations-dispatch.js';
 
 let googleAdsTokenCache = { token: null, expiresAt: 0 };
 
@@ -122,14 +122,29 @@ export async function onRequestPost(context) {
     // --- Bot detection ---
     const { isBot, botReason } = detectBot(userAgent);
 
-    // Geo da Cloudflare (disponível em runtime, vazio em dev local) — movido
-    // pra antes do fan-out porque o Pipedrive (Cidade/Estado) também usa.
+    // Geo da Cloudflare (disponível em runtime, vazio em dev local).
     const country = (request.cf?.country || '').slice(0, 2).toUpperCase();
     const city    = request.cf?.city    || '';
     const region  = request.cf?.region  || '';
 
     // Consent — usa corpo do request ou cookie LGPD do middleware
     const consentStatus = body.consent_status || cookies['alisat_lgpd'] || 'unknown';
+
+    // --- Generic operator-configured integrations (webhooks/planilhas) ---
+    // Decoupled from the ad-platform fan-out below: raw (unhashed) fields,
+    // since these exist to feed a CRM/spreadsheet the operator controls, not
+    // an ad platform. Skipped for bots, same as the CAPI fan-out. Covers
+    // every event_name that reaches /tracker (Lead, LeadUpdate, etc.) — the
+    // 'leadupdate' early-return further down happens after this, not before.
+    if (!isBot) {
+      context.waitUntil(
+        dispatchIntegrations({
+          env,
+          eventName: body.event_name,
+          data: buildIntegrationData(body, userData, sessionData, { country, city, region, consent_status: consentStatus }),
+        })
+      );
+    }
 
     // --- Fan out to ad platforms (skipped for bot UAs) ---
     // Bots still get logged to event_log so the dashboard's bot-filter
@@ -148,25 +163,6 @@ export async function onRequestPost(context) {
         value: body.value || 0,
         currency: body.currency || 'BRL',
         eventTime: body.event_time,
-        env,
-      }),
-      sendToPipedrive({
-        eventName: body.event_name,
-        email: userData.em || '',
-        name: [userData.fn, userData.ln].filter(Boolean).join(' ').trim(),
-        phone: userData.ph || '',
-        empresa: body.empresa || '',
-        cnpj: body.cnpj || '',
-        segmento: body.segmento || '',
-        cidade: city,
-        estado: region,
-        lgpdConsent: consentStatus !== 'unknown',
-        product: body.product || '',
-        sourceUrl: body.event_source_url || '',
-        utmSource: body.utm_source || '', utmMedium: body.utm_medium || '',
-        utmCampaign: body.utm_campaign || '', utmContent: body.utm_content || '',
-        utmTerm: body.utm_term || '',
-        externalId,
         env,
       }),
       sendToBrevo({
@@ -226,35 +222,24 @@ export async function onRequestPost(context) {
       if (gadsStatus >= 400) console.error('Google Ads lead CAPI non-2xx:', gadsStatus);
     }
 
-    // --- Parse Pipedrive result (fire-and-forget — not persisted to event_log) ---
-    if (results[4]?.status === 'rejected') {
-      console.error('Pipedrive deal creation error:', results[4].reason?.message || 'unknown');
-    } else if (results[4]?.status === 'fulfilled' && results[4].value?.response && !results[4].value?.skipped) {
-      const pdStatus = results[4].value.response.status;
-      if (pdStatus >= 400) {
-        const pdBody = await results[4].value.response.text().catch(() => '');
-        console.error('Pipedrive deal creation non-2xx:', pdStatus, pdBody);
-      }
-    }
-
     // --- Parse Brevo result (fire-and-forget — not persisted to event_log) ---
-    if (results[5]?.status === 'rejected') {
-      console.error('Brevo contact sync error:', results[5].reason?.message || 'unknown');
-    } else if (results[5]?.status === 'fulfilled' && results[5].value?.response && !results[5].value?.skipped) {
-      const brevoStatus = results[5].value.response.status;
+    if (results[4]?.status === 'rejected') {
+      console.error('Brevo contact sync error:', results[4].reason?.message || 'unknown');
+    } else if (results[4]?.status === 'fulfilled' && results[4].value?.response && !results[4].value?.skipped) {
+      const brevoStatus = results[4].value.response.status;
       if (brevoStatus >= 400) {
-        const brevoBody = await results[5].value.response.text().catch(() => '');
+        const brevoBody = await results[4].value.response.text().catch(() => '');
         console.error('Brevo contact sync non-2xx:', brevoStatus, brevoBody);
       }
     }
 
     // --- Parse ChatGPT Ads Conversions API result (fire-and-forget — not persisted to event_log) ---
-    if (results[6]?.status === 'rejected') {
-      console.error('ChatGPT Ads CAPI error:', results[6].reason?.message || 'unknown');
-    } else if (results[6]?.status === 'fulfilled' && results[6].value?.response && !results[6].value?.skipped) {
-      const chatgptStatus = results[6].value.response.status;
+    if (results[5]?.status === 'rejected') {
+      console.error('ChatGPT Ads CAPI error:', results[5].reason?.message || 'unknown');
+    } else if (results[5]?.status === 'fulfilled' && results[5].value?.response && !results[5].value?.skipped) {
+      const chatgptStatus = results[5].value.response.status;
       if (chatgptStatus >= 400) {
-        const chatgptBody = await results[6].value.response.text().catch(() => '');
+        const chatgptBody = await results[5].value.response.text().catch(() => '');
         console.error('ChatGPT Ads CAPI non-2xx:', chatgptStatus, chatgptBody);
       }
     }
@@ -538,7 +523,7 @@ async function sendToGA4({ body, gaClientId, gaSessionId, hashedEm, env }) {
 
 // -------------------------------------------------------
 // GOOGLE ADS — Lead conversion
-// Mirrors _core.js/pipedrive adapter logic, kept local to avoid
+// Mirrors _core.js's logic, kept local to avoid
 // cross-module state coupling. Uses GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID
 // as the conversion action (no productConfig at lead time).
 // -------------------------------------------------------
@@ -671,6 +656,29 @@ function validateFbCookie(value) {
   if (!/^\d+$/.test(parts[2])) return '';
   if (!parts[3]) return '';
   return value;
+}
+
+// Flattens the /tracker request body into the shape operator-configured
+// integrations (functions/lib/integrations-dispatch.js) map fields from.
+// Keeps every top-level body field (empresa, cnpj, segmento, product, UTMs,
+// the calculator's custom fields, etc.) and lifts user_data's em/fn/ln/ph to
+// the top level — raw, unhashed, since this feeds a CRM/spreadsheet, not an
+// ad platform.
+function buildIntegrationData(body, userData, sessionData, extra) {
+  const flat = {};
+  for (const [k, v] of Object.entries(body)) {
+    if (k !== 'user_data' && v !== undefined && v !== null) flat[k] = v;
+  }
+  if (userData.em) flat.em = userData.em;
+  if (userData.fn) flat.fn = userData.fn;
+  if (userData.ln) flat.ln = userData.ln;
+  if (userData.ph) flat.ph = userData.ph;
+  flat.utm_source   = flat.utm_source   || sessionData.utm_source   || '';
+  flat.utm_medium   = flat.utm_medium   || sessionData.utm_medium   || '';
+  flat.utm_campaign = flat.utm_campaign || sessionData.utm_campaign || '';
+  flat.utm_content  = flat.utm_content  || sessionData.utm_content  || '';
+  flat.utm_term     = flat.utm_term     || sessionData.utm_term     || '';
+  return { ...flat, ...extra };
 }
 
 function parseCookies(cookieHeader) {

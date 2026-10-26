@@ -16,9 +16,9 @@
 //     payload (Brevo → Webhook settings → "contact attributes to include"),
 //     it arrives as a top-level `EXTERNAL_ID` (or `external_id`) field — this
 //     is the attribute functions/outputs/brevo.js stamps on every Lead event.
-//   - If EXTERNAL_ID isn't in the payload, falls back to the same email →
-//     event_log.raw_email → sessions lookup the Pipedrive webhook already
-//     uses, taking the earliest session on record for that address.
+//   - If EXTERNAL_ID isn't in the payload, falls back to an email →
+//     event_log.raw_email → sessions lookup, taking the earliest session
+//     on record for that address.
 //   - Unknown external_id (never seen a Lead event, or lookup failed) is not
 //     an error — the event is acknowledged and skipped, since Brevo may send
 //     engagement for contacts that predate this integration.
@@ -26,9 +26,8 @@
 // Required env vars:
 //   BREVO_WEBHOOK_SLUG   — UUID generated during deploy-stack
 //
-// Point values are intentionally NOT env vars (same treatment as PIPELINE_NAME/
-// STAGE_NAME in outputs/pipedrive.js) — they're tuning constants, not secrets
-// or per-recipient config. Edit POINTS_BY_EVENT below to change them.
+// Point values are intentionally NOT env vars — they're tuning constants,
+// not secrets or per-recipient config. Edit POINTS_BY_EVENT below to change them.
 // -----------------------------------------------------------------------------
 
 import { guardSlug } from '../_utils.js';
@@ -95,8 +94,7 @@ function normalizeEventType(raw) {
 
 // -----------------------------------------------------------------------------
 // Resolve the lead's external_id, EXTERNAL_ID-first, e-mail fallback second
-// (mirrors the email → event_log → sessions lookup in
-// functions/webhook/pipedrive/[slug].js).
+// (email → event_log → sessions lookup).
 // -----------------------------------------------------------------------------
 async function resolveExternalId(body, env) {
   const fromPayload = body.EXTERNAL_ID || body.external_id || '';
