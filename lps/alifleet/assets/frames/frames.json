@@ -1,0 +1,3 @@
+{ "total": 160, "largura": 1920, "altura": 1080,
+  "desktop": "assets/frames/desktop/f_{n}.webp",
+  "mobile": "assets/frames/mobile/f_{n}.webp" }

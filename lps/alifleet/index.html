@@ -1,0 +1,423 @@
+<!doctype html>
+<!--
+  Alifleet · Site Cinematográfico por Labrego IA (labregoia.com.br)
+  Projeto: LBG-SC-20261102-56F7009547 · Assinatura LBG-SC-2026-v1
+  © 2026 Labrego IA. Estrutura, código e método licenciados.
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alifleet | Gestão de frotas da Ali Sat</title>
+  <meta name="description" content="Rastreamento, telemetria e videotelemetria para frotas de 15 veículos ou mais. Acompanhe um dia da sua frota: diesel, checklist, mapa, câmeras, motoristas e custo.">
+  <meta name="generator" content="Site Cinematográfico · Labrego IA">
+  <meta name="author" content="Labrego IA · labregoia.com.br">
+  <meta property="og:title" content="Alifleet | Um dia da sua frota">
+  <meta property="og:description" content="Diesel, checklist, mapa, câmeras, motoristas e custo, do amanhecer ao resultado da semana.">
+  <meta property="og:image" content="assets/frames/desktop/f_0001.webp">
+  <meta name="theme-color" content="#0f2658">
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="preload" as="font" type="font/woff2" href="assets/fontes/archivo-var.woff2" crossorigin>
+  <link rel="preload" as="image" href="assets/frames/desktop/f_0001.webp">
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<div class="trilho" aria-hidden="true"></div>
+<header class="topo">
+  <a href="#inicio" class="marca" aria-label="Alifleet">
+    <img src="assets/logo.svg" alt="Alifleet" class="marca-logo">
+  </a>
+  <nav class="menu" aria-label="Seções">
+    <a href="#dia">Um dia da frota</a>
+    <a href="#painel">O painel</a>
+    <a href="#dono">Para o dono</a>
+    <a href="#calculadora">Calculadora</a>
+    <a href="#implantacao">Implantação</a>
+    <a href="#contato" class="menu-cta">Ver com a minha frota</a>
+  </nav>
+</header>
+
+<div class="relogio" aria-hidden="true">
+  <span class="relogio-dia">Terça</span>
+  <strong class="relogio-hora">02:40</strong>
+  <i class="relogio-marcas"><b></b><b></b><b></b><b></b><b></b><b></b></i>
+</div>
+
+<main>
+
+  <section id="inicio" class="cine" style="--altura: 440vh">
+    <div class="cine-palco">
+      <canvas class="cine-canvas" aria-hidden="true"></canvas>
+      <div class="cine-vinheta"></div>
+
+      <div class="momento" data-de="0" data-ate="0.3">
+        <div class="painel">
+          <h1 class="titulo-abertura">50% menos tempo analisando relatórios</h1>
+        </div>
+      </div>
+      <div class="momento momento--direita" data-de="0.38" data-ate="0.66">
+        <div class="painel">
+          <p class="destaque">Diesel, câmera, motorista e custo na mesma tela.</p>
+        </div>
+      </div>
+      <div class="momento momento--centro" data-de="0.74" data-ate="1">
+        <div class="painel">
+          <p class="destaque">Veja o que acontece num dia da sua frota.</p>
+          <a href="#contato" class="botao">Ver o Alifleet com a minha frota</a>
+        </div>
+      </div>
+
+      <div class="cine-dica" aria-hidden="true"><span></span>role</div>
+    </div>
+  </section>
+
+  <section id="prova" class="faixa">
+    <div class="prova">
+      <div class="painel painel--noite revelar">
+        <h2>Nem sempre a culpa é do seu motorista</h2>
+        <p>Um bitrem ultrapassava quando surgiu um caminhão no sentido contrário. O outro veículo desviou e atingiu o caminhão do nosso cliente, que seguia na faixa dele. A câmera da Ali Sat registrou tudo.</p>
+        <p>Sem imagem, vira a palavra de um contra a do outro. Com o vídeo, a empresa tem o que mostrar.</p>
+      </div>
+      <div class="video video--largo revelar" data-video="L1YTA8DTTSA" data-titulo="Câmera de caminhão registra acidente">
+        <img src="assets/capas/capa-bitrem.webp" alt="" loading="lazy">
+        <button type="button" class="play" aria-label="Assistir: câmera de caminhão registra acidente"><span></span>Assistir ao registro</button>
+      </div>
+    </div>
+    <div class="clientes revelar" aria-label="Empresas que usam a Ali Sat">
+      <p>Empresas que usam a Ali Sat</p>
+      <div class="clientes-fita">
+        <img src="assets/clientes/agilog.png" alt="Agilog" loading="lazy">
+        <img src="assets/clientes/asun.png" alt="Asun" loading="lazy">
+        <img src="assets/clientes/fg.png" alt="FG Express" loading="lazy">
+        <img src="assets/clientes/mica.png" alt="Mica Transportes" loading="lazy">
+        <img src="assets/clientes/casamaria.png" alt="Casa Maria" loading="lazy">
+        <img src="assets/clientes/coesul.png" alt="Coesul" loading="lazy">
+        <img src="assets/clientes/reiter.png" alt="Reiter Log" loading="lazy">
+        <img src="assets/clientes/ups.png" alt="UPS" loading="lazy">
+        <img src="assets/clientes/flex.png" alt="Flex" loading="lazy">
+        <img src="assets/clientes/belarmino.png" alt="Grupo Belarmino" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <div id="dia">
+
+    <section class="cena" data-cena="tanque" data-dia="Terça" data-hora="02:40">
+      <div class="cena-fixa">
+        <img class="arte arte--direita cena-arte" src="assets/img/diesel.webp" alt="" loading="lazy">
+        <div class="cena-grade">
+          <div class="painel painel--noite cena-texto">
+            <span class="hora">Terça, 02:40</span>
+            <h2>O tanque baixou com o caminhão parado</h2>
+            <p>Ninguém estava olhando. O nível caiu, o alerta entrou na tela e os litros ficaram registrados, com a hora e o lugar.</p>
+          </div>
+          <div class="viva" role="img" aria-label="Simulação: nível do tanque cai 9%, cerca de 81 litros, com o veículo parado, e o alerta aparece">
+            <header class="viva-topo"><strong>Bitrem graneleiro</strong><span>KYP2E09</span><em class="selo">Parado</em></header>
+            <div class="tanque">
+              <div class="numero"><strong data-nivel>62</strong><small>% no tanque</small></div>
+              <div class="barra"><i data-barra></i></div>
+              <svg class="curva" viewBox="0 0 560 150" preserveAspectRatio="none" aria-hidden="true"><path data-curva d="M0 30 H330 C350 30 360 110 400 118 H560" fill="none" stroke="#5d81e7" stroke-width="4" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+              <div class="eixo"><span>00:00</span><span>01:00</span><span>02:00</span><span>03:00</span></div>
+            </div>
+            <div class="aviso" data-aviso>
+              <i class="ponto"></i>
+              <div><strong>Queda com o veículo parado</strong><span>O nível caiu 9%. Cerca de <b data-litros>0</b> L.</span></div>
+              <em class="selo">Medido</em>
+            </div>
+            <small class="exemplo">Dados de exemplo</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cena cena--inversa" data-cena="checklist" data-dia="Terça" data-hora="06:10">
+      <div class="cena-fixa">
+        <img class="arte arte--esquerda cena-arte" src="assets/img/manutencao.webp" alt="" loading="lazy">
+        <div class="cena-grade">
+          <div class="viva viva--dupla" role="img" aria-label="Simulação: checklist por WhatsApp, o item freios volta Não OK e vira ordem de serviço">
+            <div class="zap">
+              <p class="balao balao--ali" data-passo="0.05">Checklist de hoje, ABC1D23. Toque para responder.</p>
+              <p class="balao" data-passo="0.2">Pneus: OK</p>
+              <p class="balao" data-passo="0.32">Luzes: OK</p>
+              <p class="balao balao--nao" data-passo="0.44">Freios: Não OK</p>
+            </div>
+            <div class="quadro">
+              <div class="coluna"><h4>Aberta</h4></div>
+              <div class="coluna"><h4>Agendada</h4><p class="fixa"><b>Troca de óleo</b>QSD9J02</p></div>
+              <div class="coluna"><h4>Em execução</h4><p class="fixa"><b>Pneus</b>LTB4K66</p></div>
+              <article class="os" data-os><strong>Ordem de serviço</strong><span>Freios, ABC1D23</span></article>
+            </div>
+            <small class="exemplo">Dados de exemplo</small>
+          </div>
+          <div class="painel painel--noite cena-texto">
+            <span class="hora">Terça, 06:10</span>
+            <h2>O motorista marcou "Não OK" antes de sair</h2>
+            <p>O checklist vai por link no WhatsApp. O item com problema vira ordem de serviço com um clique, antes de virar quebra na estrada.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cena" data-cena="mapa" data-dia="Terça" data-hora="09:30">
+      <div class="cena-fixa">
+        <img class="arte arte--direita cena-arte" src="assets/img/mapa.webp" alt="" loading="lazy">
+        <div class="cena-grade">
+          <div class="painel painel--noite cena-texto">
+            <span class="hora">Terça, 09:30</span>
+            <h2>O cliente ligou perguntando da entrega</h2>
+            <p>Todos os caminhões num mapa só, cada um com o estado ao lado. Você responde antes de desligar, sem ligar para o motorista.</p>
+            <a href="#contato" class="botao botao--leve">Ver o Alifleet com a minha frota</a>
+          </div>
+          <div class="viva viva--mapa" role="img" aria-label="Simulação: a estrada vira mapa com caminhões andando e mudando de estado">
+            <svg viewBox="0 0 640 480" class="mapa" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="640" height="480" fill="#e9eef3"/>
+              <path d="M0 360 C120 330 180 390 300 350 S520 300 640 330 V480 H0Z" fill="#dcebdd"/>
+              <path d="M430 0 C470 90 600 110 640 90 V0Z" fill="#cfe4f2"/>
+              <path d="M60 480 L150 300 L330 240 L520 110 L640 60" fill="none" stroke="#fff" stroke-width="12"/>
+              <path d="M0 150 L150 300 L300 420 L420 480" fill="none" stroke="#fff" stroke-width="8"/>
+              <path d="M330 240 L420 400 L640 430" fill="none" stroke="#fff" stroke-width="8"/>
+              <path d="M210 0 L330 240" fill="none" stroke="#fff" stroke-width="6"/>
+              <path data-rota d="M60 480 L150 300 L330 240 L520 110 L640 60" fill="none"/>
+              <path data-rota d="M0 150 L150 300 L300 420 L420 480" fill="none"/>
+              <path data-rota d="M640 430 L420 400 L330 240 L210 0" fill="none"/>
+              <g data-marca="0"><text x="20" y="5">ABC1D23</text><circle r="15" fill="#fff"/><circle r="8" fill="#56d6f9"/></g>
+              <g data-marca="1"><text x="20" y="5">HNE5F31</text><circle r="15" fill="#fff"/><circle r="8" fill="#56d6f9"/></g>
+              <g data-marca="2"><text x="20" y="5">JCR7G18</text><circle r="15" fill="#fff"/><circle r="8" fill="#56d6f9"/></g>
+            </svg>
+            <img class="mapa-foto" data-foto src="assets/frames/desktop/f_0160.webp" alt="" loading="lazy">
+            <div class="mapa-lista">
+              <p><i style="background:#56d6f9"></i><b data-mov>3</b> em movimento</p>
+              <p><i style="background:#3e3e50"></i><b data-par>1</b> parado</p>
+            </div>
+            <div class="mapa-cartao" data-cartao>
+              <strong>ABC1D23, caminhão baú</strong>
+              <span>Em movimento, 34 km da entrega</span>
+              <em data-kmh>78 km/h</em>
+            </div>
+            <small class="exemplo">Dados de exemplo</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cena cena--inversa" data-cena="colisao" data-dia="Terça" data-hora="14:20">
+      <div class="cena-fixa">
+        <img class="arte arte--esquerda cena-arte" src="assets/img/camera.webp" alt="" loading="lazy">
+        <div class="cena-grade">
+          <div class="viva viva--caso" role="img" aria-label="Simulação: alerta de colisão frontal iminente, depois o vídeo do momento">
+            <div class="video video--caso" data-video="a0HWD1f-nJg" data-titulo="Registro das câmeras da Ali Sat" data-videocaso>
+              <img src="assets/capas/capa-short.webp" alt="" loading="lazy">
+              <button type="button" class="play" aria-label="Assistir ao registro das câmeras"><span></span>Assistir</button>
+            </div>
+            <div class="alerta" data-alerta>
+              <i class="ponto"></i>
+              <div><strong>Colisão frontal iminente</strong><span>SXY5C14, às 14h20</span></div>
+              <em class="selo selo--alta">Alta</em>
+            </div>
+            <ol class="etapas">
+              <li data-etapa="0.2"><b>Alerta na tela</b><span>Na hora em que acontece</span></li>
+              <li data-etapa="0.42"><b>Vídeo do momento</b><span>O trecho de antes e de depois chega sozinho</span></li>
+              <li data-etapa="0.62"><b>Quem dirigia e onde</b><span>Com a velocidade daquele instante</span></li>
+              <li data-etapa="0.82"><b>A ocorrência fica guardada</b><span>O trecho baixa em arquivo</span></li>
+            </ol>
+            <small class="exemplo">Tela com dados de exemplo</small>
+          </div>
+          <div class="painel painel--noite cena-texto">
+            <span class="hora">Terça, 14:20</span>
+            <h2>O alerta chegou com o vídeo do momento</h2>
+            <p>Antes de ligar para o motorista, você já sabe o que aconteceu e quem dirigia. Em acidente, o vídeo é o que separa a versão de cada um.</p>
+            <a href="#contato" class="botao botao--leve">Ver o Alifleet com a minha frota</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cena" data-cena="ranking" data-dia="Terça" data-hora="18:00">
+      <div class="cena-fixa">
+        <img class="arte arte--direita cena-arte" src="assets/img/motorista.webp" alt="" loading="lazy">
+        <div class="cena-grade">
+          <div class="painel painel--noite cena-texto">
+            <span class="hora">Terça, 18:00</span>
+            <h2>O dia fechou e os pontos foram para o lugar certo</h2>
+            <p>A conta é por 100 km, então quem roda mais não sai perdendo. A tela mostra quem evoluiu e quem precisa de apoio, com o motivo de cada ponto.</p>
+          </div>
+          <div class="viva" role="img" aria-label="Simulação: pontos dos motoristas são calculados e a lista se reordena">
+            <header class="viva-topo"><strong>Motoristas</strong><span>Pontos de hoje</span></header>
+            <ol class="ranking" data-ranking></ol>
+            <p class="nota-viva" data-apoio><b>Carlos</b> é quem mais precisa de apoio: 14,6 pontos perdidos a cada 100 km.</p>
+            <small class="exemplo">Dados de exemplo</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cena cena--inversa" data-cena="dono" data-dia="Segunda" data-hora="08:00">
+      <div class="cena-fixa">
+        <img class="arte arte--esquerda cena-arte" src="assets/img/frota.webp" alt="" loading="lazy">
+        <div class="cena-grade">
+          <div class="viva" role="img" aria-label="Simulação: o dono pergunta como foi a semana e recebe números e gráfico">
+            <div class="pergunta"><img src="assets/capas/assistente.webp" alt="" width="44" height="44" loading="lazy"><p><span data-digita></span><i class="cursor"></i></p></div>
+            <div class="resposta" data-resposta>
+              <div class="numeros">
+                <div><strong data-km>0</strong><small>km rodados</small><em>16% menos</em></div>
+                <div><strong data-oc>0</strong><small>ocorrências</small><em>18% menos</em></div>
+                <div><strong data-lt>0</strong><small>litros medidos</small></div>
+              </div>
+              <div class="barras" data-barras></div>
+            </div>
+            <small class="exemplo">Dados de exemplo</small>
+          </div>
+          <div class="painel painel--noite cena-texto">
+            <span class="hora">Segunda, 08:00</span>
+            <h2>O dono quis saber como foi a semana</h2>
+            <p>Ele pergunta em português e a resposta vem com número e gráfico, sem abrir planilha e sem esperar relatório.</p>
+            <a href="#contato" class="botao botao--leve">Ver o Alifleet com a minha frota</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section id="painel" class="painel-real">
+    <div class="painel-real-grade">
+      <h2 class="revelar">O painel de verdade, em 40 segundos</h2>
+      <div class="video video--largo revelar" data-video="rYTPXTmr8XQ" data-titulo="Alifleet em 40 segundos">
+        <img src="assets/capas/painel.webp" alt="Painel do Alifleet com o mapa ao vivo" loading="lazy">
+        <button type="button" class="play" aria-label="Assistir ao vídeo do Alifleet em 40 segundos"><span></span>Assistir em 40 segundos</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="dono" class="claro">
+    <div class="claro-grade revelar">
+      <div>
+        <h2>O que chega ao dono</h2>
+        <p class="lead">Três respostas para quem assina a conta: quanto custou, quanto risco correu e o que tem para mostrar quando algo dá errado.</p>
+      </div>
+      <dl class="respostas">
+        <div><dt>Custo</dt><dd>Manutenção e combustível somados, comparados com o período anterior.</dd></div>
+        <div><dt>Risco</dt><dd>Ocorrências por motorista e por veículo, cada uma com o vídeo.</dd></div>
+        <div><dt>Prova</dt><dd>O trecho do acidente em arquivo, para quando a empresa precisar mostrar o que aconteceu.</dd></div>
+      </dl>
+    </div>
+    <figure class="tela tela--relatorio revelar">
+      <img src="assets/telas/relatorio.webp" alt="Relatório de resumo da frota no Alifleet" width="1400" height="1064" loading="lazy">
+      <figcaption>Relatório do Alifleet. Dados de exemplo</figcaption>
+    </figure>
+  </section>
+
+  <section id="calculadora" class="calculadora">
+    <div class="calc-grade">
+      <div class="revelar">
+        <h2>Quanto custa 1% a mais de consumo na sua frota</h2>
+        <p class="lead">Coloque os números da sua operação. A conta é sua: não é promessa de economia.</p>
+        <form class="calc-campos" data-calc>
+          <label>Veículos<input name="veiculos" inputmode="numeric" value="30"></label>
+          <label>Km por mês, por veículo<input name="km" inputmode="numeric" value="8000"></label>
+          <label>Km por litro<input name="kml" inputmode="decimal" value="3,0"></label>
+          <label>Preço do diesel (R$/L)<input name="preco" inputmode="decimal" value="6,20"></label>
+        </form>
+      </div>
+      <div class="calc-saida revelar" aria-live="polite">
+        <small>Cada 1% de consumo a mais custa</small>
+        <strong data-calc-mes>R$ 0</strong>
+        <span>por mês</span>
+        <em><b data-calc-ano>R$ 0</b> por ano, em <b data-calc-litros>0</b> L de diesel</em>
+        <a href="#contato" class="botao">Ver o Alifleet com a minha frota</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="cliente" class="cliente">
+    <div class="cliente-grade">
+      <div class="video video--cliente revelar" data-video="wkVgoyO2HVg" data-titulo="Feedback de Alexandre, FG Express">
+        <img src="assets/capas/fg.webp" alt="Caminhão da FG Express" loading="lazy">
+        <button type="button" class="play" aria-label="Assistir ao depoimento de Alexandre Antunes, da FG Express"><span></span>Assistir ao depoimento</button>
+      </div>
+      <div class="revelar">
+        <h2>No começo os motoristas resistiram. Hoje eles pedem as imagens.</h2>
+        <blockquote>“Hoje a gente enxerga o que tá acontecendo lá em tempo real.”</blockquote>
+        <blockquote>“Não compromete a privacidade do motorista.”</blockquote>
+        <p class="autor"><strong>Alexandre Antunes</strong> Supervisão e gestão de motoristas, FG Express</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="implantacao" class="claro">
+    <div class="claro-grade revelar">
+      <div>
+        <h2>Como funciona a implantação em frotas grandes</h2>
+        <p class="lead">Cada projeto é construído conforme a operação do cliente. Logo após a contratação, vendedor, cliente e o CS responsável pela conta fazem a reunião de onboarding para alinhar necessidades, escopo, cronograma e próximos passos.</p>
+        <a href="#contato" class="botao">Planejar o projeto da minha frota</a>
+      </div>
+      <dl class="respostas">
+        <div><dt>Prazo</dt><dd>Planejado conforme o tamanho da frota, as unidades e a disponibilidade dos veículos.</dd></div>
+        <div><dt>Acompanhamento</dt><dd>Sua empresa tem um CS responsável pela conta, a equipe de implantação e o suporte técnico para configurar, orientar os usuários e acompanhar o uso.</dd></div>
+        <div><dt>Integrações</dt><dd>Avaliadas conforme os sistemas usados e as necessidades do projeto.</dd></div>
+        <div><dt>LGPD</dt><dd>O planejamento define acessos, finalidade e retenção dos dados, e orienta os motoristas sobre o uso de imagens e informações.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="contato" class="secao secao--contato">
+    <img class="arte arte--fundo arte--suave" src="assets/img/contato.webp" alt="" loading="lazy">
+    <div class="contato-grade">
+      <div class="revelar contato-texto">
+        <h2>Ver o Alifleet com a minha frota</h2>
+        <p>Para frotas de 15 veículos ou mais: cargas, passageiros, distribuição, construção civil, terraplanagem e agronegócio. Base em Sapucaia do Sul/RS, atendimento em todo o Brasil.</p>
+        <div class="redes"><a href="https://www.instagram.com/alisatbrasil/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.3" fill="currentColor"/></svg></a><a href="https://br.linkedin.com/company/alisatgestaodefrotas" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 9h3.2v10.5H5V9Zm1.6-5a1.85 1.85 0 1 1 0 3.7 1.85 1.85 0 0 1 0-3.7ZM10.3 9h3.05v1.45h.05c.43-.8 1.5-1.65 3.07-1.65 3.3 0 3.9 2.15 3.9 4.95v5.75h-3.2v-5.1c0-1.2 0-2.78-1.7-2.78s-1.95 1.3-1.95 2.7v5.18h-3.2V9Z"/></svg></a><a href="https://www.youtube.com/@alisatbrasil" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 7.2a2.5 2.5 0 0 0-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.83.43A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.83-.43a2.5 2.5 0 0 0 1.77-1.77c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8ZM10 15V9l5.2 3L10 15Z"/></svg></a></div>
+      </div>
+      <div class="painel painel--form revelar">
+        <form class="form" novalidate>
+          <div class="campo campo--inteiro">
+            <label for="f-nome">Nome</label>
+            <input id="f-nome" name="nome" autocomplete="name" required>
+          </div>
+          <div class="campo">
+            <label for="f-tel">Telefone</label>
+            <input id="f-tel" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required>
+          </div>
+          <div class="campo">
+            <label for="f-email">E-mail</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="campo">
+            <label for="f-cnpj">CNPJ</label>
+            <input id="f-cnpj" name="cnpj" inputmode="numeric" maxlength="18" required>
+          </div>
+          <div class="campo">
+            <label for="f-frota">Tamanho da frota</label>
+            <input id="f-frota" name="veiculos" inputmode="numeric" placeholder="Número de veículos" required>
+          </div>
+          <label class="aceite campo--inteiro"><input type="checkbox" name="lgpd" required>
+            <span>Li e aceito a <a href="/politica-de-privacidade" target="_blank" rel="noopener">Política de Privacidade e Cookies</a> e o tratamento dos meus dados conforme a LGPD.</span>
+          </label>
+          <input type="text" name="_honey" class="pote" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button type="submit" class="botao campo--inteiro">Ver o Alifleet com a minha frota</button>
+          <p class="form-status campo--inteiro" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="rodape">
+  <div class="rodape-painel">
+    <img src="assets/logo-alisat.png" alt="Ali Sat Gestão de Frotas" class="rodape-logo" loading="lazy">
+    <span>Ali Sat Rastreamento e Monitoramento LTDA · CNPJ 29.989.683/0001-33<br>© <span data-ano></span> · <a href="/politica-de-privacidade" target="_blank" rel="noopener">Política de Privacidade</a></span>
+    <span class="redes"><a href="https://www.instagram.com/alisatbrasil/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.3" fill="currentColor"/></svg></a><a href="https://br.linkedin.com/company/alisatgestaodefrotas" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 9h3.2v10.5H5V9Zm1.6-5a1.85 1.85 0 1 1 0 3.7 1.85 1.85 0 0 1 0-3.7ZM10.3 9h3.05v1.45h.05c.43-.8 1.5-1.65 3.07-1.65 3.3 0 3.9 2.15 3.9 4.95v5.75h-3.2v-5.1c0-1.2 0-2.78-1.7-2.78s-1.95 1.3-1.95 2.7v5.18h-3.2V9Z"/></svg></a><a href="https://www.youtube.com/@alisatbrasil" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 7.2a2.5 2.5 0 0 0-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.83.43A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.83-.43a2.5 2.5 0 0 0 1.77-1.77c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8ZM10 15V9l5.2 3L10 15Z"/></svg></a></span>
+    <a class="credito" href="https://labregoia.com.br" target="_blank" rel="noopener">Site por Labrego IA</a>
+  </div>
+</footer>
+
+<a class="whats" target="_blank" rel="noopener" aria-label="Conversar no WhatsApp">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.4.7 4.7 1.9 6.7L3 29l6.9-2.1c1.9 1 4 1.6 6.1 1.6 7 0 12.7-5.6 12.7-12.6S23 3 16 3Zm0 23.1c-1.9 0-3.8-.5-5.4-1.5l-.4-.2-4.1 1.2 1.3-4-.3-.4a10.4 10.4 0 0 1-1.6-5.6C5.5 9.8 10.2 5.2 16 5.2s10.5 4.6 10.5 10.4S21.8 26.1 16 26.1Zm5.8-7.8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.4c.2.2 2.4 3.6 5.7 5 .8.4 1.4.6 1.9.7.8.3 1.6.2 2.2.1.7-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4Z"/></svg>
+</a>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script src="dia.js"></script>
+</body>
+</html>
