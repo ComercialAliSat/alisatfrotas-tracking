@@ -592,7 +592,7 @@ async function sendToGA4({ body, gaClientId, gaSessionId, hashedEm, env }) {
 // no productConfig at lead time. The action must be of type "Import" (upload
 // clicks) in Google Ads.
 // -------------------------------------------------------
-function normalizeEmailForGoogle(email) {
+export function normalizeEmailForGoogle(email) {
   const e = String(email || '').trim().toLowerCase();
   const at = e.lastIndexOf('@');
   if (at < 1) return e;
@@ -607,7 +607,7 @@ function normalizeEmailForGoogle(email) {
 // Turns the settled result of sendToGoogleAds into one flat record.
 // HTTP 200 is not enough: with partialFailure Google reports rejected
 // conversions in `partialFailureError`, so that counts as a failure.
-async function summarizeGoogleAds(settled) {
+export async function summarizeGoogleAds(settled) {
   const empty = { statusCode: 0, ok: 0, skipped: '', body: '', payload: null, clickIdType: '' };
   if (!settled) return { ...empty, skipped: 'not sent' };
   if (settled.status === 'rejected') {
@@ -624,7 +624,7 @@ async function summarizeGoogleAds(settled) {
   return { statusCode: v.response.status, ok, skipped: '', body: text, payload: v.payload ?? null, clickIdType: v.clickIdType || '' };
 }
 
-async function logGoogleAds(env, row) {
+export async function logGoogleAds(env, row) {
   if (!env.DB) return;
   try {
     await env.DB.prepare(`
@@ -642,7 +642,7 @@ async function logGoogleAds(env, row) {
   }
 }
 
-async function sendToGoogleAds({ sessionData, body, conversionActionId, hashedEm, hashedPh, value, currency, eventTime, orderId, env }) {
+export async function sendToGoogleAds({ sessionData, body, conversionActionId, hashedEm, hashedPh, value, currency, eventTime, orderId, env }) {
   if (!env.GOOGLE_ADS_CUSTOMER_ID || !env.GOOGLE_ADS_LOGIN_CUSTOMER_ID ||
       !env.GOOGLE_ADS_DEVELOPER_TOKEN || !env.GOOGLE_ADS_CLIENT_ID ||
       !env.GOOGLE_ADS_CLIENT_SECRET || !env.GOOGLE_ADS_REFRESH_TOKEN) {

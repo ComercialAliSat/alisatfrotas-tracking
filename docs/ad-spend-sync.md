@@ -361,3 +361,19 @@ the spend side, enabling CPL/CAC for that row.
 
 `metrics.cost_micros` is a documented, stable Google Ads API unit (1,000,000
 micros = 1 currency unit) — divided by 10,000 to store as integer cents.
+
+## Google Ads: reenvio de leads (backfill)
+
+Se o upload em tempo real falhou (refresh token expirado, `GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID` ausente), os gclid/wbraid/gbraid dos leads continuam no D1. O Google aceita conversão por clique até 90 dias depois do clique.
+
+```bash
+# 1) Simulação (padrão): só lista o que seria enviado, sem PII
+curl -X POST https://SEU-DOMINIO/api/sync/google-ads-backfill \
+  -H "x-sync-secret: $SYNC_SECRET" -d '{"days": 30}'
+
+# 2) Envio real (até 100 por chamada; repita para o restante)
+curl -X POST https://SEU-DOMINIO/api/sync/google-ads-backfill \
+  -H "x-sync-secret: $SYNC_SECRET" -d '{"days": 30, "dry_run": false}'
+```
+
+Opções: `days` (1-90, padrão 30), `limit` (1-100, padrão 50), `retry_rejected` (reenvia os que o Google rejeitou antes). É idempotente: o `orderId` é o `event_id` do lead, então reenviar não duplica. Cada tentativa fica em `/api/google-ads-log`. Pré-requisitos: migration 0031 aplicada e as variáveis `GOOGLE_ADS_*` válidas.

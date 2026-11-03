@@ -141,6 +141,7 @@ for the full design.
 | `api/events.js` | Dashboard: tracking-health stats (ITP recovery, adblock, bot filter, fbp source). |
 | `api/purchases.js` | Dashboard: purchases table with platform delivery status. |
 | `api/google-ads-log.js` | `GET /api/google-ads-log?key=` — last Google Ads server-side uploads from `google_ads_log` (accepted / rejected / skipped + Google's reason). |
+| `api/sync/google-ads-backfill.js` | `POST /api/sync/google-ads-backfill` — re-sends Lead conversions that never reached Google Ads (dry-run by default; idempotent via `orderId`; logs to `google_ads_log`). Gated by `SYNC_SECRET`. Use after fixing an expired token / missing action id; works up to 90 days after the click. |
 | `api/sync/meta-ads.js` | `POST /api/sync/meta-ads` — cron-triggered Meta Marketing API pull into `ad_spend`. Gated by `SYNC_SECRET` header. |
 | `api/sync/chatgpt-ads.js` | `POST /api/sync/chatgpt-ads` — cron-triggered OpenAI Ads Insights API pull into `ad_spend` (`platform='chatgpt'`). Gated by the same `SYNC_SECRET` header. |
 | `api/sync/google-ads.js` | `POST /api/sync/google-ads` — cron-triggered Google Ads reporting query (`googleAds:searchStream`) into `ad_spend` (`platform='google'`). Reuses the same OAuth credentials already used by `sendToGoogleAds` in `tracker.js` — no new env vars. Gated by the same `SYNC_SECRET` header. |
