@@ -22,6 +22,7 @@ enrich outgoing events with server-captured attribution.
 | `external_id` | TEXT | UUID, matches `_krob_eid` cookie — used as Meta Advanced Matching `external_id` |
 | `fbclid` | TEXT | Raw value from URL, undecoded |
 | `gclid` | TEXT | Google Ads click id |
+| `wbraid` / `gbraid` | TEXT | Google's iOS (privacy-limited) click ids, used when there is no `gclid` (added in migration 0031) |
 | `msclkid` | TEXT | Microsoft Ads click id |
 | `oppref` | TEXT | ChatGPT Ads click id (added in migration 0026) — OpenAI's `gclid`/`fbclid` equivalent, appended to the destination URL on ad clicks |
 | `fbc` | TEXT | Meta spec: `fb.{subdomainIndex}.{ts}.{fbclid}` |
@@ -40,7 +41,7 @@ enrich outgoing events with server-captured attribution.
 
 **Index**: `idx_sessions_created` on `created_at`.
 
-**UPSERT behavior**: `fbclid` / `gclid` / `msclkid` / `fbc` / `utm_*` use
+**UPSERT behavior**: `fbclid` / `gclid` / `wbraid` / `gbraid` / `msclkid` / `fbc` / `utm_*` use
 CASE-WHEN-empty — a return visit without the parameter keeps the original
 value; a return visit WITH a different parameter overwrites.
 
@@ -211,6 +212,30 @@ by the dashboard's "last synced at" indicator.
 | `run_at` | INTEGER NOT NULL | Unix seconds |
 
 **Index**: `idx_sync_log_platform_run_at` on `(platform, run_at DESC)`.
+
+## `google_ads_log`
+
+One row per server-side Google Ads conversion upload attempted from
+`functions/tracker.js` (migration 0031). Kept apart from `event_log` on purpose,
+so a logging problem can never affect lead logging. Read via
+`GET /api/google-ads-log?key=<DASH_KEY>`.
+
+| Column | Type | Purpose |
+|---|---|---|
+| `id` | INTEGER PK | Auto |
+| `session_id` | TEXT | Joins to `sessions` |
+| `event_name` | TEXT | `Lead` or `LeadQualificado` |
+| `event_id` | TEXT | Also sent to Google as `order_id` (`<lead event_id>-q` for the qualified conversion) |
+| `conversion_action_id` | TEXT | Action the upload targeted |
+| `click_id_type` | TEXT | `gclid` / `wbraid` / `gbraid`, empty when none |
+| `status_code` | INTEGER | HTTP status from Google, 0 when not sent |
+| `response_ok` | INTEGER | 1 only if HTTP ok AND no `partialFailureError` (uploads use `partialFailure`, so Google answers 200 even for rejected conversions) |
+| `skipped_reason` | TEXT | Why nothing was sent: `no click id`, `missing google ads env`, `no conversion action configured`, `oauth token unavailable` |
+| `response_body` | TEXT | Google's answer, truncated to 4000 chars |
+| `payload_sent` | TEXT | JSON sent (hashed identifiers + click id) |
+| `created_at` | INTEGER NOT NULL | Unix seconds |
+
+**Index**: `idx_google_ads_log_created` on `created_at DESC`.
 
 ## `lead_score`
 

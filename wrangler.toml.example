@@ -44,6 +44,15 @@ database_id = "__REPLACE_ME_DB_ID__"
 #   GOOGLE_ADS_DEVELOPER_TOKEN
 #   GOOGLE_ADS_CUSTOMER_ID
 #   GOOGLE_ADS_LOGIN_CUSTOMER_ID
+#   GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID   Numeric id (ctId in the action's URL) of a
+#                                          conversion action of type Import / upload
+#                                          clicks. Receives every Lead server-side.
+#   GOOGLE_ADS_LEAD_VALUE                  Optional value (BRL) sent with each Lead (default 0)
+#   GOOGLE_ADS_QUALIFIED_CONVERSION_ACTION_ID  Optional second Import action. When set,
+#                                          a LeadUpdate with a CNPJ and enough vehicles
+#                                          uploads a qualified-lead conversion.
+#   GOOGLE_ADS_QUALIFIED_MIN_VEHICLES      Minimum vehicles to qualify (default 1)
+#   GOOGLE_ADS_QUALIFIED_VALUE             Optional value (BRL) of a qualified lead (default 0)
 #   ENCHARGE_API_KEY
 #   MANYCHAT_KEY
 #  

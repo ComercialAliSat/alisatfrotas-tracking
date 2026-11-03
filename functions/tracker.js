@@ -119,6 +119,13 @@ export async function onRequestPost(context) {
     const hashedPh = await sha256(normalizePhone(userData.ph, env.DEFAULT_COUNTRY_CODE));
     const hashedExternalId = await sha256(externalId);
 
+    // Google Ads has its own normalization rules: gmail dots are removed, and
+    // phones are hashed in E.164 WITH the leading '+' (Meta's hash above has
+    // no '+', so it cannot be reused).
+    const hashedEmGoogle = await sha256(normalizeEmailForGoogle(userData.em));
+    const phoneDigits = normalizePhone(userData.ph, env.DEFAULT_COUNTRY_CODE);
+    const hashedPhGoogle = phoneDigits ? await sha256('+' + phoneDigits) : '';
+
     // --- Bot detection ---
     const { isBot, botReason } = detectBot(userAgent);
 
@@ -155,19 +162,29 @@ export async function onRequestPost(context) {
     // GA4 fires are suppressed. Without this gate, every link-unfurl
     // crawl (WhatsApp preview, Slackbot, facebookexternalhit, etc.)
     // would burn a Meta CAPI event and pollute the Pixel.
+    // Google Ads only receives the first-step Lead. LeadUpdate (step 2) and any
+    // other event name must not upload another conversion for the same click.
+    const isLeadEvent = (body.event_name || '').toLowerCase() === 'lead';
+    const nowSeconds = Math.floor(Date.now() / 1000);
     const results = isBot ? [] : await Promise.allSettled([
       sendToMeta({ body, clientIp, userAgent, fbp, fbc, hashedEm, hashedFn, hashedLn, hashedPh, hashedExternalId, sessionData, env }),
       sendToGA4({ body, gaClientId, gaSessionId, hashedEm, env }),
       sendToLinkedIn({ email: userData.em, li_fat_id: liFatId, event_type: body.event_name, value: body.value, currency: body.currency, eventId: body.event_id, eventTime: body.event_time, env }),
-      sendToGoogleAds({
-        sessionData,
-        conversionActionId: env.GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID || '',
-        hashedEm,
-        value: body.value || 0,
-        currency: body.currency || 'BRL',
-        eventTime: body.event_time,
-        env,
-      }),
+      isLeadEvent
+        ? sendToGoogleAds({
+            sessionData,
+            body,
+            conversionActionId: env.GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID || '',
+            hashedEm: hashedEmGoogle,
+            hashedPh: hashedPhGoogle,
+            value: body.value || env.GOOGLE_ADS_LEAD_VALUE || 0,
+            currency: body.currency || 'BRL',
+            // Client clocks can run ahead; Google rejects conversions in the future.
+            eventTime: Math.min(Number(body.event_time) || nowSeconds, nowSeconds),
+            orderId: body.event_id || '',
+            env,
+          })
+        : Promise.resolve({ skipped: 'not a lead event', payload: null, response: null }),
       sendToBrevo({
         eventName: body.event_name,
         email: userData.em || '',
@@ -217,12 +234,18 @@ export async function onRequestPost(context) {
       if (liStatus >= 400) console.error('LinkedIn CAPI non-2xx:', liStatus);
     }
 
-    // --- Parse Google Ads result (fire-and-forget — not persisted to event_log) ---
-    if (results[3]?.status === 'rejected') {
-      console.error('Google Ads lead CAPI error:', results[3].reason?.message || 'unknown');
-    } else if (results[3]?.status === 'fulfilled' && results[3].value?.response && !results[3].value?.skipped) {
-      const gadsStatus = results[3].value.response.status;
-      if (gadsStatus >= 400) console.error('Google Ads lead CAPI non-2xx:', gadsStatus);
+    // --- Parse Google Ads result → google_ads_log (own table, never touches event_log) ---
+    // partialFailure makes Google answer HTTP 200 even when it rejects the
+    // conversion, so success = HTTP ok AND no partialFailureError.
+    if (isLeadEvent && results[3]) {
+      const gads = await summarizeGoogleAds(results[3]);
+      if (!gads.ok && !gads.skipped) {
+        console.error('Google Ads lead upload failed:', gads.statusCode, gads.body.slice(0, 500));
+      }
+      context.waitUntil(logGoogleAds(env, {
+        sessionId, eventName: 'Lead', eventId: body.event_id || '',
+        conversionActionId: env.GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID || '', ...gads,
+      }));
     }
 
     // --- Parse Brevo result (fire-and-forget — not persisted to event_log) ---
@@ -274,6 +297,42 @@ export async function onRequestPost(context) {
           }
         })());
       }
+
+      // Qualified-lead conversion (opt-in): fires only when
+      // GOOGLE_ADS_QUALIFIED_CONVERSION_ACTION_ID is set. A lead counts as
+      // qualified when step 2 arrives with a CNPJ and at least
+      // GOOGLE_ADS_QUALIFIED_MIN_VEHICLES vehicles (default 1 = any completed
+      // step 2). The first number found in quantidade_veiculos is used, so
+      // "10-20" counts as 10 and "Mais de 50" as 50.
+      const qualifiedActionId = env.GOOGLE_ADS_QUALIFIED_CONVERSION_ACTION_ID || '';
+      if (qualifiedActionId && !isBot && updateForId) {
+        const vehiclesMatch = String(body.quantidade_veiculos ?? '').match(/\d+/);
+        const vehicles = vehiclesMatch ? parseInt(vehiclesMatch[0], 10) : 0;
+        const minVehicles = parseInt(env.GOOGLE_ADS_QUALIFIED_MIN_VEHICLES || '1', 10) || 1;
+        const hasCnpj = String(body.cnpj || '').replace(/\D/g, '').length >= 14;
+        if (hasCnpj && vehicles >= minVehicles) {
+          context.waitUntil((async () => {
+            const settled = (await Promise.allSettled([sendToGoogleAds({
+              sessionData,
+              body,
+              conversionActionId: qualifiedActionId,
+              hashedEm: hashedEmGoogle,
+              hashedPh: hashedPhGoogle,
+              value: env.GOOGLE_ADS_QUALIFIED_VALUE || 0,
+              currency: body.currency || 'BRL',
+              eventTime: Math.floor(Date.now() / 1000),
+              orderId: `${updateForId}-q`,
+              env,
+            })]))[0];
+            const gads = await summarizeGoogleAds(settled);
+            await logGoogleAds(env, {
+              sessionId, eventName: 'LeadQualificado', eventId: `${updateForId}-q`,
+              conversionActionId: qualifiedActionId, ...gads,
+            });
+          })());
+        }
+      }
+
       return new Response(JSON.stringify({ ok: true }), {
         status: 200,
         headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
@@ -527,10 +586,63 @@ async function sendToGA4({ body, gaClientId, gaSessionId, hashedEm, env }) {
 // -------------------------------------------------------
 // GOOGLE ADS — Lead conversion
 // Mirrors _core.js's logic, kept local to avoid
-// cross-module state coupling. Uses GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID
-// as the conversion action (no productConfig at lead time).
+// cross-module state coupling. The caller passes the conversion action
+// (GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID for Lead, optionally
+// GOOGLE_ADS_QUALIFIED_CONVERSION_ACTION_ID for a qualified lead) — there is
+// no productConfig at lead time. The action must be of type "Import" (upload
+// clicks) in Google Ads.
 // -------------------------------------------------------
-async function sendToGoogleAds({ sessionData, conversionActionId, hashedEm, value, currency, eventTime, env }) {
+function normalizeEmailForGoogle(email) {
+  const e = String(email || '').trim().toLowerCase();
+  const at = e.lastIndexOf('@');
+  if (at < 1) return e;
+  const local = e.slice(0, at);
+  const domain = e.slice(at + 1);
+  // Google's rule: remove dots from the local part of gmail/googlemail addresses.
+  return (domain === 'gmail.com' || domain === 'googlemail.com')
+    ? `${local.replace(/\./g, '')}@${domain}`
+    : e;
+}
+
+// Turns the settled result of sendToGoogleAds into one flat record.
+// HTTP 200 is not enough: with partialFailure Google reports rejected
+// conversions in `partialFailureError`, so that counts as a failure.
+async function summarizeGoogleAds(settled) {
+  const empty = { statusCode: 0, ok: 0, skipped: '', body: '', payload: null, clickIdType: '' };
+  if (!settled) return { ...empty, skipped: 'not sent' };
+  if (settled.status === 'rejected') {
+    return { ...empty, body: `Fetch error: ${settled.reason?.message || 'unknown'}` };
+  }
+  const v = settled.value || {};
+  if (v.skipped) return { ...empty, skipped: v.skipped, clickIdType: v.clickIdType || '' };
+  let text = '';
+  try { text = await v.response.text(); } catch (e) { text = `Read error: ${e.message}`; }
+  let ok = v.response.ok ? 1 : 0;
+  try {
+    if (JSON.parse(text)?.partialFailureError) ok = 0;
+  } catch (e) { /* non-JSON body: keep HTTP status */ }
+  return { statusCode: v.response.status, ok, skipped: '', body: text, payload: v.payload ?? null, clickIdType: v.clickIdType || '' };
+}
+
+async function logGoogleAds(env, row) {
+  if (!env.DB) return;
+  try {
+    await env.DB.prepare(`
+      INSERT INTO google_ads_log (
+        session_id, event_name, event_id, conversion_action_id, click_id_type,
+        status_code, response_ok, skipped_reason, response_body, payload_sent, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      row.sessionId || '', row.eventName || '', row.eventId || '', String(row.conversionActionId || ''), row.clickIdType || '',
+      row.statusCode || 0, row.ok ? 1 : 0, row.skipped || '', String(row.body || '').slice(0, 4000), row.payload ?? null,
+      Math.floor(Date.now() / 1000)
+    ).run();
+  } catch (e) {
+    console.error('google_ads_log insert error (is migration 0031 applied?):', e.message);
+  }
+}
+
+async function sendToGoogleAds({ sessionData, body, conversionActionId, hashedEm, hashedPh, value, currency, eventTime, orderId, env }) {
   if (!env.GOOGLE_ADS_CUSTOMER_ID || !env.GOOGLE_ADS_LOGIN_CUSTOMER_ID ||
       !env.GOOGLE_ADS_DEVELOPER_TOKEN || !env.GOOGLE_ADS_CLIENT_ID ||
       !env.GOOGLE_ADS_CLIENT_SECRET || !env.GOOGLE_ADS_REFRESH_TOKEN) {
@@ -541,16 +653,19 @@ async function sendToGoogleAds({ sessionData, conversionActionId, hashedEm, valu
     return { skipped: 'no conversion action configured', payload: null, response: null };
   }
 
-  const gclid = sessionData.gclid || '';
+  // Session row first (captured at the edge, survives Safari ITP); the LP's
+  // own gclid in the request body is only a fallback.
+  const gclid = sessionData.gclid || body?.gclid || '';
   const wbraid = sessionData.wbraid || '';
   const gbraid = sessionData.gbraid || '';
-  if (!gclid && !wbraid && !gbraid) {
-    return { skipped: 'no click id', payload: null, response: null };
+  const clickIdType = gclid ? 'gclid' : (wbraid ? 'wbraid' : (gbraid ? 'gbraid' : ''));
+  if (!clickIdType) {
+    return { skipped: 'no click id', clickIdType, payload: null, response: null };
   }
 
   const accessToken = await getGoogleAdsAccessToken(env);
   if (!accessToken) {
-    return { skipped: 'oauth token unavailable', payload: null, response: null };
+    return { skipped: 'oauth token unavailable', clickIdType, payload: null, response: null };
   }
 
   const customerId = String(env.GOOGLE_ADS_CUSTOMER_ID).replace(/-/g, '');
@@ -566,9 +681,14 @@ async function sendToGoogleAds({ sessionData, conversionActionId, hashedEm, valu
   else if (wbraid) conversion.wbraid = wbraid;
   else if (gbraid) conversion.gbraid = gbraid;
 
-  if (hashedEm) {
-    conversion.userIdentifiers = [{ hashedEmail: hashedEm }];
-  }
+  // order_id makes retries idempotent: Google ignores a repeated order_id
+  // for the same conversion action.
+  if (orderId) conversion.orderId = String(orderId);
+
+  const userIdentifiers = [];
+  if (hashedEm) userIdentifiers.push({ hashedEmail: hashedEm });
+  if (hashedPh) userIdentifiers.push({ hashedPhoneNumber: hashedPh });
+  if (userIdentifiers.length) conversion.userIdentifiers = userIdentifiers;
 
   const gadsBody = {
     conversions: [conversion],
@@ -590,7 +710,7 @@ async function sendToGoogleAds({ sessionData, conversionActionId, hashedEm, valu
       body: payloadJson,
     }
   );
-  return { payload: payloadJson, response };
+  return { payload: payloadJson, response, clickIdType };
 }
 
 async function getGoogleAdsAccessToken(env) {

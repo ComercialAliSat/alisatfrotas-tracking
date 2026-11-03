@@ -25,6 +25,9 @@ export async function onRequest(context) {
   // raw fbclid as it appears in the URL.
   const fbclid = getRawParam(url.search, 'fbclid');
   const gclid = getRawParam(url.search, 'gclid');
+  // wbraid / gbraid: Google's iOS (privacy-limited) click ids, used when no gclid.
+  const wbraid = getRawParam(url.search, 'wbraid');
+  const gbraid = getRawParam(url.search, 'gbraid');
   const msclkid = getRawParam(url.search, 'msclkid');
   const oppref = getRawParam(url.search, 'oppref');
 
@@ -246,7 +249,34 @@ export async function onRequest(context) {
     (async () => {
       try {
         if (env.DB) {
-          await env.DB.prepare(`
+          // The statement below stores wbraid/gbraid (migration 0031). If that
+          // migration has not been applied yet, fall back to the legacy
+          // statement so session/attribution capture never breaks.
+          const withClickIds = `
+            INSERT INTO sessions (session_id, external_id, fbclid, gclid, wbraid, gbraid, msclkid, oppref, fbc, fbp, ip_address, user_agent, referrer, landing_url, utm_source, utm_medium, utm_campaign, utm_content, utm_term, li_fat_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(session_id) DO UPDATE SET
+              fbclid = CASE WHEN excluded.fbclid != '' THEN excluded.fbclid ELSE sessions.fbclid END,
+              gclid = CASE WHEN excluded.gclid != '' THEN excluded.gclid ELSE sessions.gclid END,
+              wbraid = CASE WHEN excluded.wbraid != '' THEN excluded.wbraid ELSE sessions.wbraid END,
+              gbraid = CASE WHEN excluded.gbraid != '' THEN excluded.gbraid ELSE sessions.gbraid END,
+              msclkid = CASE WHEN excluded.msclkid != '' THEN excluded.msclkid ELSE sessions.msclkid END,
+              oppref = CASE WHEN excluded.oppref != '' THEN excluded.oppref ELSE sessions.oppref END,
+              fbc = CASE WHEN excluded.fbc != '' THEN excluded.fbc ELSE sessions.fbc END,
+              utm_source = CASE WHEN excluded.utm_source != '' THEN excluded.utm_source ELSE sessions.utm_source END,
+              utm_medium = CASE WHEN excluded.utm_medium != '' THEN excluded.utm_medium ELSE sessions.utm_medium END,
+              utm_campaign = CASE WHEN excluded.utm_campaign != '' THEN excluded.utm_campaign ELSE sessions.utm_campaign END,
+              utm_content = CASE WHEN excluded.utm_content != '' THEN excluded.utm_content ELSE sessions.utm_content END,
+              utm_term = CASE WHEN excluded.utm_term != '' THEN excluded.utm_term ELSE sessions.utm_term END,
+              li_fat_id = CASE WHEN excluded.li_fat_id IS NOT NULL AND excluded.li_fat_id != '' THEN excluded.li_fat_id ELSE sessions.li_fat_id END,
+              updated_at = excluded.updated_at
+          `;
+          try {
+            await env.DB.prepare(withClickIds).bind(sessionId, externalId, fbclid, gclid, wbraid, gbraid, msclkid, oppref, fbc, fbp, clientIp, userAgent, referrer, url.toString(), utmSource, utmMedium, utmCampaign, utmContent, utmTerm, liFatId || null, now, now).run();
+          } catch (e) {
+            if (!/wbraid|gbraid/i.test(e.message || '')) throw e;
+            console.error('sessions.wbraid/gbraid missing — apply migration 0031. Using legacy upsert.');
+            await env.DB.prepare(`
             INSERT INTO sessions (session_id, external_id, fbclid, gclid, msclkid, oppref, fbc, fbp, ip_address, user_agent, referrer, landing_url, utm_source, utm_medium, utm_campaign, utm_content, utm_term, li_fat_id, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(session_id) DO UPDATE SET
@@ -263,6 +293,7 @@ export async function onRequest(context) {
               li_fat_id = CASE WHEN excluded.li_fat_id IS NOT NULL AND excluded.li_fat_id != '' THEN excluded.li_fat_id ELSE sessions.li_fat_id END,
               updated_at = excluded.updated_at
           `).bind(sessionId, externalId, fbclid, gclid, msclkid, oppref, fbc, fbp, clientIp, userAgent, referrer, url.toString(), utmSource, utmMedium, utmCampaign, utmContent, utmTerm, liFatId || null, now, now).run();
+          }
         }
       } catch (e) {
         console.error('Middleware D1 error:', e.message);

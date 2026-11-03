@@ -124,7 +124,7 @@ for the full design.
 
 | Path | Purpose |
 |---|---|
-| `_middleware.js` | Runs on every page request. Generates `_krob_sid`, captures `fbclid`/`gclid`/`oppref`/UTMs, computes `SUB_DOMAIN_INDEX` from the Host header, sets 400-day cookies, upserts `sessions`. Also injects consent-gated pixel snippets (Meta, GA4, LinkedIn, ChatGPT Ads `oaiq`) into `<head>` when `alisat_lgpd=all`. Skips `/tracker`, `/webhook/*`, `/api/*`, `/plataforma`. |
+| `_middleware.js` | Runs on every page request. Generates `_krob_sid`, captures `fbclid`/`gclid`/`wbraid`/`gbraid`/`oppref`/UTMs, computes `SUB_DOMAIN_INDEX` from the Host header, sets 400-day cookies, upserts `sessions`. Also injects consent-gated pixel snippets (Meta, GA4, LinkedIn, ChatGPT Ads `oaiq`) into `<head>` when `alisat_lgpd=all`. Skips `/tracker`, `/webhook/*`, `/api/*`, `/plataforma`. |
 | `tracker.js` | `POST /tracker` — client events. Hashes PII, fires Meta CAPI + GA4 MP + LinkedIn CAPI + Google Ads (lead conversion) + ChatGPT Ads Conversions API (Lead only, `lead_created`), logs to `event_log` (PageView skipped). |
 | `checkout-session.js` | `POST /checkout-session` — persists `trk` + attribution when a sales-page loads or a checkout button fires. |
 | `scripts/[[path]].js` | First-party proxy for `gtag.js`. Example pages load GA4 via `/scripts/gtag.js?id=...`. |
@@ -140,6 +140,7 @@ for the full design.
 | `api/leads.js` | Dashboard: Lead events joined to `sessions` for originating UTMs. |
 | `api/events.js` | Dashboard: tracking-health stats (ITP recovery, adblock, bot filter, fbp source). |
 | `api/purchases.js` | Dashboard: purchases table with platform delivery status. |
+| `api/google-ads-log.js` | `GET /api/google-ads-log?key=` — last Google Ads server-side uploads from `google_ads_log` (accepted / rejected / skipped + Google's reason). |
 | `api/sync/meta-ads.js` | `POST /api/sync/meta-ads` — cron-triggered Meta Marketing API pull into `ad_spend`. Gated by `SYNC_SECRET` header. |
 | `api/sync/chatgpt-ads.js` | `POST /api/sync/chatgpt-ads` — cron-triggered OpenAI Ads Insights API pull into `ad_spend` (`platform='chatgpt'`). Gated by the same `SYNC_SECRET` header. |
 | `api/sync/google-ads.js` | `POST /api/sync/google-ads` — cron-triggered Google Ads reporting query (`googleAds:searchStream`) into `ad_spend` (`platform='google'`). Reuses the same OAuth credentials already used by `sendToGoogleAds` in `tracker.js` — no new env vars. Gated by the same `SYNC_SECRET` header. |
@@ -148,7 +149,7 @@ for the full design.
 
 | Path | Purpose |
 |---|---|
-| `migrations/` | D1 schema, numbered 0001-0028 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users` (with `role`: `admin`/`member`, added 0027), `page_views`, `lead_score`, `integrations`/`integration_log` (0028). |
+| `migrations/` | D1 schema, numbered 0001-0031 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users` (with `role`: `admin`/`member`, added 0027), `page_views`, `lead_score`, `integrations`/`integration_log` (0028), `google_ads_log` + `sessions.wbraid`/`gbraid` (0031). |
 | `config/products.js` | Per-product integration config: Encharge tag, ManyChat tag ID, Google Ads conversion action. Keyed by `platform → productId`. Tracked in git; no secrets. |
 | `plataforma/index.html` | Operator dashboard — tabbed SPA, no build step. Auth via `/api/auth/login` (returns `DASH_KEY` as `key`). Tabs: Páginas, Leads (score/stage, journey, payload inspector in the detail panel), Rastreamento (attribution, purchases, tracking health), Integrações, Configurações. Replaced the old single-scroll `/dash` page. |
 | `examples/lead-form-page/index.html` | Lead form starter (email-only by default; add phone/name per `docs/page-types/lead-form-page.md`). Demonstrates the full pixel+CAPI dedup pattern. |
@@ -193,3 +194,4 @@ These have sensible defaults. Change them only if you know why.
 | Dashboard auth | Query param `?key=<DASH_KEY>` | Rotate by changing the env var; no code change |
 | Ad-spend sync | Off until recipient configures Meta/ChatGPT/Google Ads cron (see `docs/ad-spend-sync.md`) | Set `META_ADS_ACCESS_TOKEN`, `META_ADS_ACCOUNT_ID`, `SYNC_SECRET` and schedule an external cron to hit `/api/sync/meta-ads` hourly; set `CHATGPT_ADS_API_KEY` (reuses `SYNC_SECRET`) and hit `/api/sync/chatgpt-ads` hourly; `/api/sync/google-ads` reuses the existing `GOOGLE_ADS_*` conversion-upload credentials — just needs a valid (non-revoked) `GOOGLE_ADS_REFRESH_TOKEN` |
 | ChatGPT Ads pixel + conversions | Off until `CHATGPT_ADS_PIXEL_ID` is set | Set `CHATGPT_ADS_PIXEL_ID` (public, non-secret — the `pixelId` embedded in the injected `oaiq` snippet) to enable the browser pixel on every page (LGPD-gated, same as Meta/GA4/LinkedIn). Set `CHATGPT_ADS_API_CONVERSION_KEY` — a **separate key from `CHATGPT_ADS_API_KEY`**, scoped with `ads.third_party_events.write`, generated in Ads Manager's Conversions section — to enable the server-side fan-out in `tracker.js` for Lead events. Both must be set for full pixel+CAPI dedup, matching the Meta pattern. |
+| Google Ads server-side conversions | Lead uploads once `GOOGLE_ADS_*` and `GOOGLE_ADS_LEAD_CONVERSION_ACTION_ID` are set; only the `Lead` event uploads (not `LeadUpdate`) | The action must be type **Import** (upload clicks) in Google Ads. Every attempt, including rejections hidden behind HTTP 200, is in `google_ads_log` (`/api/google-ads-log`). Optional qualified-lead conversion: set `GOOGLE_ADS_QUALIFIED_CONVERSION_ACTION_ID` (+ `GOOGLE_ADS_QUALIFIED_MIN_VEHICLES`, `GOOGLE_ADS_LEAD_VALUE`, `GOOGLE_ADS_QUALIFIED_VALUE`). Apply migration 0031 BEFORE deploying code that writes it. |
