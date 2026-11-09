@@ -58,17 +58,4 @@ database_id = "__REPLACE_ME_DB_ID__"
 #   LINKEDIN_CONVERSION_ID_PURCHASE    Conversion rule ID for Purchase events.
 #   LINKEDIN_CONVERSION_ID             Fallback rule ID if no event-specific var is set.
 #
-# Brevo (email marketing):
-#   BREVO_API_KEY                      API v3 key (Settings → SMTP & API → API Keys).
-#                                       Every Lead event creates/updates the Brevo
-#                                       contact and stamps sessions.external_id as
-#                                       the EXTERNAL_ID custom attribute — create
-#                                       that attribute (Text type) in Brevo's
-#                                       Contact Attributes settings first.
-#   BREVO_WEBHOOK_SLUG                 UUID slug gating /webhook/brevo/<slug>.
-#                                       Configure this URL in Brevo → Automation/
-#                                       Campaigns → Settings → Webhooks, subscribed
-#                                       to at least: opened, click, unsubscribed,
-#                                       hardBounce, softBounce. Turns email
-#                                       engagement into lead_score points.
 # ---------------------------------------------------------------------------

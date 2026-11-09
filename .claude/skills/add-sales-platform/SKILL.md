@@ -88,8 +88,8 @@ pre-wired) — this one you write is the first, built directly from the
 contract rather than copied from an example.
 
 For the slug-guard wiring pattern specifically (gate on `params.slug`,
-return 404/500, delegate), `functions/webhook/brevo/[slug].js` is a working
-example of that shape, even though it isn't a purchase adapter.
+return 404/500, delegate), see the `guardSlug` helper in
+`functions/webhook/_utils.js`.
 
 ## Step 4 — Create the platform doc
 

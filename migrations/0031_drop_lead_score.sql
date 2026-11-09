@@ -1,0 +1,11 @@
+-- Drops the lead_score table. functions/webhook/brevo/[slug].js (the only
+-- writer of this table) and functions/outputs/brevo.js (the EXTERNAL_ID
+-- stamping it depended on) have been removed as part of dropping Brevo
+-- entirely. No other integration ever wrote to this table.
+--
+-- NOT applied automatically. This permanently deletes any rows currently in
+-- lead_score (score/funnel_stage/last_event_type per external_id) with no
+-- way to recover them afterward. Run this yourself with
+-- `wrangler d1 migrations apply <db> --remote` only once you're sure you
+-- don't need that history.
+DROP TABLE IF EXISTS lead_score;

@@ -1,5 +1,4 @@
 import { sendToLinkedIn } from './outputs/linkedin.js';
-import { sendToBrevo } from './outputs/brevo.js';
 import { dispatchIntegrations } from './lib/integrations-dispatch.js';
 
 let googleAdsTokenCache = { token: null, expiresAt: 0 };
@@ -168,12 +167,6 @@ export async function onRequestPost(context) {
         eventTime: body.event_time,
         env,
       }),
-      sendToBrevo({
-        eventName: body.event_name,
-        email: userData.em || '',
-        externalId,
-        env,
-      }),
       sendToChatGptAds({ body, clientIp, userAgent, hashedEm, hashedFn, hashedLn, hashedPh, hashedExternalId, sessionData, env }),
     ]);
 
@@ -225,24 +218,13 @@ export async function onRequestPost(context) {
       if (gadsStatus >= 400) console.error('Google Ads lead CAPI non-2xx:', gadsStatus);
     }
 
-    // --- Parse Brevo result (fire-and-forget — not persisted to event_log) ---
-    if (results[4]?.status === 'rejected') {
-      console.error('Brevo contact sync error:', results[4].reason?.message || 'unknown');
-    } else if (results[4]?.status === 'fulfilled' && results[4].value?.response && !results[4].value?.skipped) {
-      const brevoStatus = results[4].value.response.status;
-      if (brevoStatus >= 400) {
-        const brevoBody = await results[4].value.response.text().catch(() => '');
-        console.error('Brevo contact sync non-2xx:', brevoStatus, brevoBody);
-      }
-    }
-
     // --- Parse ChatGPT Ads Conversions API result (fire-and-forget — not persisted to event_log) ---
-    if (results[5]?.status === 'rejected') {
-      console.error('ChatGPT Ads CAPI error:', results[5].reason?.message || 'unknown');
-    } else if (results[5]?.status === 'fulfilled' && results[5].value?.response && !results[5].value?.skipped) {
-      const chatgptStatus = results[5].value.response.status;
+    if (results[4]?.status === 'rejected') {
+      console.error('ChatGPT Ads CAPI error:', results[4].reason?.message || 'unknown');
+    } else if (results[4]?.status === 'fulfilled' && results[4].value?.response && !results[4].value?.skipped) {
+      const chatgptStatus = results[4].value.response.status;
       if (chatgptStatus >= 400) {
-        const chatgptBody = await results[5].value.response.text().catch(() => '');
+        const chatgptBody = await results[4].value.response.text().catch(() => '');
         console.error('ChatGPT Ads CAPI non-2xx:', chatgptStatus, chatgptBody);
       }
     }

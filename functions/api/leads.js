@@ -56,14 +56,9 @@ export async function onRequestGet(context) {
         s.oppref,
         s.referrer,
         s.landing_url,
-        s.external_id,
-        ls.score,
-        ls.funnel_stage,
-        ls.last_event_type,
-        ls.last_event_at
+        s.external_id
       FROM event_log e
       LEFT JOIN sessions s ON e.session_id = s.session_id
-      LEFT JOIN lead_score ls ON ls.external_id = s.external_id
       WHERE e.event_name = 'Lead'
         AND e.timestamp >= ? AND e.timestamp <= ?
         ${botClause}

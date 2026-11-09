@@ -130,7 +130,6 @@ for the full design.
 | `scripts/[[path]].js` | First-party proxy for `gtag.js`. Example pages load GA4 via `/scripts/gtag.js?id=...`. |
 | `webhook/_core.js` | Platform-agnostic brain: lookup `trk` → enrich → fan out to Meta/GA4/Google Ads/LinkedIn/Encharge/ManyChat → persist `purchase_log` + `purchase_items`. |
 | `webhook/_utils.js` | `timingSafeEqual` + `guardSlug` helpers shared by adapters. |
-| `webhook/brevo/[slug].js` | Brevo adapter. Gates on `BREVO_WEBHOOK_SLUG`. Turns opened/click/unsubscribed/hard_bounce/soft_bounce events into `lead_score` points, keyed by `external_id` (falls back to email → `event_log` → `sessions` lookup). |
 | `lib/integrations-dispatch.js` | Generic outbound webhook dispatcher for operator-configured integrations — see "Integrations" above. |
 | `api/integrations/*.js` | CRUD for the `integrations` table + delivery log, gated by `DASH_KEY`. Backs the "Integrações" tab of `/plataforma`. |
 | `api/revenue.js` | Dashboard: gross revenue, sales, AOV, daily time series from `purchase_log`. |
@@ -148,9 +147,9 @@ for the full design.
 
 | Path | Purpose |
 |---|---|
-| `migrations/` | D1 schema, numbered 0001-0028 (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users` (with `role`: `admin`/`member`, added 0027), `page_views`, `lead_score`, `integrations`/`integration_log` (0028). |
+| `migrations/` | D1 schema, numbered sequentially (0005 intentionally skipped). Applied via `wrangler d1 migrations apply`. Includes `sessions`, `checkout_sessions`, `event_log`, `purchase_log`, `purchase_items`, `ad_spend`, `sync_log`, `marketing_funnels`, `platform_users` (with `role`: `admin`/`member`, added 0027), `page_views`, `integrations`/`integration_log` (0028). |
 | `config/products.js` | Per-product integration config: Encharge tag, ManyChat tag ID, Google Ads conversion action. Keyed by `platform → productId`. Tracked in git; no secrets. |
-| `plataforma/index.html` | Operator dashboard — tabbed SPA, no build step. Auth via `/api/auth/login` (returns `DASH_KEY` as `key`). Tabs: Páginas, Leads (score/stage, journey, payload inspector in the detail panel), Rastreamento (attribution, purchases, tracking health), Integrações, Configurações. Replaced the old single-scroll `/dash` page. |
+| `plataforma/index.html` | Operator dashboard — tabbed SPA, no build step. Auth via `/api/auth/login` (returns `DASH_KEY` as `key`). Tabs: Páginas, Leads (journey, payload inspector in the detail panel), Rastreamento (attribution, purchases, tracking health), Integrações, Configurações. Replaced the old single-scroll `/dash` page. |
 | `examples/lead-form-page/index.html` | Lead form starter (email-only by default; add phone/name per `docs/page-types/lead-form-page.md`). Demonstrates the full pixel+CAPI dedup pattern. |
 | `examples/sales-page/index.html` | Sales page starter. Demonstrates `trk` generation, `checkout-session` persistence, platform-switchable checkout URL rewriting. Ships with `assets/hero.webp` placeholder. |
 | `docs/` | Reference — architecture, data flow, schema, per-page-type recipes, per-platform notes, ad-spend sync setup. |

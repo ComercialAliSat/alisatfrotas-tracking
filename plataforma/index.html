@@ -479,6 +479,23 @@
         </div>
 
         <div class="kcard" style="padding:22px">
+          <div style="font-weight:700;margin-bottom:4px">Receita por UTM</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Clique em uma linha para detalhar o próximo nível — Fonte → Meio → Campanha → Conteúdo → Termo.</div>
+          <div id="trk-drill-breadcrumb" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px;font-size:13px"></div>
+          <div style="overflow-x:auto">
+            <table class="ltable">
+              <thead><tr>
+                <th id="trk-drill-dim-label">Fonte (utm_source)</th>
+                <th style="text-align:right">Vendas</th>
+                <th style="text-align:right">Receita</th>
+                <th style="text-align:right">Ticket médio</th>
+              </tr></thead>
+              <tbody id="trk-drill-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="kcard" style="padding:22px">
           <div style="font-weight:700;margin-bottom:4px">Compras recentes</div>
           <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Clique em uma linha para ver o payload enviado ao Meta, GA4 e Google Ads.</div>
           <div style="overflow-x:auto">
@@ -1142,15 +1159,6 @@ async function loadLeads() {
   loaded.leads = true;
 }
 
-function scoreBadge(score) {
-  if (score == null) return '';
-  const n = Number(score);
-  const color = n >= 60 ? 'var(--green)' : n >= 20 ? 'var(--amber)' : 'var(--red)';
-  return ` <span style="font-size:11px;font-weight:700;color:${color}" title="Pontuação do lead">●${n}</span>`;
-}
-
-const FUNNEL_STAGE_LABELS = { topo: 'Topo', meio: 'Meio', fundo: 'Fundo' };
-
 function renderLeadsTable(leads) {
   const count = leads.length;
   g('l-total').textContent = count ? '(' + count.toLocaleString('pt-BR') + ')' : '';
@@ -1179,7 +1187,7 @@ function renderLeadsTable(leads) {
         <span style="color:var(--muted);margin-left:4px">${time}</span>
       </td>
       <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500">
-        <span>${esc(email)}</span>${scoreBadge(r.score)}
+        <span>${esc(email)}</span>
         ${locLine ? `<div style="font-size:12px;color:var(--muted);font-weight:400;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(locLine)}</div>` : ''}
       </td>
       <td>
@@ -1271,9 +1279,6 @@ function openDetail(idx) {
     ${drow('Navegador / SO', esc(browser))}
     ${locStr ? drow('Localização', esc(locStr)) : ''}
     ${drow('Política de Privacidade', `<span style="color:${r.consent_status==='all'?'var(--green)':'var(--muted)'}">${esc(privacyLabel)}</span>`)}
-    ${r.score != null ? drow('Pontuação', `<strong style="color:${Number(r.score)>=60?'var(--green)':Number(r.score)>=20?'var(--amber)':'var(--red)'}">${esc(String(r.score))}</strong>`) : ''}
-    ${r.funnel_stage ? drow('Estágio do funil', esc(FUNNEL_STAGE_LABELS[r.funnel_stage] || r.funnel_stage)) : ''}
-    ${r.last_event_type ? drow('Último evento', esc(r.last_event_type) + (r.last_event_at ? ' · ' + fmtTs(r.last_event_at, true) : '')) : ''}
 
     <div class="dsec">Página de Origem</div>
     ${r.landing_url
@@ -1439,6 +1444,7 @@ g('trk-range').addEventListener('click', e => {
   if (g('trk-from')) { g('trk-from').value = daysAgoStr(n === 365 ? 730 : n); }
   if (g('trk-to'))   { g('trk-to').value   = t; }
   loadTrkChannels();
+  resetTrkDrill();
 });
 
 ['trk-from','trk-to'].forEach(id => {
@@ -1447,14 +1453,90 @@ g('trk-range').addEventListener('click', e => {
     if (g('trk-from').value && g('trk-to').value) {
       document.querySelectorAll('#trk-range .rbtn').forEach(x => x.classList.remove('active'));
       loadTrkChannels();
+      resetTrkDrill();
     }
   });
 });
 
 function loadRastreamentoNative() {
   loadTrkChannels();
+  loadTrkDrilldown();
   loadTrkPurchases();
   loadTrkHealth();
+}
+
+// ── Receita por UTM (drill-down) ───────────────────────────────────────────
+const TRK_DRILL_DIMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+const TRK_DRILL_DIM_LABELS = { utm_source: 'Fonte', utm_medium: 'Meio', utm_campaign: 'Campanha', utm_content: 'Conteúdo', utm_term: 'Termo' };
+let trkDrillPath = []; // [{field, value}, ...] in TRK_DRILL_DIMS order
+
+async function loadTrkDrilldown() {
+  const dimIdx = Math.min(trkDrillPath.length, TRK_DRILL_DIMS.length - 1);
+  const dimension = TRK_DRILL_DIMS[dimIdx];
+  const from = (g('trk-from') || {value:''}).value;
+  const to   = (g('trk-to')   || {value:''}).value;
+  let qs = from && to ? '&from=' + enc(from) + '&to=' + enc(to) : '';
+  qs += '&dimension=' + enc(dimension);
+  trkDrillPath.forEach(p => { qs += '&' + enc(p.field) + '=' + enc(p.value); });
+
+  const res = await fetch('/api/utm-breakdown?key=' + enc(KEY) + qs);
+  if (res.status === 401) { authFail(); return; }
+  const data = await res.json();
+
+  renderTrkDrillBreadcrumb();
+  txt('trk-drill-dim-label', TRK_DRILL_DIM_LABELS[dimension] + ' (' + dimension + ')');
+
+  const rows = data.rows || [];
+  const isLast = dimIdx >= TRK_DRILL_DIMS.length - 1;
+  if (!rows.length) {
+    g('trk-drill-tbody').innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)">Nenhuma venda neste recorte.</td></tr>';
+    return;
+  }
+  g('trk-drill-tbody').innerHTML = rows.map(r => `
+    <tr class="${isLast ? '' : 'trk-drill-row'}" ${isLast ? '' : 'style="cursor:pointer"'} data-value="${esc(r.value)}">
+      <td style="font-weight:600">${esc(r.value)}${isLast ? '' : ' <span style="color:var(--muted);font-size:11px">→</span>'}</td>
+      <td style="text-align:right">${fmtInt(r.sales)}</td>
+      <td style="text-align:right;color:var(--amber);font-weight:600">${money(r.revenue)}</td>
+      <td style="text-align:right">${money(r.aov)}</td>
+    </tr>`).join('');
+
+  if (!isLast) {
+    g('trk-drill-tbody').querySelectorAll('.trk-drill-row').forEach(tr => {
+      tr.addEventListener('click', () => drillTrkInto(tr.dataset.value));
+    });
+  }
+}
+
+function drillTrkInto(value) {
+  const dimIdx = trkDrillPath.length;
+  if (dimIdx >= TRK_DRILL_DIMS.length - 1) return;
+  trkDrillPath.push({ field: TRK_DRILL_DIMS[dimIdx], value });
+  loadTrkDrilldown();
+}
+
+function renderTrkDrillBreadcrumb() {
+  const parts = ['<a href="#" data-reset style="color:var(--navy);text-decoration:none;font-weight:600">Tudo</a>'];
+  trkDrillPath.forEach((p, i) => {
+    parts.push('<span style="color:var(--muted)">/</span>');
+    const isCurrent = i === trkDrillPath.length - 1;
+    parts.push(`<a href="#" data-truncate="${i}" style="color:${isCurrent ? 'var(--text)' : 'var(--navy)'};text-decoration:none${isCurrent ? ';font-weight:600' : ''}">${esc(p.value)}</a>`);
+  });
+  const el = g('trk-drill-breadcrumb');
+  el.innerHTML = parts.join(' ');
+  const resetLink = el.querySelector('[data-reset]');
+  if (resetLink) resetLink.addEventListener('click', e => { e.preventDefault(); resetTrkDrill(); });
+  el.querySelectorAll('[data-truncate]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      trkDrillPath = trkDrillPath.slice(0, parseInt(a.dataset.truncate, 10) + 1);
+      loadTrkDrilldown();
+    });
+  });
+}
+
+function resetTrkDrill() {
+  trkDrillPath = [];
+  if (loaded.rastreamento) loadTrkDrilldown();
 }
 
 function money(n, cur) {
