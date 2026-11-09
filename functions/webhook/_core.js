@@ -704,7 +704,7 @@ async function sendToGoogleAds({ checkoutData, productConfig, hashedEm, transact
 
   const payloadJson = JSON.stringify(body);
   const response = await fetch(
-    `https://googleads.googleapis.com/v21/customers/${customerId}:uploadClickConversions`,
+    `https://googleads.googleapis.com/v23/customers/${customerId}:uploadClickConversions`,
     {
       method: 'POST',
       headers: {

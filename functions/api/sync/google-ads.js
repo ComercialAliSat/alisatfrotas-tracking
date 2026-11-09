@@ -115,7 +115,7 @@ async function fetchCampaignReport(env, accessToken, dateFrom, dateTo) {
   `.trim();
 
   const resp = await fetch(
-    `https://googleads.googleapis.com/v21/customers/${customerId}/googleAds:searchStream`,
+    `https://googleads.googleapis.com/v23/customers/${customerId}/googleAds:searchStream`,
     {
       method: 'POST',
       headers: {

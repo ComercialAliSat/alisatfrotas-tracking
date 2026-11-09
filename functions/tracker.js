@@ -560,7 +560,7 @@ async function sendToGoogleAds({ sessionData, conversionActionId, hashedEm, valu
 
   const payloadJson = JSON.stringify(gadsBody);
   const response = await fetch(
-    `https://googleads.googleapis.com/v21/customers/${customerId}:uploadClickConversions`,
+    `https://googleads.googleapis.com/v23/customers/${customerId}:uploadClickConversions`,
     {
       method: 'POST',
       headers: {
