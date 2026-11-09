@@ -535,8 +535,8 @@ async function sendToGoogleAds({ sessionData, conversionActionId, hashedEm, valu
     return { skipped: 'oauth token unavailable', payload: null, response: null };
   }
 
-  const customerId = String(env.GOOGLE_ADS_CUSTOMER_ID).replace(/-/g, '');
-  const loginCustomerId = String(env.GOOGLE_ADS_LOGIN_CUSTOMER_ID).replace(/-/g, '');
+  const customerId = String(env.GOOGLE_ADS_CUSTOMER_ID).replace(/[^0-9]/g, '');
+  const loginCustomerId = String(env.GOOGLE_ADS_LOGIN_CUSTOMER_ID).replace(/[^0-9]/g, '');
 
   const conversion = {
     conversionAction: `customers/${customerId}/conversionActions/${conversionActionId}`,

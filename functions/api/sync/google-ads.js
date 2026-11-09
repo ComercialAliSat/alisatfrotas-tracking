@@ -103,8 +103,8 @@ async function getAccessToken(env) {
 }
 
 async function fetchCampaignReport(env, accessToken, dateFrom, dateTo) {
-  const customerId = String(env.GOOGLE_ADS_CUSTOMER_ID).replace(/-/g, '');
-  const loginCustomerId = String(env.GOOGLE_ADS_LOGIN_CUSTOMER_ID).replace(/-/g, '');
+  const customerId = String(env.GOOGLE_ADS_CUSTOMER_ID).replace(/[^0-9]/g, '');
+  const loginCustomerId = String(env.GOOGLE_ADS_LOGIN_CUSTOMER_ID).replace(/[^0-9]/g, '');
 
   const query = `
     SELECT campaign.id, campaign.name, metrics.cost_micros, metrics.impressions,
