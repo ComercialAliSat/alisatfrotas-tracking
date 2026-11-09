@@ -607,9 +607,9 @@ async function getGoogleAdsAccessToken(env) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       grant_type: 'refresh_token',
-      client_id: env.GOOGLE_ADS_CLIENT_ID,
-      client_secret: env.GOOGLE_ADS_CLIENT_SECRET,
-      refresh_token: env.GOOGLE_ADS_REFRESH_TOKEN,
+      client_id: String(env.GOOGLE_ADS_CLIENT_ID).trim(),
+      client_secret: String(env.GOOGLE_ADS_CLIENT_SECRET).trim(),
+      refresh_token: String(env.GOOGLE_ADS_REFRESH_TOKEN).trim(),
     }),
   });
 
@@ -709,7 +709,7 @@ async function sendToGoogleAds({ checkoutData, productConfig, hashedEm, transact
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
-        'developer-token': env.GOOGLE_ADS_DEVELOPER_TOKEN,
+        'developer-token': String(env.GOOGLE_ADS_DEVELOPER_TOKEN).trim(),
         'login-customer-id': loginCustomerId,
         'Content-Type': 'application/json',
       },
