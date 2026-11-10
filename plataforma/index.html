@@ -457,7 +457,13 @@
       </div>
       <div style="padding:28px 40px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;flex:1">
         <div class="kcard" style="padding:22px">
-          <div style="font-weight:700;margin-bottom:4px">Investimento por canal</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px">
+            <div style="font-weight:700">Investimento por canal</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span id="trk-sync-status" style="font-size:11.5px;color:var(--muted)"></span>
+              <button id="trk-sync-btn" type="button" class="btn btn-outline" style="padding:6px 12px;font-size:12px">↻ Recarregar investimento</button>
+            </div>
+          </div>
           <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Visitas, leads e vendas classificados pela origem da sessão, no período selecionado.</div>
           <div style="overflow-x:auto">
             <table class="ltable">
@@ -1584,6 +1590,39 @@ async function loadTrkChannels() {
     ? 'Último sync de investimento — ' + syncNotes.join(' · ')
     : 'Nenhum sync de investimento configurado ainda.';
 }
+
+// Puxa o investimento das plataformas de anúncio agora (últimos 7 dias) e
+// recarrega a tabela. Passa por /api/sync-now (DASH_KEY) — o SYNC_SECRET
+// nunca chega ao navegador.
+async function syncSpendNow() {
+  const btn = g('trk-sync-btn');
+  const status = g('trk-sync-status');
+  const labels = { meta: 'Meta', google: 'Google', chatgpt: 'ChatGPT' };
+  btn.disabled = true;
+  status.style.color = 'var(--muted)';
+  status.textContent = 'Sincronizando…';
+  try {
+    const res = await fetch('/api/sync-now?key=' + enc(KEY), { method: 'POST' });
+    if (res.status === 401) { authFail(); return; }
+    const data = await res.json().catch(() => ({}));
+    if (!data.results) throw new Error(data.error || ('HTTP ' + res.status));
+    const parts = Object.keys(labels).map(ch => {
+      const r = data.results[ch] || {};
+      if (r.status === 'ok') return labels[ch] + ' ✓';
+      if (r.status === 'skipped') return labels[ch] + ' — não configurado';
+      return labels[ch] + ' ✕ ' + (r.message || 'erro').slice(0, 120);
+    });
+    status.style.color = data.ok ? 'var(--green)' : 'var(--red)';
+    status.textContent = parts.join(' · ');
+    await loadTrkChannels();
+  } catch (err) {
+    status.style.color = 'var(--red)';
+    status.textContent = 'Falha: ' + err.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+g('trk-sync-btn').addEventListener('click', syncSpendNow);
 
 let trkPurchasesData = [];
 async function loadTrkPurchases() {
