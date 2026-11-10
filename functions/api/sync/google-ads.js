@@ -74,7 +74,10 @@ export async function onRequestPost(context) {
   } catch (_) { /* ignore */ }
 
   if (status === 'error') {
-    return json({ ok: false, error: errorMessage, rows_upserted: rowsUpserted, duration_ms: durationMs }, 500);
+    // TEMP DIAGNOSTIC (remove): shape of credentials, never full values.
+    const shape = v => { const s = String(v ?? ''); return { len: s.length, raw_len: String(v ?? '').length, head: s.slice(0, 3), tail: s.slice(-3), has_ws_inside: /\s/.test(s.trim()), has_quote: /["']/.test(s) }; };
+    const diag = { refresh_token: shape(env.GOOGLE_ADS_REFRESH_TOKEN), client_id: shape(env.GOOGLE_ADS_CLIENT_ID), client_secret_len: String(env.GOOGLE_ADS_CLIENT_SECRET ?? '').trim().length };
+    return json({ ok: false, error: errorMessage, diag, rows_upserted: rowsUpserted, duration_ms: durationMs }, 500);
   }
   return json({ ok: true, rows_upserted: rowsUpserted, duration_ms: durationMs, date_from: dateFrom, date_to: dateTo });
 }
